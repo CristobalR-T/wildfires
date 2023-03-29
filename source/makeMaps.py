@@ -1,3 +1,15 @@
+# makeMaps.py                    damiancclarke             yyyy-mm-dd:2022-12-01
+#---|----1----|----2----|----3----|----4----|----5----|----6----|----7----|----8
+#
+#   This file makes maps documenting wind bearings crossed with fire intensities
+# and combines these maps into gifs.  This can all be controlled using different
+# month spans and time periods in section 3 where functions are called.  This is
+# run using Python 3.8.10, but should work with any version of Python 3 provided
+# dependencies are installed.
+#
+# To run this code, the location of materials on the users machine should be set
+# on line 36.
+
 ################################################################################
 ### [0] Imports
 ################################################################################
@@ -20,6 +32,8 @@ from matplotlib.patches import Patch
 
 sns.set(style="whitegrid", palette="pastel", color_codes=True)
 sns.mpl.rc("figure", figsize=(10,6))
+
+base = "/home/damian/investigacion/2022/climateChangeLatAm/replication"
 
 
 ################################################################################
@@ -224,11 +238,10 @@ def makemapgif(pngP,gname,yearB,monthB,dayB,yearE,monthE,dayE,distance=None):
 ################################################################################
 ### [3] Make maps
 ################################################################################
-base = "/home/damian/investigacion/2022/climateChangeLatAm/"
 year = 2019
-shps  = base+"data/maps/comunas/comunas.shp"
-winds = base+"data/fires/wind/u10_v10_"+str(year)+".dta"
-fires = base+"data/maps/fires/fires"+str(year)+".dta"
+shps  = base+"data/maps/comunas.shp"
+winds = base+"data/wind/u10_v10_"+str(year)+".dta"
+fires = base+"data/maps/fires"+str(year)+".dta"
 res   = base+'results/maps/'
 
 for month in range (9,12):
