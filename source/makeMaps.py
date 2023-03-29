@@ -277,44 +277,6 @@ makemapgif(png_path,'testdistance',2019,9,1,2019,9,2,distance=1)
 
 
 
-# frames = []
-# imgs = glob.glob('C:/Users/danie/OneDrive/Escritorio/Trabajo/Effects of Wildfires in LAC/results/maps/upwind_*.png')
-# for i in imgs:
-#     new_frame = Image.open(i)
-#     frames.append(new_frame)
-    
-# frames[0].save('C:/Users/danie/OneDrive/Escritorio/Trabajo/Effects of Wildfires in LAC/results/maps/upwind.gif', format='GIF', append_images=frames[1:],
-#                save_all=True, duration=300, loop=0)
-
-
-# frames = []
-# imgs = glob.glob('C:/Users/danie/OneDrive/Escritorio/Trabajo/Effects of Wildfires in LAC/results/maps/distance_*.png')
-# for i in imgs:
-#     new_frame = Image.open(i)
-#     frames.append(new_frame)
-    
-# frames[0].save('C:/Users/danie/OneDrive/Escritorio/Trabajo/Effects of Wildfires in LAC/results/maps/distance.gif', format='GIF', append_images=frames[1:],
-#                save_all=True, duration=300, loop=0)
-
-
-
-# year  = 2019
-# month = 9
-# day   = 1
-
-# sday  = str(day).zfill(2)
-# smon  = str(month).zfill(2)
-# syear = str(year)
-# dlim = syear+'-'+smon+'-'+sday
-
-# res = 'C:/Users/danie/OneDrive/Escritorio/Trabajo/Effects of Wildfires in LAC/results/maps/'
-
-# fn = res+'distance_'+syear+'-'+smon+'_'+sday
-# makemap(fire_path,wind_path,shp_path,fn+'_test.png',dlim+' 00:00:00',lat=[-76,-68],lon=[-44,-32],distance=1)
-
-# fn = res+'upwind_'+syear+'-'+smon+'_'+sday
-# makemap(fire_path,wind_path,shp_path,fn+'_test.png',dlim+' 00:00:00',lat=[-76,-68],lon=[-44,-32])
-
 
 
 #RM lat=[-72,-69.5],lon=[-35,-33]
