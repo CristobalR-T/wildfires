@@ -14,12 +14,14 @@ cap log close
 *-------------------------------------------------------------------------------
 *--- (0) Globals and locals
 *-------------------------------------------------------------------------------
-global DAT "~/investigacion/2022/climateChangeLatAm/data"
-global OUT "~/investigacion/2022/climateChangeLatAm/results"
-global LOG "~/investigacion/2022/climateChangeLatAm/log"
+global ROOT "~/investigacion/2022/climateChangeLatAm/replication"
+
+global DAT "{$ROOT}/data"
+global OUT "{$ROOT}/results"
+global LOG "{$ROOT}/log"
 
 log using "$LOG/analysisMP25.txt", text replace
-
+cap mkdir "$OUT/figures"
 
 *-------------------------------------------------------------------------------
 *--- (1) Match fires with MP 2.5
@@ -51,7 +53,7 @@ foreach year of numlist 2004(1)2021 {
     decode CUT_2018, gen(Cod_Comuna_2018)
     *gen Cod_Comuna_2018 = string(CUT_2018, "%05.0f")
     foreach dist of numlist 0(25)200 250 500 {
-        merge 1:1 Date Cod_Comuna_2018 using "$DAT/fires/matched/fireWind_`year'_`dist'_donut5.dta"
+        merge 1:1 Date Cod_Comuna_2018 using "$DAT/windAndFires/fireWind_`year'_`dist'_donut5.dta"
         foreach type in upwind downwind nondownwind {
             *`type'Duration  `type'Surface 
             foreach var of varlist `type' `type'Distance {
@@ -81,55 +83,12 @@ foreach dist of numlist 0(25)200 250 {
         replace `var'_`dist' = 0 if `var'_`dist'==.
     }
 }
-*replace fire = 0 if fire==.
-*gen downwind = fire>0 & upwind==0
 
-*gen windSpeedSq = windSpeed^2
 destring Cod_Comuna_2018, replace
 gen region = floor(Cod_Comuna_2018/1000)
 bys CUT_2018 (Date): gen time = _n
 
-/*
-*** 4 exposures
-foreach num in 0_45 45_90 90_135 135_180 {
-    gen LB_`num'   = .
-    gen UB_`num'   = .
-    gen Beta_`num' = .
-}
-gen distance  = .
 
-local j=1
-foreach dist of numlist 0(25)200 250 {
-    local xvars F_exposure_0_45_`dist' F_exposure_45_90_`dist' F_exposure_90_135_`dist' F_exposure_135_180_`dist'
-    reghdfe pm2p5 `xvars', absorb(time CUT_2018) cluster(CUT_2018)
-    foreach num in 0_45 45_90 90_135 135_180 {
-        replace LB_`num'   = _b[F_exposure_`num'_`dist'] + invnormal(0.025)*_se[F_exposure_`num'_`dist'] in `j'
-        replace UB_`num'   = _b[F_exposure_`num'_`dist'] + invnormal(0.975)*_se[F_exposure_`num'_`dist'] in `j'
-        replace Beta_`num' = _b[F_exposure_`num'_`dist'] in `j'
-    }    
-    replace distance = `dist' in `j'
-    local ++j
-}
-#delimit ;
-twoway rarea LB_0_45 UB_0_45 distance, color(gs10%30)
-   || line Beta_0_45 distance, lwidth(medthick) lpattern(solid)
-   || rarea LB_45_90 UB_45_90 distance, color(gs10%30)
-   || line Beta_45_90 distance, lwidth(medthick) lpattern(dash)
-   || rarea LB_90_135 UB_90_135 distance, color(gs10%30)
-   || line Beta_90_135 distance, lwidth(medthick) lpattern(dash)
-   || rarea LB_135_180 UB_135_180 distance, color(gs10%30)
-   || line Beta_135_180 distance, lwidth(medthick) lpattern(dash)
-ytitle("MP 2.5 (kg/m{sup:3})") xtitle("Fire Size (Ha)")
-legend(order(2 "Estimate (0-45)" 4 "Estimate (45-90)"
-             6 "Estimate (90-135)" 8 "Estimate (135-180)" 
-             1 "95% CI") position(6) rows(2))
-yline(0, lpattern(dash));
-#delimit cr
-graph export "$OUT/figures/exposurePM25_4groups.pdf", replace
-drop LB_* UB_* Beta_* distance 
-*/
-
-***LEVEL
 gen LB_up     = .
 gen UB_up     = .
 gen Beta_up   = .
