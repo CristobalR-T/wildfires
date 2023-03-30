@@ -8,13 +8,22 @@
 # dependencies are installed.
 #
 # To run this code, the location of materials on the users machine should be set
-# on line 36.
+# on line 45.
+#
+# This code can be run using the following at the command line:
+#  python3 -W ignore makeMaps.py
+#
+# The -W ignore flag is because error messages are thrown when no fires occur in
+# a given moment and the map of fires is empty.  If -W ignore is not used these
+# messages will simply be printed on the screen.
+
 
 ################################################################################
 ### [0] Imports
 ################################################################################
 import numpy as np
 import pandas as pd
+import os
 
 import shapefile as shp
 import matplotlib.pyplot as plt
@@ -33,7 +42,7 @@ from matplotlib.patches import Patch
 sns.set(style="whitegrid", palette="pastel", color_codes=True)
 sns.mpl.rc("figure", figsize=(10,6))
 
-base = "/home/damian/investigacion/2022/climateChangeLatAm/replication"
+base = "/home/damian/investigacion/2022/climateChangeLatAm/replication/"
 
 
 ################################################################################
@@ -84,13 +93,9 @@ def makemap(fireP,windP,shpP,fname,date,lat=None,lon=None,delta=30,distance=None
     both['c3b'] = both.windangle<delta
     both['c3']  = both.c3a+both.c3b
     both['Upwind'] = both.c1*(1-both.c3)+both.c2*both.c3
-    #both['Upwind'] = (both.c1==True and both.c3==False) or (both.c2==True and both.c3==True)
 
     upwind = both[['Distancia','Upwind','CUT_2018']].groupby('CUT_2018').mean()
-    #distance = both[[,'CUT_2018']].groupby('CUT_2018').mean()
-
     
-    ###CHECK IF COMUNAS WITHIN delta DEGREES OF WINDANGLE
     sf = gpd.read_file(shpP)
     sf = sf.to_crs('epsg:4326')
     sf['CUT_2018']=sf.cod_comuna
@@ -169,6 +174,9 @@ def makemap(fireP,windP,shpP,fname,date,lat=None,lon=None,delta=30,distance=None
     plt.savefig(fname,bbox_inches='tight')
     plt.close('all')
 
+################################################################################
+### [2] Auxiliary script and gif maker
+################################################################################
 #for create a vector of dates
 def get_start_to_end(start_date, end_date):
     date_list = []
@@ -230,6 +238,9 @@ def makemapgif(pngP,gname,yearB,monthB,dayB,yearE,monthE,dayE,distance=None):
         new_frame = Image.open(i)
         frames.append(new_frame)
         
+    if not os.path.exists(pngP+'gifs/'):
+        os.makedirs(pngP+'gifs/')
+
     fn_save = pngP+'gifs/'+gname+'.gif'
     frames[0].save(fn_save, format='GIF', append_images=frames[1:],
                    save_all=True, duration=300, loop=0)
@@ -244,9 +255,15 @@ winds = base+"data/wind/u10_v10_"+str(year)+".dta"
 fires = base+"data/maps/fires"+str(year)+".dta"
 res   = base+'results/maps/'
 
+if not os.path.exists(res):
+    os.makedirs(res)
+
+
 for month in range (9,12):
-    if month==9 or month==11:
+    if month==4 or month==6 or month==9 or month==11:
         mday = 31
+    elif month==2:
+        mday = 28
     else:
         mday = 32
     for day in range(1,mday):
@@ -258,6 +275,7 @@ for month in range (9,12):
         print(dlim)
         
         fn = res+'upwind_'+syear+'_'+smon+'_'+sday
+        #RM lat=[-72,-69.5],lon=[-35,-33]
         la = lat=[-76,-68]
         lo = lon=[-44,-32]
         makemap(fires,winds,shps,fn+'_a.png',dlim+' 00:00:00',la,lo)
@@ -281,29 +299,6 @@ for month in range (9,12):
         makemap(fires,winds,shps,fn+'_h.png',dlim+' 21:00:00',la,lo,distance=1)
 
 
-# make gif
-png_path = base+'results/maps/'
-
-makemapgif(png_path,'testupwind'  ,2019,9,1,2019,9,9)
-makemapgif(png_path,'testdistance',2019,9,1,2019,9,2,distance=1)
-
-
-
-
-
-
-#RM lat=[-72,-69.5],lon=[-35,-33]
-
-
-#ax.set_ylim(-60, -15)
-#MIDDLE ZONE
-#ax.set_ylim(-45, -30)
-#ax.set_xlim(-76, -68)
-#RM
-#ax.set_ylim(-35, -33)
-#ax.set_xlim(-72, -69.5)
-    
-
-
-#ax.set_ylim(-38, -36)
-#ax.set_xlim(-74, -69.5)
+# make gifs
+makemapgif(res,'testupwind'  ,2019,9,1,2019,9,9)
+makemapgif(res,'testdistance',2019,9,1,2019,9,2,distance=1)
