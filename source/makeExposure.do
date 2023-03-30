@@ -405,15 +405,13 @@ foreach donut of numlist `donuts' {
             **Merge == 3 is days with fires
             merge m:1 Cod_Comuna_2018 date using `year`yr''
             local dsum = `dsum'+`ndays'
-            save "$DAT/comunaExposure_`yr'", replace    
+            tempfile comunaExposure_`yr'
+            save `comunaExposure_`yr'', replace
             tab Cod_Comuna_2018
-        }
-        
-        use "$DAT/comunaExposure_2003", clear
-        rm "$DAT/comunaExposure_2003"
+        }        
+        use `comunaExposure_2003', clear
         foreach num of numlist 2004(1)2019 {
-            append using "$DAT/comunaExposure_`num'"
-            rm "$DAT/comunaExposure_`num'"
+            append using `comunaExposure_`num''
         }
         
         *-------------------------------------------------------------------------------
