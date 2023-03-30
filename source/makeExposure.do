@@ -60,11 +60,18 @@ if c(username)=="damian" {
 global DAT "${BASE}/data"
 global LOG "${BASE}/log"
 global OUT "${BASE}/results/descriptives"
+
+cap mkdir "${BASE}/results"
+cap mkdir $LOG
+cap mkdir $OUT
+cap mkdir "$DAT/windAndFires"
+cap mkdir "$DAT/exposure"
+
 log using "$LOG/makeExposure.txt", text replace
 
 
 local delta = 30
-local firesize 0 25 50 75 100 125 150 175 200 250 500
+local firesize 25 50 75 100 125 150 175 200 250 500 0 
 local donuts 0 5
 
 foreach donut of numlist `donuts' {
@@ -76,9 +83,7 @@ foreach donut of numlist `donuts' {
         *-----------------------------------------------------------------------
         if `farea'==0 {     
             **2002
-            *use "${DAT}/T_INCENDIOS_120KM/2002-2003_120KMCC"
-            *use "${DAT}/T_INCENDIOS_200KM_python/I_2002-2003"
-            use "${DAT}/fires/expose/d200/I_2002-2003"
+            use "${DAT}/fires/I_2002-2003"
             rename CUT_2018 numeric_CUT_2018
             gen CUT_2018 = string(numeric_CUT_2018,"%05.0f")
             keep if LENGTH_KM>=`donut'
@@ -200,18 +205,12 @@ foreach donut of numlist `donuts' {
             *-------------------------------------------------------------------
             local yrminus1 = `yr'-1
             local yrplus1  = `yr'+1
-            *use "$DAT/fires/expose/d120/`yrminus1'-`yr'_120KMCC"
-            *use "${DAT}/T_INCENDIOS_120KM/`yrminus1'-`yr'_120KMCC"
-            *use "${DAT}/T_INCENDIOS_200KM_python/I_`yrminus1'-`yr'"
-            use "${DAT}/fires/expose/d200/I_`yrminus1'-`yr'"
+            use "${DAT}/fires/I_`yrminus1'-`yr'"
             
             dis "Count file `yrminus1'-`yr'"
             count
             drop beta_radia*
-            *append using "$DAT/fires/expose/d120/`yr'-`yrplus1'_120KMCC"
-            *append using "${DAT}/T_INCENDIOS_120KM/`yr'-`yrplus1'_120KMCC"
-            *append using "${DAT}/T_INCENDIOS_200KM_python/I_`yr'-`yrplus1'", force
-            append using "${DAT}/fires/expose/d200/I_`yr'-`yrplus1'", force
+            append using "${DAT}/fires/I_`yr'-`yrplus1'", force
             keep if LENGTH_KM>=`donut'
             keep if Superficie>=`farea' & Superficie!=.
         
@@ -313,8 +312,7 @@ foreach donut of numlist `donuts' {
             **Merge == 3 is fires occurring in municipalities
             **Merge == 1 is fires occurring outside of year
             **Merge == 2 is municipalities with no fires
-            merge m:1 CUT_2018 Date using "$DAT/fires/wind/u10_v10_`yr'"
-            *merge m:1 CUT_2018 Date using "${DAT}/Vientos u 10y v10/u10_v10_`yr'"
+            merge m:1 CUT_2018 Date using "$DAT/wind/u10_v10_`yr'"
             //drop observations if no fires in municipality*time cell
             drop if _merge==2
         
@@ -334,7 +332,6 @@ foreach donut of numlist `donuts' {
             rename beta_grado bearingComuna
         
             *gen bearingWind = atan2(viento_u10,viento_v10)*180/c(pi)
-            *replace bearingWind = bearingWind + 360 if bearingWind<0
             gen bearingWind = atan2(viento_v10,viento_u10)*180/c(pi)
             replace bearingWind = bearingWind + 360 if bearingWind<0
             gen windSpeed = sqrt(viento_u10^2+viento_v10^2)
@@ -352,8 +349,8 @@ foreach donut of numlist `donuts' {
             keep CUT_2018_exposure Superficie la1 lo1 beta_grado Date duration distancia 
             rename CUT_2018_exposure CUT_2018
             rename distancia Distancia
-            save "$DAT/maps/fires/fires`yr'", replace 
-            *save "$DAT/maps/fires`yr'", replace
+            cap mkdir "$DAT/maps"
+            save "$DAT/maps/fires`yr'", replace 
             restore
         
             **bearing difference calculates distance between wind direction
@@ -379,16 +376,20 @@ foreach donut of numlist `donuts' {
                 gen `f'Surface  = Superficie if `f'==1
                 gen `f'Distance = distancia  if `f'==1
             }
+            // GENERATE a municipality by time block dataset (groups multiple fires)
+            // This is used for MP 2.5 analysis at high frequency
             #delimit ;
             collapse windSpeed upwindDistance downwindDistance nondownwindDistance
-            (sum) sumWindSpeed=windSpeed upwind downwind nondownwind fire F_exposure_*,
+            (sum)    upwind downwind nondownwind fire F_exposure_*,
             by(NOM_COM CUT_2018_exposure Date);
             #delimit cr
             
             gen date = date(Date, "YMDhms") 
             rename CUT_2018_exposure Cod_Comuna_2018
-            save "$DAT/fires/matched/fireWind_`yr'_`farea'_donut`donut'.dta", replace
+            save "$DAT/windAndFires/fireWind_`yr'_`farea'_donut`donut'.dta", replace
         
+            // GENERATE a municipality by day dataset (groups multiple fires)
+            // This is then joined to empty cells so it is a balanced panel
             #delimit ;
             collapse windSpeed upwind downwind nondownwind 
             upwindDistance downwindDistance nondownwindDistance fire F_exposure_*,
@@ -409,8 +410,10 @@ foreach donut of numlist `donuts' {
         }
         
         use "$DAT/comunaExposure_2003", clear
+        rm "$DAT/comunaExposure_2003"
         foreach num of numlist 2004(1)2019 {
             append using "$DAT/comunaExposure_`num'"
+            rm "$DAT/comunaExposure_`num'"
         }
         
         *-------------------------------------------------------------------------------
