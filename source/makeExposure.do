@@ -164,8 +164,7 @@ foreach donut of numlist `donuts' {
             destring CUT_2018, replace
             tostring CUT_2018, replace
             
-            *merge m:1 CUT_2018 Date using "${DAT}/Vientos u 10y v10/u10_v10_2002"
-            merge m:1 CUT_2018 Date using "${DAT}/fires/wind/u10_v10_2002"
+            merge m:1 CUT_2018 Date using "${DAT}/wind/u10_v10_2002"
             //drop observations if no fires in municipality*time cell
             drop if _merge==2
             keep if D1=="2003"
