@@ -8,7 +8,7 @@
 # dependencies are installed.
 #
 # To run this code, the location of materials on the users machine should be set
-# on line 45.
+# on line 46.
 #
 # This code can be run using the following at the command line:
 #  python3 -W ignore makeMaps.py
@@ -31,6 +31,7 @@ import seaborn as sns
 import geopandas as gpd
 import matplotlib.lines as mlines
 import pyreadr
+import zipfile
 
 from PIL import Image
 import glob
@@ -255,6 +256,9 @@ winds = base+"data/wind/u10_v10_"+str(year)+".dta"
 fires = base+"data/maps/fires"+str(year)+".dta"
 res   = base+'results/maps/'
 
+
+with zipfile.ZipFile(base+"data/wind/u10_v10_"+str(year)+".zip", "r") as zip_ref:
+    zip_ref.extractall(base+"data/wind/")
 if not os.path.exists(res):
     os.makedirs(res)
 
@@ -302,3 +306,6 @@ for month in range (9,12):
 # make gifs
 makemapgif(res,'testupwind'  ,2019,9,1,2019,9,9)
 makemapgif(res,'testdistance',2019,9,1,2019,9,2,distance=1)
+
+# clean up
+os.remove(base+"data/wind/u10_v10_"+str(year)+".dta")

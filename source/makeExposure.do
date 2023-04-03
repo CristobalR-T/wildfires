@@ -62,8 +62,8 @@ global LOG "${BASE}/log"
 global OUT "${BASE}/results/descriptives"
 
 cap mkdir "${BASE}/results"
-cap mkdir $LOG
-cap mkdir $OUT
+cap mkdir "$LOG"
+cap mkdir "$OUT"
 cap mkdir "$DAT/windAndFires"
 cap mkdir "$DAT/exposure"
 
@@ -74,9 +74,13 @@ local delta = 30
 local firesize 25 50 75 100 125 150 175 200 250 500 0 
 local donuts 0 5
 
+cd "$DAT"
+unzipfile comunaBase
 foreach donut of numlist `donuts' {
     foreach farea of numlist `firesize' {        
         dis "Fire area is `farea'"
+        cd "fires"
+        unzipfile I_2002-2003
         
         *-----------------------------------------------------------------------
         *--- (1) Set up municipal by day panel [LEAP YEAR 2000(4)2020]
@@ -164,11 +168,14 @@ foreach donut of numlist `donuts' {
             destring CUT_2018, replace
             tostring CUT_2018, replace
             
+            cd "${DAT}/wind"
+            unzipfile u10_v10_2002
             merge m:1 CUT_2018 Date using "${DAT}/wind/u10_v10_2002"
             //drop observations if no fires in municipality*time cell
             drop if _merge==2
             keep if D1=="2003"
             drop _merge Long Lat viento_v10 Comuna viento_u10
+            rm u10_v10_2002.dta
         }
         else {
             clear
@@ -204,6 +211,9 @@ foreach donut of numlist `donuts' {
             *-------------------------------------------------------------------
             local yrminus1 = `yr'-1
             local yrplus1  = `yr'+1
+            
+            cd "${DAT}/fires"
+            unzipfile I_`yr'-`yrplus1'
             use "${DAT}/fires/I_`yrminus1'-`yr'"
             
             dis "Count file `yrminus1'-`yr'"
@@ -306,11 +316,13 @@ foreach donut of numlist `donuts' {
             drop CONAF_Lat CONAF_Lon Topograf Pendiente betamas30 betamenos30
             drop DAY MON HOU HOU_R D2 D3 D4
             compress
-            
+
+            cd "$DAT/wind"
+            unzipfile u10_v10_`yr'
             dis "Merge fires to wind information"
             **Merge == 3 is fires occurring in municipalities
             **Merge == 1 is fires occurring outside of year
-            **Merge == 2 is municipalities with no fires
+            **Merge == 2 is municipalities with no fires            
             merge m:1 CUT_2018 Date using "$DAT/wind/u10_v10_`yr'"
             //drop observations if no fires in municipality*time cell
             drop if _merge==2
@@ -407,7 +419,16 @@ foreach donut of numlist `donuts' {
             tempfile comunaExposure_`yr'
             save `comunaExposure_`yr'', replace
             tab Cod_Comuna_2018
-        }        
+  
+
+            cd "${DAT}/fires"
+            rm I_`yrminus1'-`yr'.dta
+            cd "$DAT/wind"
+            rm u10_v10_`yr'.dta
+        }
+        cd "${DAT}/fires"
+        local yr = `yrplus1'-1
+        rm I_`yr'-`yrplus1'.dta
         use `comunaExposure_2003', clear
         foreach num of numlist 2004(1)2019 {
             append using `comunaExposure_`num''
@@ -443,9 +464,7 @@ foreach donut of numlist `donuts' {
         collapse upwindDistance downwindDistance nondownwindDistance windSpeed
                  (sum) upwind   downwind         nondownwind         fire
                  F_exposure_*,  by(weeksBirths Cod_Comuna_2018);
-        #delimit cr
-        
-        
+        #delimit cr        
         save "$DAT/exposure/exposureWeekly_births_`farea'ha_donut`donut'.dta", replace
         
         
@@ -463,8 +482,9 @@ foreach donut of numlist `donuts' {
                  (sum) upwind   downwind         nondownwind         fire
                  F_exposure_*,  by(weeksDeaths Cod_Comuna_2018);
         #delimit cr
-        
-        
         save "$DAT/exposure/exposureWeekly_deaths_`farea'ha_donut`donut'.dta", replace
     }
 }
+
+
+rm "$DAT/comunaBase.dta"
