@@ -77,14 +77,6 @@ xtset Cod_Comuna_2018 weeksEgresos
 *--------------------------------------------------------------------------------
 *--- (2) Generate variables
 *--------------------------------------------------------------------------------
-/*
-egen pop = rowtotal(INE*)
-gen rate = egr_resp/pop
-gen rateResp = egr_resp/pop*100000
-gen rateCirc = egr_circ/pop*100000
-gen rateBurn = egr_quem/pop*100000
-*/
-
 **TOTALS
 egen all_resp  = rowtotal(male_egr_resp* female_egr_resp*)
 egen all_circ  = rowtotal(male_egr_circ* female_egr_circ*)
@@ -111,6 +103,13 @@ foreach age in 00_01 01_05 06_15 16_40 41_65 65_pl {
     local rvars
     local cvars
     local bvars
+
+    local a1 = substr("`age'", 1, 2)
+    local a2 = substr("`age'", 4, 2)
+    local a2 "-`a2'"
+    if `"`a2'"'=="-pl" local a2 " plus"
+    if `"`a2'"'=="-01" local a2 "-1"
+    if `"`a1'"'=="00"  local a1 "0"
     
     foreach level of local age`age' {
         local pvars `pvars' INEfemale_`level'  INEmale_`level' 
@@ -126,11 +125,39 @@ foreach age in 00_01 01_05 06_15 16_40 41_65 65_pl {
     egen morb_burn_`age' = rowtotal(`bvars')
 
     foreach cause in all resp circ burn {
+        if `"`cause'"'=="all"  local vlab "All cause hospitalizations"
+        if `"`cause'"'=="resp" local vlab "Respiratory hospitalizations"
+        if `"`cause'"'=="circ" local vlab "Circulatory hospitalizations"
+        if `"`cause'"'=="burn" local vlab "Burns-related hospitalizations"
+
         gen rate_`cause'_`age' = (morb_`cause'_`age'/pop`age')*100000
+        lab var rate_`cause'_`age' "`vlab' (Ages `a1'`a2')"
     }
 }
 sum pop*
 sum rate*
+
+*-------------------------------------------------------------------------------
+*--- (3) Summary statistics and descriptives
+*-------------------------------------------------------------------------------
+lab var rate_morb "All cause hosptilzations (rate per 100,000)"
+lab var rate_resp "Respiratory hospitaliztaions (rate per 100,000)"
+lab var rate_circ "Circulatory hospitaliztaions (rate per 100,000)"
+lab var rate_burn "Burns-related hospitaliztaions (rate per 100,000)"
+lab var all_pop   "Population" 
+
+    
+local s1 rate_morb rate_resp rate_circ rate_burn
+local s2 rate_all_00_01 rate_resp_00_01 rate_circ_00_01 rate_burn_00_01 
+local s3 rate_all_65_pl rate_resp_65_pl rate_circ_65_pl rate_burn_65_pl 
+
+estpost tabstat `s1' `s2' `s3', c(stat) stat(n mean sd min max)
+#delimit ;
+esttab using "$OUT/descriptives/hospitalSumStats.tex", replace 
+cells("count(fmt(%9.0gc)) mean(fmt(%6.2fc)) sd(fmt(%6.2fc)) min max")
+nonumber nomtitle nonote noobs label fragment collabels(none) nolines;
+#delimit cr
+
 
 *-------------------------------------------------------------------------------
 *--- (3) Age by causes
