@@ -32,6 +32,7 @@ global LOG "${ROOT}/log"
 
 cap mkdir "$OUT/figures"
 cap mkdir "$OUT/tables"
+cap mkdir "$OUT/descriptives"
 
 log using "$LOG/analysis.txt", text replace
 
@@ -47,110 +48,93 @@ rename semana weeksEgresos
 
 rename Cod_Comuna_2018 numeric_Cod_Comuna_2018
 gen Cod_Comuna_2018 = string(numeric_Cod_Comuna_2018, "%05.0f")
-foreach HA of numlist 0 50 100 150 200 250 500 {
+foreach H of numlist 0 50 100 150 200 250 500 {
     cap drop _merge
-    merge 1:1 Cod_Comuna_2018 weeksEgresos using "$DAT/exposure/exposureWeekly_egresos_`HA'ha_donut0"
     #delimit ;
-    rename (upwind     upwindDistance     downwind     downwindDistance     nondownwind     nondownwindDistance)
-           (upwind`HA' upwindDistance`HA' downwind`HA' downwindDistance`HA' nondownwind`HA' nondownwindDistance`HA');
-    rename (F_exposure_0_45      F_exposure_45_90      F_exposure_90_135      F_exposure_135_180)
-           (F_exposure_0_45_`HA' F_exposure_45_90_`HA' F_exposure_90_135_`HA' F_exposure_135_180_`HA');
+    merge 1:1 Cod_Comuna_2018 weeksEgresos
+          using "$DAT/exposure/exposureWeekly_egresos_`H'ha_donut0";
     #delimit cr
+
+    ren (upwind      upwindDistance)      (upwind`H'     upwindDistance`H')
+    ren (downwind    downwindDistance)    (downwind`H' downwindDistance`H')
+    ren (nondownwind nondownwindDistance) (nondownwind`H' nondownwindDistance`H')
+    ren F_exposure_0_45    F_exposure_0_45_`H'
+    ren F_exposure_45_90   F_exposure_45_90_`H'
+    ren F_exposure_90_135  F_exposure_90_135_`H'
+    ren F_exposure_135_180 F_exposure_135_180_`H'
 }
-rename (Cod_Comuna_2018 numeric_Cod_Comuna_2018) (string_Cod_Comuna_2018 Cod_Comuna_2018)
+#delimit ;
+rename (Cod_Comuna_2018 numeric_Cod_Comuna_2018)
+       (string_Cod_Comuna_2018 Cod_Comuna_2018);
+#delimit cr
+
 **DROP EGRESOS 2001-2002 (no fires yet)
 keep if _merge==3
 
-*--------------------------------------------------------------------------------
-*--- (2) Two-way FE
-*--------------------------------------------------------------------------------
 keep if year>2003&year<=2018
+xtset Cod_Comuna_2018 weeksEgresos
+
+*--------------------------------------------------------------------------------
+*--- (2) Generate variables
+*--------------------------------------------------------------------------------
+/*
 egen pop = rowtotal(INE*)
 gen rate = egr_resp/pop
-gen lnResp  = log(egr_resp+1)
-gen lnBurn = log(egr_quem+1)
-gen lnCirc = log(egr_circ+1)
 gen rateResp = egr_resp/pop*100000
 gen rateCirc = egr_circ/pop*100000
 gen rateBurn = egr_quem/pop*100000
-xtset Cod_Comuna_2018 weeksEgresos
+*/
 
-*-------------------------------------------------------------------------------
-*--- (3) Age by causes
-*-------------------------------------------------------------------------------
-**0-1
-**1-5
-**6-15
-**16-40    
-**41-65
-**65 plus    
-
+**TOTALS
 egen all_resp  = rowtotal(male_egr_resp* female_egr_resp*)
 egen all_circ  = rowtotal(male_egr_circ* female_egr_circ*)
 egen all_burn  = rowtotal(male_egr_quem* female_egr_quem*)
 egen all_morb  = rowtotal(male_egr_0-male_egr_80 female_egr_0-female_egr_80)
-egen all_pop  = rowtotal(INEfemale_0-INEmale_80)
+egen all_pop   = rowtotal(INEfemale_0-INEmale_80)
 
-gen rate_resp = all_resp/all_pop*100000
-gen rate_circ = all_circ/all_pop*100000
-gen rate_burn = all_burn/all_pop*100000
-gen rate_morb = all_morb/all_pop*100000
+foreach cause in morb resp circ burn {
+    gen rate_`cause' = all_`cause'/all_pop*100000
+}
 
 
-egen pop00_01 = rowtotal(INEfemale_0 INEmale_0)
-gen  pop1day  = pop00_01
-gen  pop1month = pop00_01
-egen pop01_05 = rowtotal(INEfemale_1_5-INEmale_1_5)
-egen pop06_15 = rowtotal(INEfemale_6_10 INEfemale_11_15 INEmale_6_10 INEmale_11_15)
-egen pop16_40 = rowtotal(INEfemale_16_20 INEmale_16_20 INEfemale_21_25-INEmale_36_40)
-egen pop41_65 = rowtotal(INEfemale_41_45-INEmale_61_65)
-egen pop65_pl = rowtotal(INEfemale_66_70 INEmale_66_70 INEfemale_71_75-INEmale_80)
+**AGE-SPECIFIC
+local age00_01 0
+local age01_05 1_5
+local age06_15 6_10 11_15
+local age16_40 16_20 21_25 26_30 31_35 36_40
+local age41_65 41_45 46_50 51_55 56_60 61_65
+local age65_pl 66_70 71_75 76_80 80
 
-**ALL
-egen morb_all_1day   = rowtotal(male_egr_24hrs female_egr_24hrs)
-egen morb_all_1month = rowtotal(male_egr_30dias female_egr_30dias)
+foreach age in 00_01 01_05 06_15 16_40 41_65 65_pl {
+    local pvars
+    local avars
+    local rvars
+    local cvars
+    local bvars
+    
+    foreach level of local age`age' {
+        local pvars `pvars' INEfemale_`level'  INEmale_`level' 
+        local avars `avars' female_egr_`level' male_egr_`level'
+        local rvars `rvars' female_egr_resp_`level' male_egr_resp_`level'
+        local cvars `cvars' female_egr_circ_`level' male_egr_circ_`level'
+        local bvars `bvars' female_egr_quem_`level' male_egr_quem_`level'
+    }
+    egen pop`age' = rowtotal(`pvars')
+    egen morb_all_`age' = rowtotal(`avars')
+    egen morb_resp_`age' = rowtotal(`rvars')
+    egen morb_circ_`age' = rowtotal(`cvars')
+    egen morb_burn_`age' = rowtotal(`bvars')
 
-egen morb_all_00_01 = rowtotal(male_egr_0 female_egr_0 )
-egen morb_all_01_05 = rowtotal(male_egr_1_5 female_egr_1_5)
-egen morb_all_06_15 = rowtotal(male_egr_6_10 male_egr_11_15 female_egr_6_10 female_egr_11_15)
-egen morb_all_16_40 = rowtotal(male_egr_16_20-male_egr_36_40 female_egr_16_20-female_egr_36_40)
-egen morb_all_41_65 = rowtotal(male_egr_41_45-male_egr_61_65 female_egr_41_45-female_egr_61_65)
-egen morb_all_65_pl = rowtotal(male_egr_66_70-male_egr_80 female_egr_66_70-female_egr_80)
-
-**RESP
-egen morb_resp_00_01 = rowtotal(male_egr_resp_0   female_egr_resp_0 )
-egen morb_resp_01_05 = rowtotal(male_egr_resp_1_5 female_egr_resp_1_5)
-egen morb_resp_06_15 = rowtotal(male_egr_resp_6_10  male_egr_resp_11_15 female_egr_resp_6_10  female_egr_resp_11_15)
-egen morb_resp_16_40 = rowtotal(male_egr_resp_16_20-male_egr_resp_36_40 female_egr_resp_16_20-female_egr_resp_36_40)
-egen morb_resp_41_65 = rowtotal(male_egr_resp_41_45-male_egr_resp_61_65 female_egr_resp_41_45-female_egr_resp_61_65)
-egen morb_resp_65_pl = rowtotal(male_egr_resp_66_70-male_egr_resp_80    female_egr_resp_66_70-female_egr_resp_80)
-
-**CIRC
-egen morb_circ_00_01 = rowtotal(male_egr_circ_0   female_egr_circ_0 )
-egen morb_circ_01_05 = rowtotal(male_egr_circ_1_5 female_egr_circ_1_5)
-egen morb_circ_06_15 = rowtotal(male_egr_circ_6_10  male_egr_circ_11_15 female_egr_circ_6_10  female_egr_circ_11_15)
-egen morb_circ_16_40 = rowtotal(male_egr_circ_16_20-male_egr_circ_36_40 female_egr_circ_16_20-female_egr_circ_36_40)
-egen morb_circ_41_65 = rowtotal(male_egr_circ_41_45-male_egr_circ_61_65 female_egr_circ_41_45-female_egr_circ_61_65)
-egen morb_circ_65_pl = rowtotal(male_egr_circ_66_70-male_egr_circ_80    female_egr_circ_66_70-female_egr_circ_80)
-
-**BURN 
-egen morb_burn_00_01 = rowtotal(male_egr_quem_0   female_egr_quem_0 )
-egen morb_burn_01_05 = rowtotal(male_egr_quem_1_5 female_egr_quem_1_5)
-egen morb_burn_06_15 = rowtotal(male_egr_quem_6_10  male_egr_quem_11_15 female_egr_quem_6_10  female_egr_quem_11_15)
-egen morb_burn_16_40 = rowtotal(male_egr_quem_16_20-male_egr_quem_36_40 female_egr_quem_16_20-female_egr_quem_36_40)
-egen morb_burn_41_65 = rowtotal(male_egr_quem_41_45-male_egr_quem_61_65 female_egr_quem_41_45-female_egr_quem_61_65)
-egen morb_burn_65_pl = rowtotal(male_egr_quem_66_70-male_egr_quem_80    female_egr_quem_66_70-female_egr_quem_80)
-
-exit
-
-foreach cause in all resp circ burn {
-    local extra
-    if `"`cause'"'=="all" local extra 1day 1month
-    foreach age in 00_01 01_05 06_15 16_40 41_65 65_pl `extra' {
+    foreach cause in all resp circ burn {
         gen rate_`cause'_`age' = (morb_`cause'_`age'/pop`age')*100000
     }
 }
-sum rate_*
+sum pop*
+sum rate*
+
+*-------------------------------------------------------------------------------
+*--- (3) Age by causes
+*-------------------------------------------------------------------------------
 
 gen LB_95 = . 
 gen LB_90 = .
