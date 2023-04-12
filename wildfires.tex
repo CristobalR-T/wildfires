@@ -55,7 +55,7 @@
 %-------------------------------------------------------------------------------
 \begin{document}
 %\title{\textbf{Understanding the Effects of Wildfires on Human Well-being in the Short, Medium, and Long-Term}
-\title{\textbf{Wildfires and Human Health: Evidence from 16 Wildfire Seasons in Chile}
+\title{\textbf{Wildfires and Human Health: Evidence from 15 Wildfire Seasons in Chile}
 \thanks{We are grateful to Ignacio Fernández for exceptional research assistance. %, to XXX and YYY for in depth discussions related to data, and to ZZZ for comments and suggestions. [CONAF??]
 We gratefully acknowledge support of the Inter American Development Bank, through the project ``Implications of Climate Change and Natural Disasters in LAC''. We thank participants and organizers of a number of workshops at the Inter American Development Bank for many productive suggestions. Clarke acknowledges partial support from the Institute for Research in Market Imperfections and Public Policy, MIPP.}} %(ICS13\_002 ANID).}}
 \author{Rub\'i Arrizaga\thanks{Universidad de Santiago \href{mailto: rubi.arrizaga@usach.cl}{rubi.arrizaga@usach.cl}.}
@@ -217,13 +217,6 @@ In Table \ref{tab:sumstats}, panel A we provide summary statistics of administra
 
 
 
-\begin{figure}
-    \centering
-    \includegraphics[scale=0.6]{./results/descriptives/fireSizes.pdf}
-    \caption{Wildfires over time by magnitude}
-    \label{fig:firesize}
-\end{figure}
-
 %These matched administrative data allow us to consider the long term effects of exposure to wildfire smoke at sensitive periods, such as birth \citep{frankenberg2005health,rosales2019persistent,jayachandran2009air}, throughout the entire life of individuals, and indeed even into future generations.  Moreover, we can additionally document the immediate and medium term health impacts of exposure at other ages given that we observe full inpatient records of all individuals in the country.  Thus, we additionally use these micro-level registers of health for all individuals, covering the period of 2001-2018.  These records include information on the age, sex, and residence of each individual, as well as a classification of their reason for hospitalization, consistently recorded with ICD-10 codes.  We examine all hospitalizations, but then focus on specific classes of morbidities which are credibly linked to fires, namely hospitalizations for respiratory causes, and hospitalizations for cardiovascular disease.
 %LINK TO APPENDIX ON THIS
 
@@ -240,10 +233,38 @@ In Table \ref{tab:sumstats}, panel A we provide summary statistics of administra
 \label{sscn:fires} 
 % At a later time, we should consider using satellite data on wildfires from the  NASA's Fire Information for Resource Management System (FIRMS) active fire data from the Moderate Resolution Imaging Spectroradiometer (MODIS) aboard the Aqua and Terra satellites. 
 % This should allow us to have an homogeneous dataset that is comparable across time and regions.
-We access data on all wildfires occurring in Chile between the period of 2001 until 2019 from administrative records maintained by CONAF.  These data are collected and systematized by CONAF, and have been made available in a comparable way from the period of 1985 onwards. We work with the period of years necessary to match with other data discussed in this section.  These records contain a record of each wildfire, including information on the region, province and municipality in which it occurred, a precise geo-reference where available\footnote{This information has not been collected in precisely the same way over time.  Prior to the year 2003, this was collected using a series of IGM maps with 1:50,000 resolution, implying that fires were geo-located to within quadrants of approximately 400ha, and then information was additionally recorded by CONAF to limit this to 100ha areas within these quadrants.  From 2003 onwards, this information was collected exactly based on GPS measures.  For this reason, we generally work with municipalities as the point of reference for fires.}, the type of land-cover affected, the duration of the wildfire, and the total area burned.  
+We access data on all wildfires occurring in Chile between the period of 2004 until 2021 from administrative records maintained by CONAF.  These data are collected and systematized by CONAF, and have been made available in a comparable way from the period of 1985 onwards. We work with the period of years necessary to match with other data discussed in this section, and given that hospitalization data is available until the end of 2018, our final sample used in models laid out below consists of fire seasons 2004-2018.  These records contain a record of each wildfire, including information on the region, province and municipality in which it occurred, a precise geo-reference where available\footnote{This information has not been collected in precisely the same way over time.  Prior to the year 2003, this was collected using a series of IGM maps with 1:50,000 resolution, implying that fires were geo-located to within quadrants of approximately 400 hectacres, and then information was additionally recorded by CONAF to limit this to 100 hectacre areas within these quadrants.  From 2003 onwards, this information was collected exactly based on GPS measures.}%For this reason, we generally work with municipalities as the point of reference for fires.}
+, the type of land-cover affected, the duration of the wildfire, and the total area burned.  
 
-Measures of the total area burned are estimated by CONAF personnel, or in the case of large wildfires, with a magnitude of greater than 200 ha, these are determined based off of satellite images. Measures of total duration of fire are calculated based off the time which fires were first detected, and the time which wildfires were reported to be extinguished.  Among all wildfires registered, the majority of wildfires are relatively small (at less than 1 hour and less than 1 ha burned), though a long tail is observed, with a number of substantially more serious fires.  To illustrate this, descriptive histograms of the total area burned, and total duration of recorded fires are displayed in Figure \ref{fig:descfires}, where a small number of outliers have been removed from the plot (fires of $>$100 ha or $>$ 24 hours).
-In future analysis of the wildfire data we will consider wildfires of different extension and duration, which would probably lead us to focus mostly on larger and longer fires -- that is, those in the tail of the distribution  -- which are more destructive and are likely to emit considerable amounts of air pollutants. As a consequence, we would be bringing back in those observations that have been removed from Figure \ref{fig:descfires}.
+Measures of the total area burned are estimated by CONAF personnel, or in the case of large wildfires, with a magnitude of greater than 200 hectacres (hereafter Ha), these are determined based off of satellite images. Measures of total duration of fire are calculated as the time elapsed between the moment when fires were first detected, and the time at which the wildfires were reported to be extinguished.  Among all wildfires registered, the majority of wildfires are relatively small (at less than 1 hour and less than 1 Ha burned), though a long tail is observed, with a number of substantially more serious fires.  To illustrate this, descriptive histograms of the total area burned, and total duration of recorded fires are displayed in Figure \ref{fig:descfires}, where a small number of outliers have been removed from the plot (fires of $>$100 ha or $>$ 24 hours).  Appendix Figure \ref{fig:firesHours} documents similar patterns in terms of duration burned.
+
+%In future analysis of the wildfire data we will consider wildfires of different extension and duration, which would probably lead us to focus mostly on larger and longer fires -- that is, those in the tail of the distribution  -- which are more destructive and are likely to emit considerable amounts of air pollutants. As a consequence, we would be bringing back in those observations that have been removed from Figure \ref{fig:descfires}.
+
+\begin{figure}[htpb!]
+    \centering
+    \caption{Wildfire Exposures by Magnitude of Fire}
+    \label{fig:descfires}
+    \begin{subfigure}{0.45\textwidth}
+          \includegraphics[scale=0.46]{./results/descriptives/firesHA0_10.eps}
+         \caption{$<$10 Ha}
+    \end{subfigure}
+    \begin{subfigure}{0.45\textwidth}
+          \includegraphics[scale=0.46]{./results/descriptives/firesHA10_100.eps}
+         \caption{[10-100) Ha}
+    \end{subfigure}
+
+    \begin{subfigure}{0.45\textwidth}
+          \includegraphics[scale=0.46]{./results/descriptives/firesHA100_500.eps}
+         \caption{[100-500) Ha}
+    \end{subfigure}
+    \begin{subfigure}{0.45\textwidth}
+          \includegraphics[scale=0.46]{./results/descriptives/firesHA500_1000.eps}
+         \caption{[500-1000) Ha}
+    \end{subfigure}
+    \floatfoot{\textbf{Notes:} }
+\end{figure}
+
+
 
 %En relación con la superficie afectada, ésta es estimada para los incendios de magnitud, mayores o iguales a 200 ha, se determina la superficie en base a imágenes satelitales. Y esto viene aproximadamente realizándose desde la temporada 2013-2014, ha sido un proceso lento en la medida que las regiones, desarrollan las capacidades para generar los polígonos en base a la severidad. Y en la medida que se ha ido implementando GPS y realizando los polígonos en base a imágenes satelitales, se ha podido abordar también el punto de incendio, que sea más exacto.
 
@@ -287,31 +308,14 @@ In future analysis of the wildfire data we will consider wildfires of different 
 %   \end{table}
     
     
-\begin{figure}[htpb!]
+
+\begin{figure}
     \centering
-    \caption{Wildfire Exposures by Magnitude of Fire}
-    \label{fig:descfires}
-    \begin{subfigure}{0.45\textwidth}
-          \includegraphics[scale=0.46]{./results/descriptives/firesHA0_10.eps}
-         \caption{$<$10 Ha}
-    \end{subfigure}
-    \begin{subfigure}{0.45\textwidth}
-          \includegraphics[scale=0.46]{./results/descriptives/firesHA10_100.eps}
-         \caption{[10-100) Ha}
-    \end{subfigure}
-
-    \begin{subfigure}{0.45\textwidth}
-          \includegraphics[scale=0.46]{./results/descriptives/firesHA100_500.eps}
-         \caption{[100-500) Ha}
-    \end{subfigure}
-    \begin{subfigure}{0.45\textwidth}
-          \includegraphics[scale=0.46]{./results/descriptives/firesHA500_1000.eps}
-         \caption{[500-1000) Ha}
-    \end{subfigure}
-    \floatfoot{\textbf{Notes:} }
+    \includegraphics[scale=0.7]{./results/descriptives/fireSizes.pdf}
+    \caption{Wildfires over time by magnitude}
+    \label{fig:firesize}
+    \floatfoot{\textbf{Notes}: The total number of wildfires recorded by CONAF's administrative databases over time are plotted by the total size of the fire.  A larger number of fires smaller than 1 hectacre are recorded.}
 \end{figure}
-
-Appendix Figure \ref{fig:firesHours} documents similar patterns in terms of duration burned.
 
 
 

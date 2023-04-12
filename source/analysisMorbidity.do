@@ -145,15 +145,33 @@ lab var rate_resp "Respiratory hospitaliztaions (rate per 100,000)"
 lab var rate_circ "Circulatory hospitaliztaions (rate per 100,000)"
 lab var rate_burn "Burns-related hospitaliztaions (rate per 100,000)"
 lab var all_pop   "Population" 
+lab var year      "Year"
 
     
 local s1 rate_morb rate_resp rate_circ rate_burn
 local s2 rate_all_00_01 rate_resp_00_01 rate_circ_00_01 rate_burn_00_01 
 local s3 rate_all_65_pl rate_resp_65_pl rate_circ_65_pl rate_burn_65_pl 
+local s4 all_pop year
 
-estpost tabstat `s1' `s2' `s3', c(stat) stat(n mean sd min max)
+estpost tabstat `s1' `s2' `s3' `s4', c(stat) stat(n mean sd min max)
 #delimit ;
 esttab using "$OUT/descriptives/hospitalSumStats.tex", replace 
+cells("count(fmt(%9.0gc)) mean(fmt(%6.2fc)) sd(fmt(%6.2fc)) min max")
+nonumber nomtitle nonote noobs label fragment collabels(none) nolines;
+#delimit cr
+
+local s1
+local s2
+foreach num of numlist 0 50 100 150 200 250 500 {
+    lab var downwind`num' "Downwind fires $ \geq $ `num' Ha"
+    lab var upwind`num'   "Upwind fires $ \geq $ `num' Ha"
+    local s1 `s1' downwind`num'
+    local s2 `s2' upwind`num'
+}
+
+estpost tabstat `s1' `s2', c(stat) stat(n mean sd min max)
+#delimit ;
+esttab using "$OUT/descriptives/firesSumStats_hosp.tex", replace 
 cells("count(fmt(%9.0gc)) mean(fmt(%6.2fc)) sd(fmt(%6.2fc)) min max")
 nonumber nomtitle nonote noobs label fragment collabels(none) nolines;
 #delimit cr
@@ -162,7 +180,6 @@ nonumber nomtitle nonote noobs label fragment collabels(none) nolines;
 *-------------------------------------------------------------------------------
 *--- (3) Age by causes
 *-------------------------------------------------------------------------------
-
 gen LB_95 = . 
 gen LB_90 = .
 gen UB_95 = .
@@ -170,7 +187,6 @@ gen UB_90 = .
 gen beta  = .
 gen age = _n in 1/8
 
-*cluster(Cod_Com)     
 foreach size of numlist 500 200 0 50 100 150 250 {
     rename (upwind`size' downwind`size' nondownwind`size') (upwind downwind nondownwind)
     local xvars upwind downwind  humedad velocidad_viento temperatura
@@ -183,7 +199,7 @@ foreach size of numlist 500 200 0 50 100 150 250 {
         foreach age in `extra' 00_01 01_05 06_15 16_40 41_65 65_pl {
             dis "Cause `cause', age `age' (size `size')"
             #delimit ;
-            reghdfe rate_`cause'_`age' `xvars' [aw=pop],
+            reghdfe rate_`cause'_`age' `xvars' [aw=pop`age'],
                 abs(Cod_Comuna_2018 i.region_id#i.weeksEgresos)
                 vce(cluster Cod_Comuna_2018 weeksEgresos);
             #delimit cr
@@ -222,9 +238,8 @@ foreach size of numlist 500 200 0 50 100 150 250 {
     }
     rename (upwind downwind nondownwind) (upwind`size' downwind`size' nondownwind`size')
 }
-exit
 
-/*    
+
 *-------------------------------------------------------------------------------
 *--- (4) Fire sizes effects
 *-------------------------------------------------------------------------------
@@ -232,7 +247,7 @@ local opts abs(Cod_Comuna_2018 i.region_id#i.weeksEgresos)  cluster(Cod_Com)
 foreach size of numlist 50 100 150 250 500 {
     rename (upwind`size' downwind`size' nondownwind`size') (upwind downwind nondownwind)
     local xvars upwind downwind 
-    eststo: reghdfe rate_resp `xvars' [aw=pop], `opts'
+    eststo: reghdfe rate_resp `xvars' [aw=all_pop], `opts'
     sum rate_resp if e(sample)==1
     estadd scalar yvar = r(mean)
     sum upwind if e(sample)==1
@@ -240,7 +255,7 @@ foreach size of numlist 50 100 150 250 500 {
     sum downwind if e(sample)==1
     estadd scalar x_down = r(mean)
     
-    eststo: reghdfe rate_burn `xvars' [aw=pop], `opts'
+    eststo: reghdfe rate_burn `xvars' [aw=all_pop], `opts'
     sum rate_burn if e(sample)==1
     estadd scalar yvar = r(mean)
     sum upwind if e(sample)==1
@@ -257,7 +272,7 @@ lab var downwind    "Downwind fires during week"
 lab var nondownwind "Non-Downwind fires during week"
 
 #delimit ;
-esttab est1 est3 est5 est7 est9 est2 est4 est6 est8 est10 using "$OUT/tables/RFhosp_respBurn_C.tex", 
+esttab est1 est3 est5 est7 est9 est2 est4 est6 est8 est10 using "$OUT/tables/RFhosp_respBurn.tex", 
 replace booktabs cells(b(fmt(%-9.3f) star) se(fmt(%-9.3f) par(( )) )) label
 stats(yvar x_up x_down N r2, fmt(%5.3f %5.3f %5.3f %9.0fc %04.2f)
       label("\\ Mean of Dep. Var." "Mean Upwind" "Mean Non-Upwind" Observations R-Squared))
@@ -271,7 +286,7 @@ drop upwind downwind nondownwind
 foreach size of numlist 50 100 150 250 {
     rename (upwind`size' downwind`size' nondownwind`size') (upwind downwind nondownwind)
     local xvars upwind downwind 
-    eststo: reghdfe rate_circ `xvars' [aw=pop], abs(Cod_Comuna_2018 i.region_id#i.weeksEgresos)  cluster(Cod_Com)
+    eststo: reghdfe rate_circ `xvars' [aw=all_pop], abs(Cod_Comuna_2018 i.region_id#i.weeksEgresos)  cluster(Cod_Com)
     sum rate_circ if e(sample)==1
     estadd scalar yvar = r(mean)
     sum upwind if e(sample)==1
@@ -279,7 +294,7 @@ foreach size of numlist 50 100 150 250 {
     sum downwind if e(sample)==1
     estadd scalar x_down = r(mean)
     
-    eststo: reghdfe rate_burn `xvars' [aw=pop], abs(Cod_Comuna_2018 i.region_id#i.weeksEgresos)  cluster(Cod_Com)
+    eststo: reghdfe rate_burn `xvars' [aw=all_pop], abs(Cod_Comuna_2018 i.region_id#i.weeksEgresos)  cluster(Cod_Com)
     sum rate_burn if e(sample)==1
     estadd scalar yvar = r(mean)
     sum upwind if e(sample)==1
@@ -296,7 +311,7 @@ lab var downwind    "Downwind fires during week"
 lab var nondownwind "Non-Downwind fires during week"
 
 #delimit ;
-esttab est1 est3 est5 est7 est2 est4 est6 est8 using "$OUT/tables/RFhosp_circburn_C.tex", 
+esttab est1 est3 est5 est7 est2 est4 est6 est8 using "$OUT/tables/RFhosp_circburntex", 
 replace booktabs cells(b(fmt(%-9.3f) star) se(fmt(%-9.3f) par(( )) )) label
 stats(yvar x_up x_down N r2, fmt(%5.3f %5.3f %5.3f %9.0fc %04.2f)
       label("\\ Mean of Dep. Var." "Mean Upwind" "Mean Non-Upwind" Observations R-Squared))
@@ -306,72 +321,14 @@ collabels(none) starlevel("*" 0.1 "**" 0.05 "***" 0.01);
 estimates clear
 drop upwind downwind nondownwind
 
-
-foreach size of numlist 50 100 150 250 {
-    #delimit ;
-    rename (F_exposure_0_45_`size' F_exposure_45_90_`size' F_exposure_90_135_`size' F_exposure_135_180_`size')
-           (F_exposure_0_45        F_exposure_45_90        F_exposure_90_135        F_exposure_135_180);
-    #delimit cr
-    local xvars F_exposure_0_45 F_exposure_45_90 F_exposure_90_135 F_exposure_135_180
-
-    
-    eststo: reghdfe rate_resp `xvars' [aw=pop], abs(Cod_Comuna_2018 i.region_id#i.weeksEgresos)  cluster(Cod_Com)
-    sum rate_resp if e(sample)==1
-    estadd scalar yvar = r(mean)
-    sum F_exposure_0_45 if e(sample)==1
-    estadd scalar x_up   = r(mean)
-    sum F_exposure_135_180 if e(sample)==1
-    estadd scalar x_down = r(mean)
-    
-    eststo: reghdfe morb_all_00_01 `xvars' [aw=pop], abs(Cod_Comuna_2018 i.region_id#i.weeksEgresos)  cluster(Cod_Com)
-    sum morb_all_00_01 if e(sample)==1
-    estadd scalar yvar = r(mean)
-    sum F_exposure_0_45 if e(sample)==1
-    estadd scalar x_up   = r(mean)
-    sum F_exposure_135_180 if e(sample)==1
-    estadd scalar x_down = r(mean)
-    #delimit ;
-    rename (F_exposure_0_45        F_exposure_45_90        F_exposure_90_135        F_exposure_135_180)
-           (F_exposure_0_45_`size' F_exposure_45_90_`size' F_exposure_90_135_`size' F_exposure_135_180_`size');
-    #delimit cr
-}
-gen F_exposure_0_45    = .
-gen F_exposure_45_90   = .
-gen F_exposure_90_135  = .
-gen F_exposure_135_180  = .
-lab var F_exposure_0_45    "Fires [0-45] degrees bearing during the week"
-lab var F_exposure_45_90   "Fires (45-90] degrees bearing during the week"
-lab var F_exposure_90_135  "Fires (90-135] degrees bearing during the week"
-lab var F_exposure_135_180 "Fires (135-180] degrees bearing during the week"
-
-
-#delimit ;
-esttab est1 est3 est5 est7 est2 est4 est6 est8 using "$OUT/tables/RFhosp_infresp_degrees.tex", 
-replace booktabs cells(b(fmt(%-9.3f) star) se(fmt(%-9.3f) par(( )) )) label
-stats(yvar x_up x_down N r2, fmt(%5.3f %5.3f %5.3f %9.0fc %04.2f)
-      label("\\ Mean of Dep. Var." "Mean Upwind" "Mean Non-Upwind" Observations R-Squared))
-nonotes nogaps mlabels(, none) nonumbers style(tex) fragment noline keep(`xvars')
-collabels(none) starlevel("*" 0.1 "**" 0.05 "***" 0.01);
-#delimit cr
-estimates clear
-drop `xvars'
-*/
 *-------------------------------------------------------------------------------
 *--- (5) Ages
 *-------------------------------------------------------------------------------
-/*
-egen morb_all_00_01 = rowtotal(male_egr_0 female_egr_0 )
-egen morb_all_01_05 = rowtotal(male_egr_1_5 female_egr_1_5)
-egen morb_all_06_15 = rowtotal(male_egr_6_10 male_egr_11_15 female_egr_6_10 female_egr_11_15)
-egen morb_all_16_40 = rowtotal(male_egr_16_20-male_egr_36_40 female_egr_16_20-female_egr_36_40)
-egen morb_all_41_65 = rowtotal(male_egr_41_45-male_egr_61_65 female_egr_41_45-female_egr_61_65)
-egen morb_all_65_pl = rowtotal(male_egr_66_70-male_egr_80 female_egr_66_70-female_egr_80)
-*/
 foreach size of numlist 50 200 {
     rename (upwind`size' downwind`size' nondownwind`size') (upwind downwind nondownwind)
     local xvars upwind downwind nondownwind
     foreach var of varlist rate_all_00_01 rate_all_01_05 rate_all_06_15 rate_all_16_40 rate_all_41_65 rate_all_65_pl {
-        eststo: reghdfe `var' `xvars' [aw=pop], abs(Cod_Comuna_2018 i.region_id#i.weeksEgresos)  cluster(Cod_Com)
+        eststo: reghdfe `var' `xvars' [aw=all_pop], abs(Cod_Comuna_2018 i.region_id#i.weeksEgresos)  cluster(Cod_Com)
         sum `var' if e(sample)==1
         estadd scalar yvar = r(mean)
     }    
@@ -418,7 +375,7 @@ gen ages = .
 local A = 1
 foreach size of numlist 0 50 100 150 200 250 500 {
     rename (upwind`size' nondownwind`size' downwind`size') (upwind downwind nondownwind)
-    reghdfe rate_all_00_01 upwind downwind nondownwind [aw=pop], abs(Cod_Comuna_2018 i.region_id#i.weeksEgresos)  cluster(Cod_Com)    
+    reghdfe rate_all_00_01 upwind downwind nondownwind [aw=all_pop], abs(Cod_Comuna_2018 i.region_id#i.weeksEgresos)  cluster(Cod_Com)    
     replace beta`size' = _b[upwind] in `A'
     replace LB`size'   = _b[upwind]+invnormal(0.05)*_se[upwind] in `A'
     replace UB`size'   = _b[upwind]+invnormal(0.95)*_se[upwind] in `A'        
@@ -435,7 +392,7 @@ foreach a1 of numlist 1(5)76 {
     gen age_`a1'_`a2' = (male_egr_`a1'_`a2'+female_egr_`a1'_`a2')/(INEmale_`a1'_`a2'+INEfemale_`a1'_`a2')*100000
     foreach size of numlist 0 50 100 150 200 250 500 {
         rename (upwind`size' nondownwind`size' downwind`size') (upwind downwind nondownwind)
-        reghdfe age_`a1'_`a2' upwind downwind nondownwind [aw=pop], abs(Cod_Comuna_2018 i.region_id#i.weeksEgresos)  cluster(Cod_Com)    
+        reghdfe age_`a1'_`a2' upwind downwind nondownwind [aw=all_pop], abs(Cod_Comuna_2018 i.region_id#i.weeksEgresos)  cluster(Cod_Com)    
         replace beta`size' = _b[upwind] in `A'
         replace LB`size'   = _b[upwind]+invnormal(0.05)*_se[upwind] in `A'
         replace UB`size'   = _b[upwind]+invnormal(0.95)*_se[upwind] in `A'        
@@ -450,7 +407,7 @@ local ++A
 gen age_80_pl = (male_egr_80+female_egr_80)/(INEmale_80+INEfemale_80)*100000
 foreach size of numlist 0 50 100 150 200 250 500 {
     rename (upwind`size' downwind`size' nondownwind`size') (upwind downwind nondownwind)
-    reghdfe age_80_pl upwind downwind nondownwind [aw=pop], abs(Cod_Comuna_2018 i.region_id#i.weeksEgresos)  cluster(Cod_Com)    
+    reghdfe age_80_pl upwind downwind nondownwind [aw=all_pop], abs(Cod_Comuna_2018 i.region_id#i.weeksEgresos)  cluster(Cod_Com)    
     replace beta`size' = _b[upwind] in `A'
     replace LB`size'   = _b[upwind]+invnormal(0.05)*_se[upwind] in `A'
     replace UB`size'   = _b[upwind]+invnormal(0.95)*_se[upwind] in `A'        
@@ -482,271 +439,4 @@ foreach size of numlist 0 50 100 150 200 250 500 {
     #delimit cr
     graph export "$OUT/figures/ageEffects_downwind_`size'.eps", replace
 }
-
-exit
-
-/*
-
-*-------------------------------------------------------------------------------
-*--- (2a) upwind downwind
-*-------------------------------------------------------------------------------
-foreach size of numlist 50 100 150 250 500 {
-    rename (upwind`size' downwind`size' nondownwind`size') (upwind downwind nondownwind)
-    local xvars upwind downwind 
-    eststo: reghdfe rateResp `xvars' [aw=pop], abs(Cod_Comuna_2018 i.region_id#i.weeksEgresos)  cluster(Cod_Com)
-    sum rateResp if e(sample)==1
-    estadd scalar yvar = r(mean)
-    sum upwind if e(sample)==1
-    estadd scalar x_up   = r(mean)
-    sum downwind if e(sample)==1
-    estadd scalar x_down = r(mean)
-    
-    eststo: reghdfe rateBurn `xvars' [aw=pop], abs(Cod_Comuna_2018 i.region_id#i.weeksEgresos)  cluster(Cod_Com)
-    sum rateBurn if e(sample)==1
-    estadd scalar yvar = r(mean)
-    sum upwind if e(sample)==1
-    estadd scalar x_up   = r(mean)
-    sum downwind if e(sample)==1
-    estadd scalar x_down = r(mean)
-    rename (upwind downwind nondownwind) (upwind`size' downwind`size' nondownwind`size')
-}
-gen upwind      = .
-gen downwind    = .
-gen nondownwind = .
-lab var upwind      "Upwind fires during week"
-lab var downwind    "Downwind fires during week"
-lab var nondownwind "Non-Downwind fires during week"
-
-#delimit ;
-esttab est1 est3 est5 est7 est9 est2 est4 est6 est8 est10 using "$OUT/tables/RFhosp_respBurn.tex", 
-replace booktabs cells(b(fmt(%-9.3f) star) se(fmt(%-9.3f) par(( )) )) label
-stats(yvar x_up x_down N r2, fmt(%5.3f %5.3f %5.3f %9.0fc %04.2f)
-      label("\\ Mean of Dep. Var." "Mean Upwind" "Mean Non-Upwind" Observations R-Squared))
-nonotes nogaps mlabels(, none) nonumbers style(tex) fragment noline keep(`xvars')
-collabels(none) starlevel("*" 0.1 "**" 0.05 "***" 0.01);
-#delimit cr
-estimates clear
-drop upwind downwind nondownwind
-
-
-foreach size of numlist 50 100 150 250 {
-    rename (upwind`size' downwind`size' nondownwind`size') (upwind downwind nondownwind)
-    local xvars upwind downwind 
-    eststo: reghdfe rateCirc `xvars' [aw=pop], abs(Cod_Comuna_2018 i.region_id#i.weeksEgresos)  cluster(Cod_Com)
-    sum rateCirc if e(sample)==1
-    estadd scalar yvar = r(mean)
-    sum upwind if e(sample)==1
-    estadd scalar x_up   = r(mean)
-    sum downwind if e(sample)==1
-    estadd scalar x_down = r(mean)
-    
-    eststo: reghdfe rateBurn `xvars' [aw=pop], abs(Cod_Comuna_2018 i.region_id#i.weeksEgresos)  cluster(Cod_Com)
-    sum rateBurn if e(sample)==1
-    estadd scalar yvar = r(mean)
-    sum upwind if e(sample)==1
-    estadd scalar x_up   = r(mean)
-    sum downwind if e(sample)==1
-    estadd scalar x_down = r(mean)
-    rename (upwind downwind nondownwind) (upwind`size' downwind`size' nondownwind`size')
-}
-gen upwind      = .
-gen downwind    = .
-gen nondownwind = .
-lab var upwind      "Upwind fires during week"
-lab var downwind    "Downwind fires during week"
-lab var nondownwind "Non-Downwind fires during week"
-
-#delimit ;
-esttab est1 est3 est5 est7 est2 est4 est6 est8 using "$OUT/tables/RFhosp_circburn.tex", 
-replace booktabs cells(b(fmt(%-9.3f) star) se(fmt(%-9.3f) par(( )) )) label
-stats(yvar x_up x_down N r2, fmt(%5.3f %5.3f %5.3f %9.0fc %04.2f)
-      label("\\ Mean of Dep. Var." "Mean Upwind" "Mean Non-Upwind" Observations R-Squared))
-nonotes nogaps mlabels(, none) nonumbers style(tex) fragment noline keep(`xvars')
-collabels(none) starlevel("*" 0.1 "**" 0.05 "***" 0.01);
-#delimit cr
-estimates clear
-drop upwind downwind nondownwind
-
-
-
-drop upwind downwind nondownwind
-exit
-
-foreach size of numlist 50 100 150 250 {
-*foreach size of numlist 50 {
-    #delimit ;
-    rename (F_exposure_0_45_`size' F_exposure_45_90_`size' F_exposure_90_135_`size' F_exposure_135_180_`size')
-           (F_exposure_0_45        F_exposure_45_90        F_exposure_90_135        F_exposure_135_180);
-    #delimit cr
-    local xvars F_exposure_0_45  F_exposure_135_180
-
-    
-    eststo: reghdfe rateResp `xvars' [aw=pop], abs(Cod_Comuna_2018 i.region_id#i.weeksEgresos)  cluster(Cod_Com)
-    sum rateResp if e(sample)==1
-    estadd scalar yvar = r(mean)
-    sum F_exposure_0_45 if e(sample)==1
-    estadd scalar x_up   = r(mean)
-    sum F_exposure_135_180 if e(sample)==1
-    estadd scalar x_down = r(mean)
-    
-    eststo: reghdfe infant `xvars' [aw=pop], abs(Cod_Comuna_2018 i.region_id#i.weeksEgresos)  cluster(Cod_Com)
-    sum infant if e(sample)==1
-    estadd scalar yvar = r(mean)
-    sum F_exposure_0_45 if e(sample)==1
-    estadd scalar x_up   = r(mean)
-    sum F_exposure_135_180 if e(sample)==1
-    estadd scalar x_down = r(mean)
-    #delimit ;
-    rename (F_exposure_0_45        F_exposure_45_90        F_exposure_90_135        F_exposure_135_180)
-           (F_exposure_0_45_`size' F_exposure_45_90_`size' F_exposure_90_135_`size' F_exposure_135_180_`size');
-    #delimit cr
-}
-gen F_exposure_0_45    = .
-gen F_exposure_45_90   = .
-gen F_exposure_90_135  = .
-gen F_exposure_135_180  = .
-lab var F_exposure_0_45    "Fires [0-45] degrees bearing during the week"
-lab var F_exposure_45_90   "Fires (45-90] degrees bearing during the week"
-lab var F_exposure_90_135  "Fires (90-135] degrees bearing during the week"
-lab var F_exposure_135_180 "Fires (135-180] degrees bearing during the week"
-
-
-#delimit ;
-esttab est1 est3 est5 est7 est2 est4 est6 est8 using "$OUT/tables/RFhosp_infresp_degrees.tex", 
-replace booktabs cells(b(fmt(%-9.3f) star) se(fmt(%-9.3f) par(( )) )) label
-stats(yvar x_up x_down N r2, fmt(%5.3f %5.3f %5.3f %9.0fc %04.2f)
-      label("\\ Mean of Dep. Var." "Mean Upwind" "Mean Non-Upwind" Observations R-Squared))
-nonotes nogaps mlabels(, none) nonumbers style(tex) fragment noline keep(`xvars')
-collabels(none) starlevel("*" 0.1 "**" 0.05 "***" 0.01);
-#delimit cr
-estimates clear
-drop `xvars'
-*/
-
-*-------------------------------------------------------------------------------
-*--- (2b) Ages
-*-------------------------------------------------------------------------------
-gen morb0_1 = (male_egr_0_1+female_egr_0_1)/(xINEmale_0_1 +xINEfemale_0_1)*100000
-gen morb1_5 = (male_egr_0_5+female_egr_0_5-male_egr_0_1-female_egr_0_1)/(INEmale_0_5+INEfemale_0_5-xINEmale_0_1 -xINEfemale_0_1)*100000
-
-egen male6_15   = rowtotal(male_egr_5_10   - male_egr_10_15)
-egen female6_15 = rowtotal(female_egr_5_10 - female_egr_10_15)
-egen pop6_15    = rowtotal(INEmale_5_10 - INEfemale_10_15)
-gen morb6_15    = (male6_15 + female6_15)/(pop6_15)*100000
-
-egen male16_40   = rowtotal(male_egr_15_20   - male_egr_35_40)
-egen female16_40 = rowtotal(female_egr_15_20 - female_egr_35_40)
-egen pop16_40    = rowtotal(INEmale_15_20 - INEfemale_35_40)
-gen morb16_40    = (male16_40 + female16_40)/(pop16_40)*100000
-
-egen male41_65   = rowtotal(male_egr_40_45   - male_egr_60_65)
-egen female41_65 = rowtotal(female_egr_40_45 - female_egr_60_65)
-egen pop41_65    = rowtotal(INEmale_40_45 - INEfemale_60_65)
-gen morb41_65    = (male41_65 + female41_65)/(pop41_65)*100000
-
-egen male65_plus   = rowtotal(male_egr_65_70   - male_egr_100)
-egen female65_plus = rowtotal(female_egr_65_70 - female_egr_100)
-egen pop65_plus    = rowtotal(INEmale_65_70 - INEfemale_80_more)
-gen  morb65_plus   = (male65_plus + female65_plus)/(pop65_plus)*100000
-
-foreach size of numlist 50 100 150 250 {
-    rename (upwind`size' downwind`size' nondownwind`size') (upwind downwind nondownwind)
-    local xvars upwind downwind 
-    foreach var of varlist morb0_1 morb1_5 morb6_15 morb16_40 morb41_65 morb65_plus {
-        eststo: reghdfe `var' `xvars' [aw=pop], abs(Cod_Comuna_2018 i.region_id#i.weeksEgresos)  cluster(Cod_Com)
-        sum `var' if e(sample)==1
-        estadd scalar yvar = r(mean)
-    }    
-    rename (upwind downwind nondownwind) (upwind`size' downwind`size' nondownwind`size')
-}
-
-gen upwind      = .
-gen downwind    = .
-gen nondownwind = .
-lab var upwind      "Upwind fires during week"
-lab var downwind    "Downwind fires during week"
-lab var nondownwind "Non-Downwind fires during week"
-#delimit ;
-esttab est7 est19 est8 est20 est12 est24 using "$OUT/tables/RFhosp_ages_sensitive.tex", 
-replace booktabs cells(b(fmt(%-9.3f) star) se(fmt(%-9.3f) par(( )) )) label
-stats(yvar N r2, fmt(%5.3f %9.0fc %04.2f)
-      label("\\ Mean of Dep. Var." Observations R-Squared))
-nonotes nogaps mlabels(, none) nonumbers style(tex) fragment noline keep(`xvars')
-collabels(none) starlevel("*" 0.1 "**" 0.05 "***" 0.01);
-
-esttab est9 est21 est10 est22 est11 est23 using "$OUT/tables/RFhosp_ages_nonsensitive.tex", 
-replace booktabs cells(b(fmt(%-9.3f) star) se(fmt(%-9.3f) par(( )) )) label
-stats(yvar N r2, fmt(%5.3f %9.0fc %04.2f)
-      label("\\ Mean of Dep. Var." Observations R-Squared))
-nonotes nogaps mlabels(, none) nonumbers style(tex) fragment noline keep(`xvars')
-collabels(none) starlevel("*" 0.1 "**" 0.05 "***" 0.01);
-#delimit cr
-estimates clear
-drop upwind downwind nondownwind
-
-foreach num of numlist 50(50)250 500 {
-    gen beta`num' = .
-    gen LB`num'   = .
-    gen UB`num'   = .
-
-    gen betaD`num' = .
-    gen LBD`num'   = .
-    gen UBD`num'   = .
-}
-gen ages = .
-
-local A = 1
-foreach size of numlist 50 100 150 200 250 500 {
-    rename (upwind`size' downwind`size') (upwind downwind)
-    reghdfe infant upwind downwind [aw=pop], abs(Cod_Comuna_2018 i.region_id#i.weeksEgresos)  cluster(Cod_Com)    
-    replace beta`size' = _b[upwind] in `A'
-    replace LB`size'   = _b[upwind]+invnormal(0.05)*_se[upwind] in `A'
-    replace UB`size'   = _b[upwind]+invnormal(0.95)*_se[upwind] in `A'        
-    replace betaD`size' = _b[downwind] in `A'
-    replace LBD`size'   = _b[downwind]+invnormal(0.05)*_se[downwind] in `A'
-    replace UBD`size'   = _b[downwind]+invnormal(0.95)*_se[downwind] in `A'        
-    rename (upwind downwind) (upwind`size' downwind`size')
-}
-replace ages=`A' in `A'
-
-foreach a1 of numlist 0(5)75 {
-    local ++A
-    local a2 = `a1'+5
-    gen age_`a1'_`a2' = (male_egr_`a1'_`a2'+female_egr_`a1'_`a2')/(INEmale_`a1'_`a2'+INEfemale_`a1'_`a2')*100000
-    foreach size of numlist 50 100 150 200 250 500 {
-        rename (upwind`size' downwind`size') (upwind downwind)
-        reghdfe age_`a1'_`a2' upwind downwind [aw=pop], abs(Cod_Comuna_2018 i.region_id#i.weeksEgresos)  cluster(Cod_Com)    
-        replace beta`size' = _b[upwind] in `A'
-        replace LB`size'   = _b[upwind]+invnormal(0.05)*_se[upwind] in `A'
-        replace UB`size'   = _b[upwind]+invnormal(0.95)*_se[upwind] in `A'        
-        replace betaD`size' = _b[downwind] in `A'
-        replace LBD`size'   = _b[downwind]+invnormal(0.05)*_se[downwind] in `A'
-        replace UBD`size'   = _b[downwind]+invnormal(0.95)*_se[downwind] in `A'        
-        rename (upwind downwind) (upwind`size' downwind`size')
-    }
-    replace ages = `A' in `A'
-}
-
-foreach size of numlist 50 100 150 200 250 500 {
-    colorpalette viridis, n(4) nograph
-    #delimit ;
-    twoway rcap LB`size' UB`size' ages, lcolor("`r(p1)'") || scatter beta`size' ages, mcolor("`r(p3)'") ms(Sh)
-    xlabel(1  "0-1"    2 "0-5"   3 "5-10"   4 "10-15"  5 "15-20"  6 "20-25"   7 "25-30"  8 "30-35" 9 "35-40"
-           10 "40-45" 11 "45-50" 12 "50-55" 13 "55-60" 14 "60-65" 15 "65-70'" 16 "70-75" 17 "75-80", angle(45))
-    legend(order(2 "Point Estimate" 1 "90% CI") rows(1) position(6)) ytitle("Impact of Upwind Exposure")
-    ylabel(-0.5(0.5)2.5, format(%03.1f))
-    xtitle(" " " " "Age Group") yline(0, lcolor(red) lpattern(dash));
-    graph export "$OUT/figures/ageEffects_upwind_`size'.eps", replace;
-
-    colorpalette viridis, n(4) nograph;
-    twoway rcap LBD`size' UBD`size' ages, lcolor("`r(p1)'") || scatter betaD`size' ages, mcolor("`r(p3)'") ms(Sh)
-    xlabel(1  "0-1"    2 "0-5"   3 "5-10"   4 "10-15"  5 "15-20"  6 "20-25"   7 "25-30"  8 "30-35" 9 "35-40"
-           10 "40-45" 11 "45-50" 12 "50-55" 13 "55-60" 14 "60-65" 15 "65-70'" 16 "70-75" 17 "75-80", angle(45))
-    legend(order(2 "Point Estimate" 1 "90% CI") rows(1) position(6)) ytitle("Impact of Non-Upwind Exposure")
-    ylabel(-0.5(0.5)2.5, format(%03.1f))
-    xtitle(" " " " "Age Group") yline(0, lcolor(red) lpattern(dash));
-    #delimit cr
-    graph export "$OUT/figures/ageEffects_downwind_`size'.eps", replace
-}
-exit
 
