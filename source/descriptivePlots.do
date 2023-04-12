@@ -1,6 +1,6 @@
 /* descriptivePlots.do           damiancclarke             yyyy-mm-dd:2023-04-11
 ----|----1----|----2----|----3----|----4----|----5----|----6----|----7----|----8
-  Make descriptive plots on fires
+  Make descriptive plots on fires.  
 
 */
 
@@ -102,9 +102,9 @@ graph export "$OUT/firesHours24_72.eps", replace
 hist hours if hours>=72&hours<336, `hopts' xlabel(72(24)336) 
 graph export "$OUT/firesHours72_336.eps", replace
 
-exit
+
 *-------------------------------------------------------------------------------
-*--- (2) Descriptives on fire sizes over time
+*--- (2) Descriptives on fire sizes over time [not formatted]
 *-------------------------------------------------------------------------------
 preserve
 collapse (sum) HA*, by(beginYear)
