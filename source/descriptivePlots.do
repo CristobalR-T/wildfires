@@ -71,9 +71,7 @@ foreach num of numlist 0(50)250 500 {
 
 colorpalette viridis, n(4) nograph
 local color1 = r(p1)
-local color2 = r(p2)
 local color3 = r(p3)
-
 
 
 
@@ -82,7 +80,7 @@ drop if beginYear<2004
 local hopts color("`color1'") xtitle("Total area burned (ha)") freq
 hist Super if Super<10, `hopts' ylabel(, format(%9.0gc))
 graph export "$OUT/firesHA0_10.eps", replace
-hist Super if Super>=10&Super<100, `hopts'
+hist Super if Super>=10&Super<100, `hopts' xlabel(10(10)100)
 graph export "$OUT/firesHA10_100.eps", replace
 hist Super if Super>=100&Super<500, `hopts'
 graph export "$OUT/firesHA100_500.eps", replace
@@ -90,18 +88,21 @@ hist Super if Super>=500&Super<1000, `hopts'
 graph export "$OUT/firesHA500_1000.eps", replace
 
 
+colorpalette viridis, n(4) nograph
+local color1 = r(p1)
+local color3 = r(p3)
 gen hours = duration
-local hopts color("`color2'") xtitle("Total duration (hours)")  freq
-hist hours if hours<5,  ylabel(, format(%9.0gc)) 
-graph export "$OUT/firesHours0_5.eps", replace
-hist hours if hours>=5&Super<24, `hopts'
-graph export "$OUT/firesHours5_24.eps", replace
-hist hours if hours>=24&Super<72, `hopts'
+local hopts color("`color3'") xtitle("Total duration (hours)")  freq
+hist hours if hours<3,`hopts' ylabel(, format(%9.0gc)) 
+graph export "$OUT/firesHours0_3.eps", replace
+hist hours if hours>=3&hours<24, `hopts' xlabel(3(3)24)
+graph export "$OUT/firesHours3_24.eps", replace 
+hist hours if hours>=24&hours<72, `hopts' xlabel(24(8)72) 
 graph export "$OUT/firesHours24_72.eps", replace
-hist hours if hours>=72&Super<336, `hopts'
+hist hours if hours>=72&hours<336, `hopts' xlabel(72(24)336) 
 graph export "$OUT/firesHours72_336.eps", replace
 
-
+exit
 *-------------------------------------------------------------------------------
 *--- (2) Descriptives on fire sizes over time
 *-------------------------------------------------------------------------------

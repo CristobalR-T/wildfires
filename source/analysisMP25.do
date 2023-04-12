@@ -32,25 +32,70 @@ cap mkdir "$OUT/figures"
 *-------------------------------------------------------------------------------
 *--- (1) Descriptive of particulate matter over time (commented out)
 *-------------------------------------------------------------------------------
-/*     
-local files
-foreach yr of numlist 2003(1)2021 {
-    use "$DAT/PM25/Municipio_pm2p5_`yr'", clear
-    split Date
-    collapse pm2p5, by(Date1)
-    gen date = date(Date1, "YMD")
-    keep date pm2p5
-    tempfile yr`yr'
-    save `yr`yr''
-    local files `files' `yr`yr''
-}
-clear
-append using `files'
-format date %td
-twoway line pm2p5 date, lcolor(blue%50) ytitle("Mean PM 2.5 (kg/m{sup:3})") xtitle("Date")
-graph export "$OUT/descriptives/pm25time.pdf", replace
-*/
+local rundesc 1 //set this as 1 if wanting to make descriptive graph and table
 
+if `rundesc'==1 {
+    cd "$DAT/PM25"
+    local mfiles
+    local files
+    foreach yr of numlist 2003(1)2021 {
+        unzipfile Municipio_pm2p5_`yr'
+        use "$DAT/PM25/Municipio_pm2p5_`yr'", clear
+        split Date
+        preserve
+        // Collapse to daily exposure by country
+        collapse pm2p5, by(Date1)
+        gen date = date(Date1, "YMD")
+        keep date pm2p5
+        tempfile yr`yr'
+        save `yr`yr''
+        local files `files' `yr`yr''
+        restore
+
+        dis "hello"
+        // Collapse to municipality by week exposure (sum stats ony)
+        collapse pm2p5, by(Date1 CUT_2018)
+        gen date = date(Date1, "YMD")
+        gen accumDays    = date-14975
+        gen weeksEgresos = ceil(accumDays/7)
+        collapse pm2p5, by(weeksEgresos CUT_2018)
+        gen year = `yr'
+        tempfile m`yr'
+        save `m`yr''
+        local mfiles `mfiles' `m`yr''        
+        rm Municipio_pm2p5_`yr'.dta
+    }
+    clear
+    append using `files'
+    format date %td
+
+    // 20844 is peak of 2017 wildfires
+    // 19729 is v large Melipilla wildfire (largest of 2013-2014)
+    // Red lines are put 30 days to the right of these events for visualisation
+    #delimit ;
+    twoway line pm2p5 date, lcolor(blue%40)
+    ytitle("Mean PM 2.5 (kg/m{sup:3})") xtitle("Date")
+    xline(19759 20874, lcolor(red%65))
+    xlabel(, format(%tdMon_dd,_CCYY))
+    text(0.0000002   20874 "2017 Chile Wildfires", placement(e) size(vsmall))
+    text(0.000000175 19759 "Melipilla 2014 (14,805 Ha)", placement(e) size(vsmall));
+    #delimit cr
+    graph export "$OUT/descriptives/pm25time.pdf", replace
+
+    // Make summary stats corresponding to same period as hospitalization data
+    clear
+    append using `mfiles'
+    keep if year>2003 & year<=2018
+    collapse pm2p5, by(weeksEgresos CUT_2018 year)
+    lab var pm2p5 "$ \text{PM}_{2.5} $ Concentration"
+    lab var year "Year"
+    estpost tabstat pm2p5, c(stat) stat(n mean sd min max)
+    #delimit ;
+    esttab using "$OUT/descriptives/pm25SumStats.tex", replace
+    cells("count(fmt(%9.0gc)) mean sd min max")
+    nonumber nomtitle nonote noobs label fragment collabels(none) nolines;
+    #delimit cr
+}
 
 *-------------------------------------------------------------------------------
 *--- (2) Match fires with MP 2.5
