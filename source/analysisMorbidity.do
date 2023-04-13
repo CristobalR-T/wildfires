@@ -140,10 +140,10 @@ sum rate*
 *-------------------------------------------------------------------------------
 *--- (3) Summary statistics and descriptives
 *-------------------------------------------------------------------------------
-lab var rate_morb "All cause hosptilzations (rate per 100,000)"
-lab var rate_resp "Respiratory hospitaliztaions (rate per 100,000)"
-lab var rate_circ "Circulatory hospitaliztaions (rate per 100,000)"
-lab var rate_burn "Burns-related hospitaliztaions (rate per 100,000)"
+lab var rate_morb "All cause hospitalizations (rate per 100,000)"
+lab var rate_resp "Respiratory hospitalizations (rate per 100,000)"
+lab var rate_circ "Circulatory hospitalizations (rate per 100,000)"
+lab var rate_burn "Burns-related hospitalizations (rate per 100,000)"
 lab var all_pop   "Population" 
 lab var year      "Year"
 
