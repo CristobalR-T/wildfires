@@ -30,6 +30,7 @@
 \usepackage{adjustbox}
 \usepackage{rotating}
 \usepackage{dsfont}
+\usepackage{textcomp}
 
 \sectionfont{\fontsize{14}{15}\selectfont}
 \subsectionfont{\fontsize{13}{15}\selectfont}
@@ -166,15 +167,14 @@ Beyond these proximal costs of wildfires, there are considerable additional cost
 
 \section{Data}
 \label{scn:data} 
-We generate a week by municipality level panel covering all wildfires and hospitalizations in the country over the period of 2004-2018.  We additionally incorporate registers of population and air quality similarly at the municipality level at high temporal frequency.  Chile consists of 346 municipalities, which is the third level administrative district.  These municipalities are similar to counties, each with their own mayor and administrative bodies, and vary in size, with certain large cities containing multiple municipalities, and in regional areas generally cover multiple towns.  These 346 municipalities are observed over 783 weeks (15 years), resulting in a balanced panel of 270,918 observations.
-
+We generate a week by municipality level panel covering all wildfires and hospitalizations in the country over the period of 2004-2018.  We additionally incorporate registers of population and air quality similarly at the municipality level at high temporal frequency.  Chile consists of 346 municipalities\footnote{Municipalities in Chile are the third level administrative district.  These municipalities are similar to counties, each with their own mayor and administrative bodies, and vary in size, with certain large cities containing multiple municipalities, and in rural areas generally cover multiple towns.}, and these 346 municipalities are observed over 783 weeks (15 years), resulting in a balanced panel of 270,918 observations.
 Data on hospitalizations and wildfire are both from administrative registries at the micro-level, while data on air quality is remotely sensed at ground level covering the country at a fine grid level.  Below we provide full information on the sources of these data, how they are processed to generate a municipality-level panel, key variables, and provide summary statistics. 
 
 \subsection{Inpatient Hospitalisations}
 \label{sscn:hospitalisations} 
-We have collected and systematized administrative records on all inpatient hospitalisation records from the Chilean Ministry of Health's Department of Health Statistics and Information (DEIS) as early as 2004 (the first year this data is available) and up to 2018. Inpatient hospitalization data are rich, indicating each cause of hospitalization and its duration.  These data cover all hospitalizations in the country, whether occurring in the public or the private system. These are recorded at the individual level, with one observation for each hospitalization, with information on the principal cause of hospitalization (using standardized ICD-10 codes), demographics such as age and sex, and information on the length of the stay.  The data additionally include information the municipality in which the individual resides--which needs not be the same one as the municipality where the individual is hospitalised--which allows us to link individuals to exposure to wildfire smoke (see section \ref{sscn:wind} below). 
+We have collected and systematized administrative records on all inpatient hospitalisation records from the Chilean Ministry of Health's Department of Health Statistics and Information (DEIS) covering the period of 2004 (the first year this data is available) and up to 2018. Inpatient hospitalization data are rich, indicating each cause of hospitalization and its duration.  These data cover all hospitalizations in the country, whether occurring in the public or the private system. These are recorded at the individual level, with one observation for each hospitalization, with information on the principal cause of hospitalization (using standardized ICD-10 codes), demographics such as age and sex, and information on the length of the stay.  The data additionally include information the municipality in which the individual resides--which needs not be the same one as the municipality where the individual is hospitalised--which allows us to link individuals to exposure to wildfire smoke (see section \ref{sscn:wind} below). 
 
-We examine all hospitalizations, and also focus on specific classes of morbidities which are conceivably linked to fires, namely hospitalizations for respiratory causes, hospitalizations for cardiovascular disease, and burns.  These particular causes are generated from ICD-10 codings. We additionally consider age-specific hospitalizations.  The total number of hospitalizations occurring in each municipality are aggregated to municipal level totals, and are calculated as rates per 100,000 individuals using municipal$\times$age$\times$ time population records provided by Chile's National Institute of Statistics. 
+We examine all hospitalizations, and also focus on specific classes of morbidities which are conceivably linked to fires, namely hospitalizations for respiratory causes, hospitalizations for cardiovascular disease, and burns.  These particular causes are generated from ICD-10 codings. We additionally consider age-specific hospitalizations, both for all causes, as well as the specific causes.  The total number of hospitalizations occurring in each municipality are aggregated to municipal level totals, and are calculated as rates per 100,000 individuals using municipal$\times$age$\times$ time population records provided by Chile's National Institute of Statistics. 
 
 % CRT Note: I'm commenting the paragraphs below becauase they won't make it into the IDB WP version.
 %These data contain an individual identifier, and as such it allows us to observe an individual's health at birth, their full inpatient hospitalization use over the course of their life, and survival status at each moment in time. Inpatient hospitalization data is rich, indicating each cause of hospitalization, duration, and temporal links between earlier and later hospitalizations. Additionally, from administrative records, we are able to match any women who are born from 1992 onwards with any of their own future births in cases where they give birth within the window of time up to 2018, allowing us to consider possible intergenerational impacts of exposure. We provide  further details on this linked-data in subsection \ref{sscn:vitalstats}. 
@@ -201,8 +201,8 @@ We examine all hospitalizations, and also focus on specific classes of morbiditi
     \multicolumn{6}{l}{\textbf{Panel A: Hospitalization Measures}}\\
     \input{results/descriptives/hospitalSumStats.tex}
     \multicolumn{6}{l}{\textbf{Panel B: Exposure to Wildfires and Pollutants}} \\
-    \input{results/descriptives/firesSumStats_hosp.tex} 
     \input{results/descriptives/pm25SumStats.tex} 
+    \input{results/descriptives/firesSumStats_hosp.tex} 
      \midrule
     \multicolumn{6}{p{16.4cm}}{\footnotesize \textbf{Notes}: Observations cover municipality by week cells for the 346 municipalities and 783 weeks over the period of 2003-2018.
     Panel A refers to rates of hospitalizations per 100,000 exposed population, and are generated based on consistently applied ICD-10 codings from administrative records.  Rates are presented for the full population, as well as two particular age groups (individuals aged 0-1 year and individuals aged $\geq$ 65 years). A small number of missing observations exist for municipal by week cells where the population is zero for a given age, as in these cases population rates are undefined.
@@ -210,7 +210,7 @@ We examine all hospitalizations, and also focus on specific classes of morbiditi
     \end{tabular}
 \end{table}
 
-In Table \ref{tab:sumstats}, panel A we provide summary statistics of administrative records covering all hospitalizations at the municipal by week level. These are all cast as rates per 100,000 exposed population.  For the entire population, we observe that respiratory casuse account for around 10\% of all hospitalizations (a mean of 21 per 100,000 inhabitants in a week compared to 182 per 100,000 hospitalizations for any causes), closely followed by circulatory causes.  Rates of hospitalization are documented for a number of specific ages (infant, and over 65), and rates are observed to vary considerably by age.  Unsurprisingly, rates of hospitalization are around 4 times higher among infants than in the general population, and around 2 times higher in those aged 65 and older.  It is worth noting that in a small number of cases, not all cells have defined values of rates.  For example, among infants, less than 1\% of the cells (2455 or 270,188) have no defined rate of hospitalization, given that there are 0 populations in this particular group in a number of very small municipalities.
+In Table \ref{tab:sumstats}, panel A we provide summary statistics of administrative records covering all hospitalizations at the municipal by week level. These are all cast as rates per 100,000 exposed population.  For the entire population, we observe that respiratory casuse account for around 10\% of all hospitalizations (a mean of 21 hospitalization per 100,000 inhabitants in a week compared to 182 per 100,000 for all cause hospitalizations), closely followed by circulatory causes.  Rates of hospitalization are documented for a number of specific ages (infant, and over 65), and rates are observed to vary considerably by age.  Unsurprisingly, rates of hospitalization are around 4 times higher among infants than in the general population, and around 2 times higher in those aged 65 and older.  It is worth noting that in a small number of cases, not all cells have defined values of rates.  For example, among infants, less than 1\% of the cells (2455 or 270,188) have no defined rate of hospitalization, given that there are 0 populations in this particular group in a number of very small municipalities.  %As we lay out in the methods section later in this paper, we will generally weight cells by population size, so findings will not be driven by municipalities with very small 
 
 %In general, we observe substantial variation in the number of hospitalizations, in line with variation in municipality size, with a mean of 72 people per week, but a maximum of up to 1569 hospitalization in the largest municipality by week cell.  
 %We document basic trends of these outcomes in Appendix \ref{app:Figures}.  
@@ -233,10 +233,12 @@ In Table \ref{tab:sumstats}, panel A we provide summary statistics of administra
 \label{sscn:fires} 
 % At a later time, we should consider using satellite data on wildfires from the  NASA's Fire Information for Resource Management System (FIRMS) active fire data from the Moderate Resolution Imaging Spectroradiometer (MODIS) aboard the Aqua and Terra satellites. 
 % This should allow us to have an homogeneous dataset that is comparable across time and regions.
-We access data on all wildfires occurring in Chile between the period of 2004 until 2021 from administrative records maintained by CONAF.  These data are collected and systematized by CONAF, and have been made available in a comparable way from the period of 1985 onwards. We work with the period of years necessary to match with other data discussed in this section, and given that hospitalization data is available until the end of 2018, our final sample used in models laid out below consists of fire seasons 2004-2018.  These records contain a record of each wildfire, including information on the region, province and municipality in which it occurred, a precise geo-reference where available\footnote{This information has not been collected in precisely the same way over time.  Prior to the year 2003, this was collected using a series of IGM maps with 1:50,000 resolution, implying that fires were geo-located to within quadrants of approximately 400 hectacres, and then information was additionally recorded by CONAF to limit this to 100 hectacre areas within these quadrants.  From 2003 onwards, this information was collected exactly based on GPS measures.}%For this reason, we generally work with municipalities as the point of reference for fires.}
+We access data on all wildfires occurring in Chile between the period of 2004 until 2021 from administrative records maintained by CONAF.  These data are collected and systematized by CONAF, and have been made available in a comparable way from the period of 1985 onwards. We work with the period of years necessary to match with hospital records discussed previously, and given that these data are available until the end of 2018, our final sample used in models laid out below consists of fire seasons 2004-2018.  These records contain a record of each wildfire, including information on the region, province and municipality in which it occurred, a precise geo-reference where available\footnote{This information has not been collected in precisely the same way over time.  Prior to the year 2003, this was collected using a series of IGM maps with 1:50,000 resolution, implying that fires were geo-located to within quadrants of approximately 400 hectacres, and then information was additionally recorded by CONAF to limit this to 100 hectacre areas within these quadrants.  From 2003 onwards, this information was collected exactly based on GPS measures.}%For this reason, we generally work with municipalities as the point of reference for fires.}
 , the type of land-cover affected, the duration of the wildfire, and the total area burned.  
 
-Measures of the total area burned are estimated by CONAF personnel, or in the case of large wildfires, with a magnitude of greater than 200 hectacres (hereafter Ha), these are determined based off of satellite images. Measures of total duration of fire are calculated as the time elapsed between the moment when fires were first detected, and the time at which the wildfires were reported to be extinguished.  Among all wildfires registered, the majority of wildfires are relatively small (at less than 1 hour and less than 1 Ha burned), though a long tail is observed, with a number of substantially more serious fires.  To illustrate this, descriptive histograms of the total area burned, and total duration of recorded fires are displayed in Figure \ref{fig:descfires}, where a small number of outliers have been removed from the plot (fires of $>$100 ha or $>$ 24 hours).  Appendix Figure \ref{fig:firesHours} documents similar patterns in terms of duration burned.
+Measures of the total area burned are estimated by CONAF personnel, or in the case of large wildfires, with a magnitude of greater than 200 hectacres (hereafter Ha), these are determined based off of satellite images. Measures of total duration of fire are calculated as the time elapsed between the moment when fires were first detected, and the time at which the wildfires were reported to be extinguished.  Among all wildfires registered, the majority of wildfires are relatively small (at less than 1 hour and less than 1 Ha burned), though a long tail is observed, with a number of substantially more serious fires.  To illustrate this, descriptive histograms of the total area burned, and total duration of recorded fires are displayed in Figure \ref{fig:descfires}, where a small number of outliers have been removed from the plot (fires of $>$100 ha or $>$ 24 hours).  Appendix Figure \ref{fig:firesHours} documents similar patterns in terms of duration burned.  
+In general, over the period under study we observe some evidence of an increase in exposure to fires, particularly among larger fires.  Figure \ref{fig:firesize} plots the total number of fires reported nationally in each year between 2004-2021, over a range of fire sizes (measured by area burned).  If considering all fires of 1Ha or larger, we observe that the number of fires has increased from around 1500 per year in early 2000s, to around 2000 in the 2020s, and see similar patterns, albeit at much lower magnitudes, for fires of considerably larger sizes.  We assess empirically the importance of fires of varying sizes in the Results section of this paper.
+
 
 %In future analysis of the wildfire data we will consider wildfires of different extension and duration, which would probably lead us to focus mostly on larger and longer fires -- that is, those in the tail of the distribution  -- which are more destructive and are likely to emit considerable amounts of air pollutants. As a consequence, we would be bringing back in those observations that have been removed from Figure \ref{fig:descfires}.
 
@@ -244,25 +246,26 @@ Measures of the total area burned are estimated by CONAF personnel, or in the ca
     \centering
     \caption{Wildfire Exposures by Magnitude of Fire}
     \label{fig:descfires}
-    \begin{subfigure}{0.45\textwidth}
-          \includegraphics[scale=0.46]{./results/descriptives/firesHA0_10.eps}
+    \begin{subfigure}{0.49\textwidth}
+          \includegraphics[scale=0.55]{./results/descriptives/firesHA0_10.eps}
          \caption{$<$10 Ha}
     \end{subfigure}
-    \begin{subfigure}{0.45\textwidth}
-          \includegraphics[scale=0.46]{./results/descriptives/firesHA10_100.eps}
+    \begin{subfigure}{0.49\textwidth}
+          \includegraphics[scale=0.55]{./results/descriptives/firesHA10_100.eps}
          \caption{[10-100) Ha}
     \end{subfigure}
 
-    \begin{subfigure}{0.45\textwidth}
-          \includegraphics[scale=0.46]{./results/descriptives/firesHA100_500.eps}
+    \begin{subfigure}{0.49\textwidth}
+          \includegraphics[scale=0.55]{./results/descriptives/firesHA100_500.eps}
          \caption{[100-500) Ha}
     \end{subfigure}
-    \begin{subfigure}{0.45\textwidth}
-          \includegraphics[scale=0.46]{./results/descriptives/firesHA500_1000.eps}
+    \begin{subfigure}{0.49\textwidth}
+          \includegraphics[scale=0.55]{./results/descriptives/firesHA500_1000.eps}
          \caption{[500-1000) Ha}
     \end{subfigure}
-    \floatfoot{\textbf{Notes:} }
+    \floatfoot{\textbf{Notes:} Histrograms describe the number of fires registered across all records maintained by CONAF by the area which they are reported to burn.  Given the heavy left-skew of the distribution, these are displayed by area in panel (a)-(d), where panels do not have identically scaled y-axes.  These histograms are based on all fires reported at any time during the 2004-2018 fire seasons.}
 \end{figure}
+
 
 
 
@@ -309,7 +312,7 @@ Measures of the total area burned are estimated by CONAF personnel, or in the ca
     
     
 
-\begin{figure}
+\begin{figure}[ht!]
     \centering
     \includegraphics[scale=0.7]{./results/descriptives/fireSizes.pdf}
     \caption{Wildfires over time by magnitude}
@@ -327,16 +330,14 @@ Measures of the total area burned are estimated by CONAF personnel, or in the ca
 
 \subsection{Air Pollution, Wind direction and Meteorological Data}
 \label{sscn:airdata}
-
- 
-We obtain satellite-level data on fine particulate matter, PM$_{2.5}$, from reanalysis data from the Climate Change Service of the European Centre for Medium-Range Weather Forecasts (ECMWF). In particular, the ECMWF's CAMS global reanalysis (EAC4) provides a dataset at the 0.75° $\times$ 0.75° latitude-longitude at the earth surface level (atmospheric pressure of 1000 hPa). This is roughly, a 70 $\times$ 70 Km. grid, every three hours, for the period 2003 to 2022.\footnote{For more details, see \hyperlink{https://ads.atmosphere.copernicus.eu/cdsapp\#!/dataset/cams-global-reanalysis-eac4?tab=overview}{\textcolor{blue}{https://ads.atmosphere.copernicus.eu/cdsapp\#!/dataset/cams-global-reanalysis-eac4?tab=overview}}.}
+We obtain satellite-level data on fine particulate matter, PM$_{2.5}$, from reanalysis data from the Climate Change Service of the European Centre for Medium-Range Weather Forecasts (ECMWF). In particular, the ECMWF's CAMS global reanalysis (EAC4) provides a dataset at the 0.75\textdegree $\times$ 0.75\textdegree latitude-longitude at the earth surface level (atmospheric pressure of 1000 hPa). This is roughly, a 70 $\times$ 70 km.\ grid, every three hours, for the period 2003 to 2022.\footnote{For more details, see \hyperlink{https://ads.atmosphere.copernicus.eu/cdsapp\#!/dataset/cams-global-reanalysis-eac4?tab=overview}{\textcolor{blue}{https://ads.atmosphere.copernicus.eu/cdsapp\#!/dataset/cams-global-reanalysis-eac4?tab=overview}}.}  Summary statistics for this measure are presented in Panel B of Table \ref{tab:sumstats} (measured in kg/m$^3$), with the variable having been processed to provide a weekly average for each municipality, based on the weekly average of the grid intersecting the municipality.  Note that for this measure, there are a small number of observations missing, which corresponds to a single municipality (Chilean Antarctica) over the entire period.
 
 %the network of ground-level air pollution monitoring stations (SINCA, due to it's acronym in Spanish) of Chile's Ministry for the Environment. SINCA provides accurate data on hourly-level concentrations of several criteria air pollutants, including PM$_{2.5}$, for most of the large and medium-size cities throughout Chile. However, SINCA does not provide PM$_{2.5}$ data for small size cities and localities that lack a monitoring station.
 
-Moreover, we obtained satellite-level data on wind direction, at 10 meter above ground level, from the ERA5-Land reanalysis data of Copernicus' ECMWF. This yields a granular wind direction grid, at the 0.1° $\times$ 0.1° latitude-longitude -- that is, roughly, at a 9 $\times$ 9 km. grid -- every three hours for the period 2003-2018.\footnote{Details on this reanalysis data are available on the website of the Copernicus Climate Change Service \hyperlink{https://cds.climate.copernicus.eu/cdsapp\#!/software/app-era5-explorer?tab=overview}{\textcolor{blue}{https://cds.climate.copernicus.eu/cdsapp\#!/software/app-era5-explorer?tab=overview}}.} Using the geo-referenced location of the wildfires, together with data on their duration span, we linked these wildfires to the coordinates of the closest wind-direction data-point to calculate the likely direction of the plume of pollutants, every three hours. This is then overlaid to the bearing from the location of the wildfire to the urban areas near the wildfires. In this way, we identify wildfires that are \textit{upwind} or \textit{downwind} with respect to any given municipality at each period of time (see section \ref{sscn:wind} and Figure \ref{fig:Downwind_Fig} below). 
+We obtained satellite-level data on wind direction and velocity, at 10 metres above ground level, from the ERA5-Land reanalysis data of Copernicus' ECMWF. This yields a granular wind direction grid, at the 0.1\textdegree $\times$ 0.1\textdegree latitude-longitude -- that is, roughly, at a 9 $\times$ 9 km.\ grid -- every three hours for the period 2003-2018.\footnote{Details on this reanalysis data are available on the website of the Copernicus Climate Change Service \hyperlink{https://cds.climate.copernicus.eu/cdsapp\#!/software/app-era5-explorer?tab=overview}{\textcolor{blue}{https://cds.climate.copernicus.eu/cdsapp\#!/software/app-era5-explorer?tab=overview}}.} Using the geo-referenced location of the wildfires, together with data on their duration span, we linked these wildfires to the coordinates of the closest wind-direction data-point to calculate the likely direction of the plume of pollutants, every three hours. This is then overlaid to the bearing from the location of the wildfire to the urban areas near the wildfires. In this way, we identify wildfires that are \textit{upwind} or \textit{downwind} with respect to any given municipality at each period of time (refer to further discussion in Section \ref{sscn:wind} below). Summary statistics of these measures are provided in Panel B of Table \ref{tab:sumstats}.  These refer to exposure to fires of varying sizes, from all fires ($\geq$ 0 Ha), up to very large fires ($\geq$ 500 Ha).  These measures all refer to the number of 3-hour long periods in a given week when a municipality was exposed to a fire of this size.  
 
+Finally, to capture meteorological and climate conditions we use reanalysis data from ERA5's Copernicus Satellite Sentinels provided by ECMWF. This allows us to obtain ground level data for temperature, precipitations and wind direction at the 0.1\textdegree x 0.1\textdegree (equivalent to roughly 9 x 9 Km.). %We complement this with data from meteorological stations from Chile's Meteorological Service Agency and the Waters directorate of Chile’s Ministry for Agriculture.
 
-To capture meteorological and climate conditions we use reanalysis data from ERA5's Copernicus Satellite Sentinels provided by ECMWF. This allows us to obtain ground level data for temperature, precipitations and wind direction at the 0.1° x 0.1°(equivalent to roughly 9 x 9 Km.). %We complement this with data from meteorological stations from Chile's Meteorological Service Agency and the Waters directorate of Chile’s Ministry for Agriculture.
 
 % Moreover, to better identify the source of land fire air pollution and correctly assign it to wildfires (as opposed to, say, controlled crop burning fires), we plan on obtaining forestry layer data from Chile’s National Forestry Corporation (CONAF) and Google Earth's Engine. 
 
@@ -354,22 +355,59 @@ To capture meteorological and climate conditions we use reanalysis data from ERA
 
 \section{Methods}
 \label{scn:methods}
-%We estimate fixed-effect and differences-in-differences regressions to analyze the expected effects of climate-related wildfires on human health and economic activity. 	 
+Our design seeks to estimate the causal impact of exposure to wildfires at the population level.  Given that exposure to fire is not random---for example individuals located in more southern, hotter areas of the country, and areas closer to more vegetation are more likely to be exposed to wildfire---we seek to gain causal identification by interescting a fire's (endogenous) location with (exogenous) wind direction.  In simple terms, causal identification comes from the fact that while wildfire location is not as good as random, the wind direction---which is as good as random at any given moment---will cause some municipalities to be exposed to a fire given that the fire is upwind from these municipalities, while otherwise similar municipalities are not exposed, given that the fire is downwind from these municipalities.  Below we first lay out details of this design in section \ref{sscn:design}, before laying out precise empirical specifications in section \ref{sscn:empirics}.
 
-%We propose to econometrically examine the relationship between exposure to wildfires in the prenatal period, early in life, and later in life on health at birth, all cause morbidity and mortality, and specific classes of morbidity and mortality, such as respiratory distress, as well as the static and dynamic impacts of these exposures on educational and labour market outcomes. We propose to use dynamic two-way fixed effect models such as those proposed in de Chaisemartin \& D’Haultfoueille (2020), as well as recent synthetic difference-in-difference models based on staggered adoption designs (Arkhangelsky et al., 2021) which allow us to both consider immediate impacts, and dynamic impacts of exposure to wildfire which accumulate potentially long after initial exposure. Such models are based on parallel trend assumptions that outcomes in areas affected and unaffected by wildfires at a specific moment of time would have followed parallel paths if it were not for the fire. We can partially evaluate such assumptions by examining full pre-event trends in affected and non-affected areas.  We propose to use the full power of recent advances in observational techniques based on natural experiments and two-way fixed effect models, and additionally adequately account for inference in a setting where multiple outcomes are considered following Romano \& Wolf (2005).
-
-% EXPLICAR QUE SE VA A HACER UN ANALISIS ESTATICO, A NIVEL COMUNA-SEMANA, 
-% Y UN ANALISIS DYNAMICO A NIVEL DE SEGUIMIENTO DE LOS INDIVIDUOS, EN EL QUE SE LE HACE SEGUIMIENTO A 6.6 MILLONES DE PERSONAS
-
-Our design seeks to estimate the population-level impacts of exposure to wildfire air pollution in the short and medium-term.  For this, we use a complete panel of municipality-by-week cells, where for each municipality we observe the incidence of wildfires in the current and preceding weeks, and aggregate municipal-level outcomes for rates of hospitalization across all age groups and all causes, according to ICD-10. In this way, we estimate the short-term impacts as exposure to wildfire in the moment when outcomes are observed, and the medium-term impacts from exposure to wildfire in recent preceding periods. We lay out further details of this design below, additionally noting how we leverage fine-grained measures of wind direction to capture causal effects of wildfire exposure.
-
-% CRT Note: Commenting below because it will not make in into the IDB-wp version
 % We propose to conduct two  designs, which seek to isolate the impact of exposure to wildfire air pollution.  A first design that seeks to estimate the population-level impacts of exposure to wildfire air pollution in the short and medium-term.  For this, we will use a complete panel of municipality-by-week cells, where for each municipality we observe exposure to wildfire air pollution in the current and preceding weeks, and aggregate municipal-level outcomes such as rates of hospitalization and mortality across all age groups and health classes.  We will complement this analysis by a municipality-by-month level analysis of labour market outcomes.  In this design, we will seek to estimate the short-term impacts as exposure to wild fire in the moment when outcomes are observed, and the medium-term impacts from exposure to wildfire air pollution in recent preceding periods.  
 
 % After that, we will then conduct a second design that seeks to examine long-term effects. In this design we aim to map out the full impacts of exposure to wildfires air pollution at particularly sensitive periods in order to observe how impacts vary over a range of outcomes and over the life course of individuals. Unlike the first design, this design is based on individual-level exposure to wildfires in the months immediately preceding birth (while in the womb) and very early in life (during the first few months of life), given evidence of the particular sensitivity during this period \citep{rosales2019persistent,jayachandran2009air}.  Our individual-level data allows us to follow, over the course of their life, each of the 6.6 million individuals born in Chile during our period of study, thus allowing us to identify the impact of exposure to wildfire at the periods of time preceding birth and closely after.  As we observe the full population of individuals born at each moment, and these can be matched with later-life health, mortality, and fertility outcomes, we can observe a full micro-level panel, where for each individual we can identify, at all points of life, if they are hospitalized, if they remain living, if they have had a child, and if so measures of the child's health, and so forth.
 
 % We lay out each of these designs in the sub-sections below, additionally noting how we leverage fine-grained measures of wind direction to capture causal effects of exposure to fire.
-%However it does allow us to identify the immediate impacts of exposure to fire at other ages.  For this reason, we propose a second design, which allows us to estimate the impacts of exposure to wildfires at all ages based on a long panel of municipal by week cells.  
+ 
+\subsection{Wind Direction as a Causal Empirical Design}
+\label{sscn:design}
+To ensure that we capture \emph{exogenous} exposure to wildfire, we follow an empirical strategy previously adopted by \cite{RangelVogl2019} and also employed by \cite{zivin2020unintended} to identify the causal effects of wildfires. This strategy consists of using ground-level wind direction data to identify wildfires that are \textit{upwind} from a given municipality as well as wildfires that are \textit{downwind} from it. In this way, we estimate the effects of exposure to \textit{upwind} wildfires on the health outcomes of the population residing in each municipality. 
+
+%This strategy consists of using wind direction data to identify municipalities that are \textit{downwind} from a wildfire's smoke plume as well as those that are \textit{not downwind} (both, \textit{upwind} municipalities as well as 'vertical' municipalities). For each group of municipalities, and for a given wildfire, we will identify the effect of downwind/not-downwind wildfires on the health outcome. Thereby, we will use difference between our \textit{downwind} estimate with respect to the \textit{not-downwind} estimate as our estimate of the effect of wildfire on the health outcome.
+
+
+%While the two-way fixed effect models will allow us to quite richly seek to capture a range of relevant unobserved confounding factors, there is, nonetheless, a concern that we may not be able to \emph{causally} estimate the impact of wildfire air pollution. For example, if a given municipality close to a wildfire (say municipality $m'$) is effectively affected by its air pollution, but not directly assigned as exposed given that the epicentre of the wildfire occurred in another municipality, then municipality $m'$ would be wrongly assigned to the `untreated' group (\ref{eq:TwoWayFE}) and (\ref{eq:TwoWayDynamic}). Conversely, if a a wildfire occurs in a given municipality $m''$, but its people are not really affected by its air pollution, then $m''$ would be wrongly assigned to the 'treated' group. Thus, the wrong assignment of treated and untreated units may lead to substantial attenuation in estimated impacts.  
+
+
+
+\begin{figure}[htpb!]
+    \centering
+    \vspace{1mm}
+    \includegraphics[scale=0.41]{./results/descriptives/DownwindFigure_2.png}
+    \caption{Exposure to Wildfires}
+    \label{fig:Downwind_Fig}
+    \vspace{2mm}
+    \floatfoot{Notes: A schematic representation of exposure to wildfires is presented. Within a distance of 50km from a municipality \textit{upwind} wildfires are denoted \textbf{U} and \textit{downwind} wildfires are denoted \textbf{D}. The light blue ray represents wind direction, and the 60° yields the pie-area defining \textit{upwind} and \textit{downwind} wildfires.}
+\end{figure}
+
+Figure \ref{fig:Downwind_Fig} illustrates this strategy. In our specification, an \textit{upwind} wildfire for a given municipality (\textbf{U}, in the figure) is a fire which falls within the sector of the circle formed where a 60\textdegree\  angle bisects the wind direction, represented as the blue ray in Figure \ref{fig:Downwind_Fig}.\footnote{The urban centroid refers to the population-weighted geographical central point of the municipality.} %In robustness checks we will use different angles (say, 30, 60 and 90) as well as different distances from the wildfire (say, 20 km, 50 km and 100 km).}
+Conversely, a \textit{downwind} wildfire (\textbf{D}, in the figure) falls within the sectant formed by a 60\textdegree\ angle bisected by the \emph{opposite} of the wind direction.  The logic of this design -- and something which we will demonstrate empirically -- is that the prevailing wind will take pollutants from the smoke plume of fires which are upwind from a municipality towards the municipality, exposing residents to fires, while the prevailing wind will take pollutants from fires downwind from the municipality away from the municipalities, implying that residents are un-exposed.
+
+\textcolor{red}{EDITED UP TO HERE}
+Empirically, our design follows the map laid out in figure \ref{fig:design2}.  Here we present wind vectors describing the direction of wind at a particular moment of time, as well as their velocity (indicated by the length of the arrow).  The location of fires is indicated with orange circles. Thus, depending on how wind intersects wildfires, nearby municipalities are exposed or unexposed to their air pollutants.  
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.4]{results/descriptives/RM.png}
+    \caption{Exposure Design to (Upwind) Wildfires}
+    \label{fig:design2}
+    \floatfoot{Notes: Large orange points represent fires, grey arrows represent wind directions (arrow heads) and velocities (length of arrow).  Shaded colours refer to whether municipalites have an upwind wildfire (yellow), downwind wildfire (purple) or not within 50km of a wildfire.  This is a representative figure at a particular moment of time, focusing only on the metropolitan region of Santiago.  To observe how such patterns evolve over longer periods, refer to the dynamic figure: \url{http://damianclarke.net/resources/fires_and_wind_upwind.gif}.}
+\end{figure}    
+
+
+
+ In figure \ref{fig:design} we plot for the whole country the distance to the nearest fire (in metres), with municipalities more than 50 kilometers from fire classified as unexposed. We will vary such definitions in final empirical models, considering potentially longer distances.  Processing has currently been completed up to distances of 120 kilometers.  
+Based on the schematic diagram in Figure \ref{fig:Downwind_Fig}, Figure \ref{fig:design2} below presents whether a municipality is exposed to a wildfire that has been classified as \textit{upwind} or \textit{downwind}, with municipalities more than 50 kilometers from fire classified as unexposed.\footnote{We will vary such definitions in final empirical models, considering potentially longer distances.  Processing has currently been completed for up to distances of 120 kilometers.} For causal identification our design requires that, conditional on fixed effects and controls, \emph{either} wildfire location with respect to the municipality \emph{or} wind direction is as good as random. We argue that this process generates quasi-random exposure to wildfires' air pollutants.
+
+
+\subsection{Empirical Specifications}
+\label{sscn:empirics}
+
+
 
 \subsection{Two Way Fixed Effects Model in a Municipal-level Panel}
 \label{sscn:comunatime}
@@ -425,33 +463,6 @@ Here, all details follow those laid out previously in (\ref{eq:TwoWayFE}), howev
 %\end{equation}
 \subsection{Wind Direction in a Two-Way Fixed Effects Model}
 \label{sscn:wind}
-While the two-way fixed effect models will allow us to quite richly seek to capture a range of relevant unobserved confounding factors, there is, nonetheless, a concern that we may not be able to \emph{causally} estimate the impact of wildfire air pollution. For example, if a given municipality close to a wildfire (say municipality $m'$) is effectively affected by its air pollution, but not directly assigned as exposed given that the epicentre of the wildfire occurred in another municipality, then municipality $m'$ would be wrongly assigned to the `untreated' group (\ref{eq:TwoWayFE}) and (\ref{eq:TwoWayDynamic}). Conversely, if a a wildfire occurs in a given municipality $m''$, but its people are not really affected by its air pollution, then $m''$ would be wrongly assigned to the 'treated' group. Thus, the wrong assignment of treated and untreated units may lead to substantial attenuation in estimated impacts.  
-
-
-Given this, and to ensure that we capture \emph{exogenous} exposure to wildfire, we follow the empirical strategy developed by \cite{RangelVogl2019} and also employed by \cite{zivin2020unintended} to identify the causal effects of wildfires. %This will be conducted once we have processed our data on wind direction (both, from Copernicus satellite data as well as several ground level meteorological stations). 
-This strategy consists of using ground-level wind direction data to identify wildfires that are \textit{upwind} from a given municipality as well as wildfires that are \textit{downwind} from it. In this way, we estimate the effects of exposure to \textit{upwind} wildfires on the health outcomes of the population residing in each municipality. 
-
-%This strategy consists of using wind direction data to identify municipalities that are \textit{downwind} from a wildfire's smoke plume as well as those that are \textit{not downwind} (both, \textit{upwind} municipalities as well as 'vertical' municipalities). For each group of municipalities, and for a given wildfire, we will identify the effect of downwind/not-downwind wildfires on the health outcome. Thereby, we will use difference between our \textit{downwind} estimate with respect to the \textit{not-downwind} estimate as our estimate of the effect of wildfire on the health outcome.
-
-
-\begin{figure}[htpb!]
-    \centering
-    \vspace{1mm}
-    \includegraphics[scale=0.50]{./results/descriptives/DownwindFigure_2.png}
-    \caption{Exposure to Wildfires}
-    \label{fig:Downwind_Fig}
-    \vspace{2mm}
-    \floatfoot{Notes: A schematic representation of exposure to wildfires is presented. Within a distance of 50km from a municipality \textit{upwind} wildfires are denoted \textbf{U} and \textit{downwind} wildfires are denoted \textbf{D}. The light blue ray represents wind direction, and the 60° yields the pie-area defining \textit{upwind} and \textit{downwind} wildfires.}
-\end{figure}
-
-Figure \ref{fig:Downwind_Fig} illustrates this strategy. In our specification, an \textit{upwind} wildfire (\textbf{U}, in the figure) is such that it is located within a 50 kilometer distance of the urban centroid of a municipality and falls within the 'pie-area' formed by a 60° angle bisected by the most prevalent wind direction (i.e., average or modal wind direction) during the period of time $t$.\footnote{Urban centroid refers to the population-weighted geographical central point of the municipality. Moreover, in a robustness check we will use different angles (say, 30, 60 and 90) as well as different distances from the wildfire (say, 20 km, 50 km and 100 km).} Conversely, a \textit{downwind} wildfire (\textbf{D}, in the figure) falls within the 'pie-area' formed by a 60° angle bisected by the \emph{opposite} of the most prevalent wind direction during period $t$ --that is, where the wind is blowing towards. Finally, a \textit{not-upwind} wildfire is such that it falls within a 50 kilometer from the urban centroid of a municipality but it is not \textit{upwind}. 
-
-
-Empirically, our design follows the map laid out in figure \ref{fig:design2}.  Here we present wind vectors describing the direction of wind at a particular moment of time, as well as their velocity (indicated by the length of the arrow).  The location of fires is indicated with orange circles. Thus, depending on how wind intersects wildfires, nearby municipalities are exposed or unexposed to their air pollutants.  
-% CRT NOTE: I WOULD MOVE THE PRESENTATION AND ANALYSIS OF figure \ref{fig:design} TO THE APPENDIX. I THINK THAT THE KEY FIGURE THAT EXPLAINS THE DESIGN IS Figure \ref{fig:design2}
-
- In figure \ref{fig:design} we plot for the whole country the distance to the nearest fire (in metres), with municipalities more than 50 kilometers from fire classified as unexposed. We will vary such definitions in final empirical models, considering potentially longer distances.  Processing has currently been completed up to distances of 120 kilometers.  
-Based on the schematic diagram in Figure \ref{fig:Downwind_Fig}, Figure \ref{fig:design2} below presents whether a municipality is exposed to a wildfire that has been classified as \textit{upwind} or \textit{downwind}, with municipalities more than 50 kilometers from fire classified as unexposed.\footnote{We will vary such definitions in final empirical models, considering potentially longer distances.  Processing has currently been completed for up to distances of 120 kilometers.} For causal identification our design requires that, conditional on fixed effects and controls, \emph{either} wildfire location with respect to the municipality \emph{or} wind direction is as good as random. We argue that this process generates quasi-random exposure to wildfires' air pollutants.
 
 \begin{figure}
     \centering
@@ -461,13 +472,6 @@ Based on the schematic diagram in Figure \ref{fig:Downwind_Fig}, Figure \ref{fig
   \floatfoot{Notes: Large orange points represent fires, grey arrows represent wind directions (arrow heads) and velocities (length of arrow).  Shaded colours refer to the distance, in meters, from each municipality to the nearest wildfire.  This is a representative figure at a particular moment of time.  To observe how such patterns evolve over longer periods, refer to the dynamic figure: \url{http://damianclarke.net/resources/fires_and_wind_distance.gif}.}
 \end{figure}    
 
-\begin{figure}
-    \centering
-    \includegraphics[scale=0.4]{results/descriptives/RM.png}
-    \caption{Exposure Design to (Upwind) Wildfires}
-    \label{fig:design2}
-    \floatfoot{Notes: Large orange points represent fires, grey arrows represent wind directions (arrow heads) and velocities (length of arrow).  Shaded colours refer to whether municipalites have an upwind wildfire (yellow), downwind wildfire (purple) or not within 50km of a wildfire.  This is a representative figure at a particular moment of time, focusing only on the metropolitan region of Santiago.  To observe how such patterns evolve over longer periods, refer to the dynamic figure: \url{http://damianclarke.net/resources/fires_and_wind_upwind.gif}.}
-\end{figure}    
 
 In practice, we observe expected seasonal cyclicality in the presence of and exposure to wildfires (Figure \ref{fig:time}) throughout the year, where in peak summer months around 70-80\% of the municipalities are exposed to \textit{upwind} wildfires, and 55-65\% of municipalities are found to have \textit{downwind} wildfires. Moreover, the broad location of wildfires may not be deemed as random --say, because certain regions are more prompt to experiencing wildfires than others. However, whether its air pollutants are blown towards the population in a given municipality (i.e., an \textit{upwind} wildfire) can be considered a quasi-random process. 
 
