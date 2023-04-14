@@ -365,7 +365,7 @@ Our design seeks to estimate the causal impact of exposure to wildfires at the p
  
 \subsection{Wind Direction as a Causal Empirical Design}
 \label{sscn:design}
-To ensure that we capture \emph{exogenous} exposure to wildfire, we follow an empirical strategy previously adopted by \cite{RangelVogl2019} and also employed by \cite{zivin2020unintended} to identify the causal effects of wildfires. This strategy consists of using ground-level wind direction data to identify wildfires that are \textit{upwind} from a given municipality as well as wildfires that are \textit{downwind} from it. In this way, we estimate the effects of exposure to \textit{upwind} wildfires on the health outcomes of the population residing in each municipality. 
+To ensure that we capture \emph{exogenous} exposure to wildfire, we follow an empirical strategy previously adopted by \cite{RangelVogl2019} and also employed by \cite{zivin2020unintended} to identify the causal effects of wildfires. This strategy consists of using ground-level wind direction data to identify wildfires that are \textit{upwind} from a given municipality as well as wildfires that are \textit{downwind} from it. In this way, we estimate the effects of exposure to \textit{upwind} wildfires on the health outcomes of the population residing in each municipality, as well as documenting the considerable relevance of upwind exposure as a driver of air pollution.  
 
 %This strategy consists of using wind direction data to identify municipalities that are \textit{downwind} from a wildfire's smoke plume as well as those that are \textit{not downwind} (both, \textit{upwind} municipalities as well as 'vertical' municipalities). For each group of municipalities, and for a given wildfire, we will identify the effect of downwind/not-downwind wildfires on the health outcome. Thereby, we will use difference between our \textit{downwind} estimate with respect to the \textit{not-downwind} estimate as our estimate of the effect of wildfire on the health outcome.
 
@@ -387,10 +387,7 @@ To ensure that we capture \emph{exogenous} exposure to wildfire, we follow an em
 Figure \ref{fig:Downwind_Fig} illustrates this strategy. In our specification, an \textit{upwind} wildfire for a given municipality (\textbf{U}, in the figure) is a fire which falls within the sector of the circle formed where a 60\textdegree\  angle bisects the wind direction, represented as the blue ray in Figure \ref{fig:Downwind_Fig}.\footnote{The urban centroid refers to the population-weighted geographical central point of the municipality.} %In robustness checks we will use different angles (say, 30, 60 and 90) as well as different distances from the wildfire (say, 20 km, 50 km and 100 km).}
 Conversely, a \textit{downwind} wildfire (\textbf{D}, in the figure) falls within the sectant formed by a 60\textdegree\ angle bisected by the \emph{opposite} of the wind direction.  The logic of this design -- and something which we will demonstrate empirically -- is that the prevailing wind will take pollutants from the smoke plume of fires which are upwind from a municipality towards the municipality, exposing residents to fires, while the prevailing wind will take pollutants from fires downwind from the municipality away from the municipalities, implying that residents are un-exposed.
 
-\textcolor{red}{EDITED UP TO HERE}
-Empirically, our design follows the map laid out in figure \ref{fig:design2}.  Here we present wind vectors describing the direction of wind at a particular moment of time, as well as their velocity (indicated by the length of the arrow).  The location of fires is indicated with orange circles. Thus, depending on how wind intersects wildfires, nearby municipalities are exposed or unexposed to their air pollutants.  
-
-\begin{figure}
+\begin{figure}[htpb!]
     \centering
     \includegraphics[scale=0.4]{results/descriptives/RM.png}
     \caption{Exposure Design to (Upwind) Wildfires}
@@ -398,14 +395,27 @@ Empirically, our design follows the map laid out in figure \ref{fig:design2}.  H
     \floatfoot{Notes: Large orange points represent fires, grey arrows represent wind directions (arrow heads) and velocities (length of arrow).  Shaded colours refer to whether municipalites have an upwind wildfire (yellow), downwind wildfire (purple) or not within 50km of a wildfire.  This is a representative figure at a particular moment of time, focusing only on the metropolitan region of Santiago.  To observe how such patterns evolve over longer periods, refer to the dynamic figure: \url{http://damianclarke.net/resources/fires_and_wind_upwind.gif}.}
 \end{figure}    
 
+In practice, and for a particular moment of time, this design is laid out in figure \ref{fig:design2}.  This map displays the metropolitan region of Santiago, and surrounding regions, with white boundaries representing municipal borders.  Wind vectors displayed as arrows document the direction of wind at a particular moment of time, as well as their velocity (indicated by the length of the arrow).  The location of fires burning at that is indicated with orange circles. Thus, depending on how wind intersects wildfires, nearby municipalities are exposed (municipalities indicated in yellow) or unexposed (municipalities indicated in purple) to their air pollutants. Municipalities coloured in grey are located greater than 50km from the nearest fire, and hence are classified neither as upwind nor non-upwind. Appendix Figure \ref{fig:designDist} provides a similar representation we plot for the whole country, additionally noting distances to active fires.
 
 
- In figure \ref{fig:design} we plot for the whole country the distance to the nearest fire (in metres), with municipalities more than 50 kilometers from fire classified as unexposed. We will vary such definitions in final empirical models, considering potentially longer distances.  Processing has currently been completed up to distances of 120 kilometers.  
-Based on the schematic diagram in Figure \ref{fig:Downwind_Fig}, Figure \ref{fig:design2} below presents whether a municipality is exposed to a wildfire that has been classified as \textit{upwind} or \textit{downwind}, with municipalities more than 50 kilometers from fire classified as unexposed.\footnote{We will vary such definitions in final empirical models, considering potentially longer distances.  Processing has currently been completed for up to distances of 120 kilometers.} For causal identification our design requires that, conditional on fixed effects and controls, \emph{either} wildfire location with respect to the municipality \emph{or} wind direction is as good as random. We argue that this process generates quasi-random exposure to wildfires' air pollutants.
+Definitions of exposure to fire in this way are thus dynamic, as for a given fire, municipalities may be classified as upwind at a particular moment, but later in time the direction of wind will change, and a municipality will be downwind now of the same fire.  For fires which burn for a short period of time this will not occur, but for fires with a longer duration, this will occur.  For this reason, the definition of upwind or downwind is dynamic.  To generate these measures we begin with a record of each wildfire and its duration.  This is combined with records of wind direction and speed which are available with a frequency of 6 hours. In our dataset we expand each wildfire for the full duration for which it is burning, in blocks of 6 hours, and then this is merged to the wind direction and speed with closest proximity to the fire in that 6-hour block.  For example, a wildfire which burns for 48 hours is associated with eight cells in our dataset, each of which contains the unique wind direction and wind speed at the 6-hour period for the wildfire's location.  All municipalities within 50 kilometers of these wildfires are then considered as potentially exposed. And if a municipality has a wildfire within a 60\textdegree\ bearing of the current wind direction (i.e., -30\textdegree\ to +30\textdegree), this wildfire is classified as \textit{upwind}.  If wildfires are diametrically opposed to the current wind direction, plus or minus 30\textdegree\ (i.e., 150\textdegree\ to 210\textdegree), they are classified as \textit{downwind} from the municipality.  Any wildfires within a 50 kilometers distance from a municipality,  but that are not upwind, are classified as 'non-upwind' wildfires.  Thus, this results in a municipality panel dataset with a frequency of 6 hours indicating whether a municipality is exposed to one or potentially multiple wildfires, and whether this wildfire(s) is upwind or downwind.  This procedure is repeated for all wildfires. Moreover, it also repeated considering only wildfires burning at least certain minimum surface areas. Specifically at least 50 hectares, 100 hectares, 200 hectares, and so on.  To conduct analysis at a weekly level (laid out further below), we calculate for each municipality the number of 6 hour periods during the week in which it was exposed to an upwind wildfire, and similarly the number of 6 hour periods in which it was exposed to a downwind wildfire.  In practice, we observe expected seasonal cyclicality in the presence of and exposure to wildfires (Figure \ref{fig:time}) throughout the year, where in peak summer months up to 60\% of the municipalities are exposed to at least one \textit{upwind} wildfires, with up to 70\% of municipalities being exposed to any type of wildfire. 
+
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.76]{./results/descriptives/exposure.pdf}
+    \caption{Seasonal patterns of presence and exposure to Wildfires}
+    \label{fig:time}
+    \floatfoot{\textbf{Notes: }}
+\end{figure}    
+
+
 
 
 \subsection{Empirical Specifications}
 \label{sscn:empirics}
+BRING ALL EQUATIONS HERE AND ELIMINATE 
+
 
 
 
@@ -464,24 +474,7 @@ Here, all details follow those laid out previously in (\ref{eq:TwoWayFE}), howev
 \subsection{Wind Direction in a Two-Way Fixed Effects Model}
 \label{sscn:wind}
 
-\begin{figure}
-    \centering
-    \includegraphics[scale=0.95]{results/descriptives/national.pdf}
-    \caption{Exposure Design to Wildfires (Distance)}
-    \label{fig:design}
-  \floatfoot{Notes: Large orange points represent fires, grey arrows represent wind directions (arrow heads) and velocities (length of arrow).  Shaded colours refer to the distance, in meters, from each municipality to the nearest wildfire.  This is a representative figure at a particular moment of time.  To observe how such patterns evolve over longer periods, refer to the dynamic figure: \url{http://damianclarke.net/resources/fires_and_wind_distance.gif}.}
-\end{figure}    
 
-
-In practice, we observe expected seasonal cyclicality in the presence of and exposure to wildfires (Figure \ref{fig:time}) throughout the year, where in peak summer months around 70-80\% of the municipalities are exposed to \textit{upwind} wildfires, and 55-65\% of municipalities are found to have \textit{downwind} wildfires. Moreover, the broad location of wildfires may not be deemed as random --say, because certain regions are more prompt to experiencing wildfires than others. However, whether its air pollutants are blown towards the population in a given municipality (i.e., an \textit{upwind} wildfire) can be considered a quasi-random process. 
-
-
-\begin{figure}
-    \centering
-    \includegraphics[scale=0.76]{./results/descriptives/exposure.pdf}
-    \caption{Seasonal patterns of presence and exposure to Wildfires}
-    \label{fig:time}
-\end{figure}    
 
 
 To implement this identification strategy, we estimate the following equation:
@@ -491,8 +484,7 @@ Y_{mt}=\alpha + \beta\text{Wildfire}_{mt}\times\mathds{1}\{\text{Upwind}_{mt}\} 
 \end{equation}
 where, for a given wildfire within a 50 kilometers from municipality $m$ on period $t$, $\mathds{1}\{\text{Upwind}_{mdt}\}$ takes on value equal to $1$ if a wildfire is \textit{upwind}, and takes on value equal to $0$ if a wildfire is \textit{downwind}.\footnote{Alternatively,  $\mathds{1}\{Upwind_{mdt}\}$ could be defined as taking on value equal to $0$ when a wildfire is simply \textit{not-upwind} from a municipality $m$}.  The equation defined in (\ref{eq:TwoWayFE_Wind}) can be viewed as the exogeneized version of (\ref{eq:TwoWayFE}), where all details, apart from the use of the Upwind variation, follow those in (\ref{eq:TwoWayFE}). Similarly, we implement a version of (\ref{eq:TwoWayDynamic}) accounting for the upwind variation.
 
-%\textcolor{red}{Edit the following for clarity.  Add link to Rangel \& Vogl, etc.}
-To measure exposure to \textit{upwind} wildfires, we begin with a record of each wildfire and its duration.  This is combined with records of wind direction and speed which are available in a very fine geographical grid (9 x 9 kilometers, approximately), with a frequency of 6 hours. In our dataset we expand each wildfire for the full duration for which it is burning, in blocks of 6 hours, then this is merged to the wind direction and speed with closest proximity to the fire in that 6-hour block.  For example, a wildfire which burns for 48 hours is associated with eight cells in our dataset, each of which contains the unique wind direction and wind speed at the 6-hour period for the wildfire's location.  All municipalities within 50 kilometers of these wildfires are then considered as potentially exposed. And if a municipality has a wildfire within a 60° bearing of the current wind direction (i.e., -30° to +30°), this wildfire is classified as \textit{upwind}.  If wildfires are diametrically opposed to the current wind direction, plus or minus 30° (i.e., 150° to 210°), they are classified as \textit{downwind} from the municipality.  Any wildfires within a 50 kilometers distance from a municipality,  but that are not upwind, are classified as 'non-upwind' wildfires.  Thus, this results in a municipality panel dataset with a frequency of 6 hours indicating whether a municipality is exposed to one or potentially multiple wildfires, and whether this wildfire(s) is upwind or downwind.  This procedure is repeated for all wildfires. Moreover, it also repeated considering only wildfires burning at least certain minimum surface areas. Specifically at least 50 hectares, 100 hectares, 200 hectares, and so on.
+
 
 %For analyses at the frequency of 6-hour by municipality cells (analyses of pollutant concentrations), these data are used directly.  
 For health  outcomes analyses, these are conducted at a municipality-by-week level. For these outcomes, exposure to the wildfire is measured as the total number of 6-hour periods for which a municipality has a wildfire that is upwind, downwind, or non-upwind. Thus, for example, a municipality in which a wildfire burned for 48 hours and that this wildfire was upwind for five 6-hour blocks and it was non-upwind for three 6-hour blocks, it would be treated as exposed to upwind wildfires for five periods. In this way, upwind and downwind measures capture independent exposure to fires, while also capturing dose-responses in which municipalities exposed to wildfires for a greater period are classified as having a higher dose.  In all specifications, both exposure to upwind and downwind fires are included together as independent variables, such that upwind exposure is estimated \emph{conditional} on any downwind exposure owing to changes in wind direction.  
@@ -539,9 +531,9 @@ For health  outcomes analyses, these are conducted at a municipality-by-week lev
 
 \subsection{Impacts of Wildfire on PM$_{2.5}$}
 \label{sscn:results_pm25}
-Figure \ref{fig:firstStage} below presents predicted PM$_{2.5}$ concentrations ($\widehat{PM}_{2.5}$, as in equation \ref{eq:FirstStagePM}) driven by exposure to wildfires for different wildfire size. The figure shows that wildfire upwind and downwind exposure drives differential levels of PM$_{2.5}$ concentrations. Moreover, our estimated PM$_{2.5}$ for downwind wildfire is statistically not different from zero, meaning that downwind wildfires do not significantly generate ambient PM$_{2.5}$.  
+A first key consideration is whether this design to estimate exposure to wildfires actually captures true exposure to contaminants.  For this reason, we first estimate equation XXXX where the outcome consists of PM$_{2.5}$ concentrations.  Descriptively, it appears clear that large wildfires are important drivers of contaminants.  Figure \ref{fig:PM25} presents a descriptive plot of mean rates of ambient PM$_{2.5}$ nationwide in Chile by day over the period of 2003--2021.  While there is clear cyclical variation in line with temporal patterns in which PM$_{2.5}$ concentrations are substantially higher in winter than summer, key sharp spikes are observed during summer months each year.  The most notorious of these are indicated with red vertical lines (slightly shifted so as not to obscure the spikes), and are observed surrounding large wildfires, or series of megafires.  For example, the wildfires of 2017 are associated with mean contaminants which are an entire order of magnitude higher than is standard in summer months, and rates of PM$_{2.5}$ concentrations around 4 times higher than winter peaks.
 
-\begin{figure}
+\begin{figure}[ht!]
     \centering
     \includegraphics[scale=0.95]{./results/descriptives/pm25time.pdf}
     \caption{PM$_{2.5}$ Concentrations Over Time}
@@ -550,9 +542,14 @@ Figure \ref{fig:firstStage} below presents predicted PM$_{2.5}$ concentrations (
 \end{figure}
 
 
+%THESE RESULTS SHOW ESTIMATED EFFECTS, NOT PREDICTED CONCENTRATIONS
+%Figure \ref{fig:firstStage} below presents predicted PM$_{2.5}$ concentrations ($\widehat{PM}_{2.5}$, as in equation \ref{eq:FirstStagePM}) driven by exposure to wildfires for different wildfire size. The figure shows that wildfire upwind and downwind exposure drives differential levels of PM$_{2.5}$ concentrations. Moreover, our estimated PM$_{2.5}$ for downwind wildfire is statistically not different from zero, meaning that downwind wildfires do not significantly generate ambient PM$_{2.5}$.  
 
-\textcolor{red}{CURRENTLY UNDER REVISION BY CRT: 
-To address the second comment from IDB reviewer we need to better motivate these results for PM$_{2.5}$ and explain how they relate to the main results below.}
+
+We estimate this relationship formally in Figure \ref{fig:firstStage}.  Here we present a series of parameter estimates and their corresponding 95\% CIs for the coefficients $\beta$ (solid red line) and $\gamma$ (dashed blue line) from equation XXX.  In this case, upwind and downwind are estimated based on a range of fires as indicated on the x-axis, namely all fires of 0 Ha or above, all fires of at least 50 Ha or above, up to all fires of at least 250 Ha or above (in increments of 50 Ha). Sets of coefficients on upwind and downwind are estimated in a single model for each fire size plotted in the figure.  In all specifications, we observe clear impacts of exposure to wildfires on ambient concentrations of PM$_{2.5}$.  What's more, we observe exposure to upwind fires produces large increases in contaminants, while exposure to downwind fires produces small increases, which are often not statistically distinguishable from 0. This suggests validation of the exposure design....  The impact of wildfires on [BY SIZE]...
+
+
+
 \begin{figure}[htpb!]
     \caption{Exposure to Wildfires and PM$_{2.5}$}
     \label{fig:firstStage}
@@ -561,31 +558,10 @@ To address the second comment from IDB reviewer we need to better motivate these
     \floatfoot{Notes: Each coefficient and confidence interval presents the impact of regression where airborne PM 2.5 concentrations are regressed on the number of wildfires which are \textit{upwind} (red solid line) and \textit{downwind} (blue dashed line) from a given municipality.  Observations consist of municipality cells in each 6 hour block occurring from 2002 to 2021 (19,xxx,xxx observations).  Each specification includes full municipal and hour$\times$day$\times$month$\times$year fixed effects, and the definition of the independent variable is based on exposure to wildfires of the size indicated on the x-axis or generated. 95\% confidence intervals are presented based on standard errors clustered by municipality.}
 \end{figure}
 
-%\subsection{Descriptive Analysis}
-%Add here a table of descriptive statistics as well as descriptive graphs and/or figures that introduce and motivate the most interesting relationships of our data.
-
-%CAMBIOS A LA TABLA DE ESTADISTICAS DESCRIPTIVAS:
-%1) Cambiar comas por puntos, y viceversa.
-%2) Poner el número de incendios una sola vez (tal vez al final de la tabla solamente?
-%3) Cambiar las etiquetas de los paneles: Panel A - Birth Outcomes; Panel B - Hospital Admissions; Panel C - Mortality Outcomes
-%\begin{figure}[htpb!]
-%    \centering
-%    \includegraphics[scale=0.55]{./Descriptive/Tab1.png}
-%    \caption{Caption}
-%    \label{fig:my_label}
-%\end{figure}
-
 
 \subsection{Static and Dynamic Two-way Fixed Effect Models}
 \label{scn:results_2wayFE}
 Indeed, the existing literature find no statistically significant effects of fire air pollution prior to controlling for wind transport of pollutants and identifying populations \textit{upwind} vs. \textit{downwind} from burning fires. \citep{RangelVogl2019,rocha2022winds,he2020straw,zivin2020unintended}.
-
-%EN ESTA ETAPA (PARA EL PRIMER BORRADOR), TENEMOS QUE CITAR LA LITERATURA QUE MUESTRA EFECTOS NO SIGNIFICATIVOS DEL ANALISIS DE EFECTOS FIJOS . QUE ESTO ES COMPLETAMENTE ESPERABLE A ESTAS ALTURAS DE ANALISIS
-
-%ESTAMOS METIENDO EN EL MISMO SACO LOS 'TREATED' CON LOS 'NON-TREATED', POR LO QUE ES DE ESPERAR QUE EL EFECTO DEL INCENDIO PRACTIAMENTE QUE SE CANCELE COMPLETAMENTE.
-
-%DE HECHO, LOS PAPERS EN LA LITERATURA EXPLICAN QUE ESTOS NO-EFECTOS SON LOS QUE HACE QUE SEA MUHO MAS IMPORTANTE EL ENFOCARSE EN EL TEMA DE EXPOSICION A LA CONTAMINACION PRODUCTO DE LA DIRECCION DEL VIENTO.
-
 
 \subsection{Impacts on Inpatient Hospitalizations}
 \label{scn:results_hosp}
@@ -757,8 +733,6 @@ Indeed, the existing literature find no statistically significant effects of fir
 
 \subsection{Mid-Term Impacts on Inpatient hospitalizations}
 In this section we present results for impacts of exposure to wildfires not only in the current period of time (current week) but also in recent periods. Figure  \ref{fig:HospMTerm_Inf} below presents parameter estimates and confidence intervals from estimating the dynamic model in equation (\ref{eq:TwoWayDynamic}) with 6 lags and 4 leads for hospital admissions for infants (i.e., 0 to 1 years old). Since one should not expect to find significant effects of future wildfire exposure on current hospital admissions, parameter estimates for leads act as a 'placebo test' and should be interpreted as a check of our identification strategy. Results from Figure \ref{fig:HospMTerm_Inf} show that it is only exposure on the current week what drives an increase in hospital admissions for infants. 
-
-%\textcolor{red}{CRT COMMENT: IN THIS SECTION I'M FOCUSING ONLY ON VERY LARGE AND MEGA WILDFIRES. From the results we obtained for the IDB presentation, those wildfire sizes turned out to have significant effects on Infant Hospitalizations.}
 
 %%NOT IN GITHUB!!!  NEED TO FIX.
 \begin{figure}[htpb!]
@@ -951,7 +925,8 @@ In this section we highlight work in progress and future work.  This is laid out
 \begin{spacing}{1.3}
 
 
-\clearpage
+  \newpage
+  
 \appendix
 \setcounter{page}{1}
 \renewcommand{\thepage}{A\arabic{page}}
@@ -960,8 +935,9 @@ In this section we highlight work in progress and future work.  This is laid out
 
 \begin{center}
 {\Large Online Appendix -- Not for Print}\\
-\textbf{Identifying the Effects of Climate-Driven Wildfires in Latin America} \\
-Rub\'i Arrizaga, Damian Clarke, Crist\'obal Ruiz-Tagle
+%\textbf{Identifying the Effects of Climate-Driven Wildfires in Latin America} \\
+\textbf{Wildfires and Human Health: Evidence from 15 Wildfire Seasons in Chile} \\
+Rub\'i Arrizaga, Damian Clarke, Pedro Cubillos, Crist\'obal Ruiz-Tagle
 \end{center}
 \end{spacing}
 
@@ -981,17 +957,17 @@ Rub\'i Arrizaga, Damian Clarke, Crist\'obal Ruiz-Tagle
 \setcounter{figure}{0}
 \renewcommand{\thefigure}{A\arabic{figure}}
     
-\section{Appendix Tables}   
-\label{app:Tables}
-\newgeometry{margin=0.5in}
-\begin{spacing}{1.3}    
+%\section{Appendix Tables}   
+%\label{app:Tables}
+%\newgeometry{margin=0.5in}
+%\begin{spacing}{1.3}    
 
 
 
-\end{spacing}
+%\end{spacing}
 
 
-\clearpage
+%\clearpage
 \section{Appendix Figures} 
 \label{app:Figures}
 \newgeometry{margin=0.5in}
@@ -1021,6 +997,16 @@ Rub\'i Arrizaga, Damian Clarke, Crist\'obal Ruiz-Tagle
 \end{figure}
 
 
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.95]{results/descriptives/national.pdf}
+    \caption{Exposure Design to Wildfires (Distance)}
+    \label{fig:designDist}
+  \floatfoot{Notes: Large orange points represent fires, grey arrows represent wind directions (arrow heads) and velocities (length of arrow).  Shaded colours refer to the distance, in meters, from each municipality to the nearest wildfire.  This is a representative figure at a particular moment of time.  To observe how such patterns evolve over longer periods, refer to the dynamic figure: \url{http://damianclarke.net/resources/fires_and_wind_distance.gif}.}
+\end{figure}    
+
+
 %\begin{figure}[htpb!]
 %    \centering
 %    \caption{Wildfires -- Trends over time}
@@ -1040,9 +1026,9 @@ Rub\'i Arrizaga, Damian Clarke, Crist\'obal Ruiz-Tagle
 
 
 \clearpage
-\setcounter{page}{1}
-\renewcommand{\thepage}{C\arabic{page}}
-\section{Data Appendix}
+%\setcounter{page}{1}
+%\renewcommand{\thepage}{C\arabic{page}}
+%\section{Data Appendix}
 
 
 
