@@ -72,14 +72,14 @@ log using "$LOG/makeExposure.txt", text replace
 
 local delta = 30
 local firesize 25 50 75 100 125 150 175 200 250 500 0 
-local donuts 0 5
+local donuts 5 0
 
 cd "$DAT"
 unzipfile comunaBase
 foreach donut of numlist `donuts' {
     foreach farea of numlist `firesize' {        
         dis "Fire area is `farea'"
-        cd "fires"
+        cd "$DAT/fires"
         unzipfile I_2002-2003
         
         *-----------------------------------------------------------------------
@@ -90,10 +90,10 @@ foreach donut of numlist `donuts' {
             use "${DAT}/fires/I_2002-2003"
             rename CUT_2018 numeric_CUT_2018
             gen CUT_2018 = string(numeric_CUT_2018,"%05.0f")
-            keep if LENGTH_KM>=`donut'
+            *keep if LENGTH_KM>=`donut' 
+            keep if LENGTH_KM>=`donut' & LENGTH_KM<=50
             keep if Superficie>=`farea' & Superficie!=.
             
-            drop beta_radia*
             rename Lat CONAF_Lat
             rename Lon CONAF_Lon
             
@@ -218,15 +218,14 @@ foreach donut of numlist `donuts' {
             
             dis "Count file `yrminus1'-`yr'"
             count
-            drop beta_radia*
+
             append using "${DAT}/fires/I_`yr'-`yrplus1'", force
-            keep if LENGTH_KM>=`donut'
+            keep if LENGTH_KM>=`donut' & LENGTH_KM<=50
             keep if Superficie>=`farea' & Superficie!=.
         
             rename CUT_2018 numeric_CUT_2018
             gen CUT_2018 = string(numeric_CUT_2018,"%05.0f")
-            
-            drop beta_radia*
+
             dis "Count file ``yr'-yrplus1'"
             count
             rename Lat CONAF_Lat
@@ -310,10 +309,7 @@ foreach donut of numlist `donuts' {
         
             **Add previous year's overflow (fire that started year prior, but rolled over)
             append using `overflow`yr'', force
-            drop Causa_gene-Subtotal_o
-            drop Temperatur-Exposició
-            drop FID direccion POINT_X_1 POINT_Y_1 X_muni Y_muni
-            drop CONAF_Lat CONAF_Lon Topograf Pendiente betamas30 betamenos30
+            drop CONAF_Lat CONAF_Lon 
             drop DAY MON HOU HOU_R D2 D3 D4
             compress
 
@@ -357,7 +353,8 @@ foreach donut of numlist `donuts' {
             gen distancia = LENGTH_KM*1000
             preserve
             rename bearingComuna beta_grado
-            keep CUT_2018_exposure Superficie la1 lo1 beta_grado Date duration distancia 
+            keep CUT_2018_exposure Superficie la2 lo2 beta_grado Date duration distancia 
+            rename (la2 lo2) (la1 lo1) 
             rename CUT_2018_exposure CUT_2018
             rename distancia Distancia
             cap mkdir "$DAT/maps"
