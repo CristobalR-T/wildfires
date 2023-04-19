@@ -31,6 +31,7 @@
 \usepackage{rotating}
 \usepackage{dsfont}
 \usepackage{textcomp}
+\usepackage{placeins}
 
 \sectionfont{\fontsize{14}{15}\selectfont}
 \subsectionfont{\fontsize{13}{15}\selectfont}
@@ -56,13 +57,13 @@
 %-------------------------------------------------------------------------------
 \begin{document}
 %\title{\textbf{Understanding the Effects of Wildfires on Human Well-being in the Short, Medium, and Long-Term}
-\title{\textbf{Wildfires and Human Health: Evidence from 15 Wildfire Seasons in Chile}
-\thanks{We are grateful to Ignacio Fernández for exceptional research assistance. %, to XXX and YYY for in depth discussions related to data, and to ZZZ for comments and suggestions. [CONAF??]
-We gratefully acknowledge support of the Inter American Development Bank, through the project ``Implications of Climate Change and Natural Disasters in LAC''. We thank participants and organizers of a number of workshops at the Inter American Development Bank for many productive suggestions. Clarke acknowledges partial support from the Institute for Research in Market Imperfections and Public Policy, MIPP.}} %(ICS13\_002 ANID).}}
-\author{Rub\'i Arrizaga\thanks{Universidad de Santiago \href{mailto: rubi.arrizaga@usach.cl}{rubi.arrizaga@usach.cl}.}
-  \and Damian Clarke\thanks{University of Exeter, University of Chile, MIPP, and IZA \href{mailto:dclarke@fen.uchile.cl}{dclarke@fen.uchile.cl}.}
-    \and Pedro P. Cubillos\thanks{University of Chile, \href{mailto:pcubillosr@fen.uchile.cl}{pcubillosr@fen.uchile.cl}.}
-\and J. Crist\'obal Ruiz-Tagle\thanks{Department of Geography and Environment, London School of Economics and Political Science, \href{mailto:j.c.ruiz-tagle@lse.ac.uk}{j.c.ruiz-tagle@lse.ac.uk}}}
+\title{\textbf{Wildfires and Human Health: Evidence from 15 Wildfire Seasons in Chile}\thanks{We are grateful to Ignacio Fernández for exceptional research assistance. %, to XXX and YYY for in depth discussions related to data, and to ZZZ for comments and suggestions. [CONAF??]
+We gratefully acknowledge support of the Inter American Development Bank, through the project ``Implications of Climate Change and Natural Disasters in LAC''. We thank participants and organizers of a number of workshops at the Inter American Development Bank for many productive suggestions. Clarke acknowledges partial support from the Institute for Research in Market Imperfections and Public Policy, MIPP. 
+Copyright \copyright\ 2023. Inter-American Development Bank. Used by permission. The work was financed with the support of the Latin America and the Caribbean Research Network of the Inter-American Development Bank. The opinions expressed in this publication are those of the authors and do not necessarily reflect the views of the Inter-American Development Bank, its Board of Directors, or the countries they represent.}} %(ICS13\_002 ANID).}}
+\author{Rub\'i Arrizaga\thanks{Universidad de Santiago.  Contact email: \href{mailto: rubi.arrizaga@usach.cl}{rubi.arrizaga@usach.cl}.}
+  \and Damian Clarke\thanks{University of Exeter, University of Chile, MIPP, and IZA.  Contact email: \href{mailto:dclarke@fen.uchile.cl}{dclarke@fen.uchile.cl}.}
+    \and Pedro P. Cubillos\thanks{University of Chile.  Contact email: \href{mailto:pcubillosr@fen.uchile.cl}{pcubillosr@fen.uchile.cl}.}
+\and J. Crist\'obal Ruiz-Tagle\thanks{Department of Geography and Environment, London School of Economics and Political Science.  Contact email: \href{mailto:j.c.ruiz-tagle@lse.ac.uk}{j.c.ruiz-tagle@lse.ac.uk}}}
 \date{\today}
 
 \renewcommand{\thefootnote}{\arabic{footnote}}
@@ -72,7 +73,8 @@ We gratefully acknowledge support of the Inter American Development Bank, throug
 
 \begin{spacing}{1.2}
 \begin{abstract} 
-Wildfires are increasing in frequency and intensity.  We study the impact of exposure to wildfires on human health, educational outcomes and labour market outcomes, in both the short, medium and long term. Using 30 years of administrative data from Chile combined with comprehensive records of wildfire from 1991-2020 we seek to isolate both the impacts of immediate exposure to wildfire, as well as understand dynamic impacts owing to exposure at a particularly sensitive periods.  Our administrative records allow us to follow individuals in a granular way over life, and even to follow individuals across generations.  In order to isolate the effect of exposure to wildfires we combine two-way fixed effect models with local changes in wind direction.  This paper seeks to provide a more complete account of the costs of exposure to wildfires.  This is a preliminary document for submission to BID focusing principally on data and proposed methods, as well as initial descriptive results.
+Wildfires are increasing in frequency and intensity.  We study the impact of exposure to wildfires on pollutants and on human health in Chile, finding substantial impacts on both classes of outcomes. We use 
+data on 15 wildfire seasons (2004-2018) matched with granular (intra-day) records of wind direction and air quality, as well as administrative records of all hospitalizations in the country.  By combining the precise location of fires with wind direction at the moment in which fires occur, we casually estimate impacts of exposure to wildfires.  We find considerable impacts.  Exposure to a large wildfire (250 Ha) is observed to increase PM 2.5 concentrations in municipalities up to 200km from the wildfire by 10\%.  These effects have appreciable impacts on rates of hospitalization. A one standard deviation increase in exposure to large wildfires is estimated to increase rates of respiratory hospitalizations by 0.75\%, while the effect of exposure to the most extreme week of wildfires observed is estimated to increase hospitalizations by as much as a third.  Effects are found to be particularly acute for infants, and to grow with the size of the exposure (both in terms of duration and area burned).
 \end{abstract}
 
 \noindent\emph{JEL codes:} Q54; I18; R11.\\
@@ -82,7 +84,7 @@ Wildfires are increasing in frequency and intensity.  We study the impact of exp
 \setlength{\baselineskip}{1.3\baselineskip} 
 \newpage 
 \end{spacing}
-\begin{spacing}{1.3}
+\begin{spacing}{1.5}
 
 \section{Introduction}
 
@@ -94,9 +96,7 @@ For Latin-America and the Caribbean (LAC) Chapter 12 of the \cite{IPCC2022climat
 % Para ello, se podrían sobreponer datos de uso de suelo de Google Earth Engine con los datos satelitales de incendios, de manera de ver que es lo que se esta quemando.
 % Check out  landmask cover data here: https://developers.google.com/earth-engine/datasets/catalog/MODIS_006_MCD12Q1. This dataset splits land types into categories (Prachi used LC-Type1 classification with 17 categories). We can view the bands/categories here: https://developers.google.com/earth-engine/datasets/catalog/MODIS_006_MCD12Q1#bands. 
 
-In this paper we focus on the health effects potentially impacting large number of people residing in the broad geographical areas affected by the air pollution from these wildfires.\footnote{An important impact analysis, albeit beyond of the scope of this paper, would be to examine the effects on land cover burned by these wildfires. For example, the impacts on high value-added land, such as wineries and fruit plantations for exports, that are lost and burned by the flames} Particulate air pollution from wildfire smoke is known to cause significant adverse effects on human health. For example, \cite{frankenberg2005health} and \cite{jayachandran2009air} examine the large widespread fires that took place in Indonesia in 1997. Whereas \cite{frankenberg2005health} find that exposure to the air pollution from those fires had a negative  impact on the health of older adults and prime-age women, \cite{jayachandran2009air} finds that prenatal air pollution exposure, due to widespread wildfires over the course of four months, led to a 1.2 percent decrease in cohort size in Indonesia, representing 15,600 missing children.\footnote{More recent studies have found that wildfire air pollution in Indonesia decreases lung capacity \citep{Pakhtigian2020where}, that children are shorter and have lower lung capacity even many years after exposure to these fires \citep{rosales2019persistent}, and that prenatal exposure is associated with lower adult height \citep{tan2019seeking}. Moreover, \cite{mead2018impact} show that more than 60 percent of residents in Malaysia have been exposed to a harmful level of air pollution following episodes of wildfires in Indonesia and other neighboring countries.} For the United States, \cite{miller2017blowing}  estimate the effect of of PM$_{2.5}$ on mortality in the Medicare population finding that the annual mortality cost of wildfire smoke is just over \$ 6 billion.\footnote{Wildfire is just one type of disaster associated with natural hazards, and similar results have been documented in other settings, for example \citet{halliday2019vog}, examining volcanic eruptions.} 
-
-In studies for Latin-America, \citet{rocha2022winds} employ exogenous variation in wind direction in the Brazilian Amazons and find that wildfire-related air pollution leads to an increase in hospitalization rates (particularly among children and the elderly). Similarly, \cite{RangelVogl2019} employ the differential exposure to air pollution between those living in municipalities that are \textit{downwind} as compared to those living in municipalities that are \textit{upwind} of agricultural fires in Brazil. The authors find significant effects of air pollution from agricultural fires on health at birth (birthweight and prematurity), perinatal morbidity (hospital admissions) and perinatal mortality (both stillbirth and death just after birth).\footnote{Using a similar identification strategy to look at the effect of crop burning air pollution in China \cite{zivin2020unintended} find significant effects on university admission exams, and \cite{he2020straw} find significant effects on rural mortality. Moreover, \cite{Singh2022stubble} find a significant effects of crop and forest fires on the height-for-age of children less than five years old in India. Finally, for a review of the non-causal epidemiological literature linking wildfires air pollution to adverse health outcomes see \cite{reid2016critical} and \cite{cascio2018wildland}.}
+In this paper we focus on the health effects potentially impacting large number of people residing in the broad geographical areas affected by the air pollution from these wildfires.\footnote{An important impact analysis, albeit beyond of the scope of this paper, would be to examine the effects on land cover burned by these wildfires. For example, the impacts on high value-added land, such as wineries and fruit plantations for exports, that are lost and burned by the flames} Particulate air pollution from wildfire smoke is known to cause significant adverse effects on human health. For example, \cite{frankenberg2005health} and \cite{jayachandran2009air} examine the large widespread fires that took place in Indonesia in 1997. Whereas \cite{frankenberg2005health} find that exposure to the air pollution from those fires had a negative  impact on the health of older adults and prime-age women, \cite{jayachandran2009air} finds that prenatal air pollution exposure, due to widespread wildfires over the course of four months, led to a 1.2 percent decrease in cohort size in Indonesia, representing 15,600 missing children.\footnote{More recent studies have found that wildfire air pollution in Indonesia decreases lung capacity \citep{Pakhtigian2020where}, that children are shorter and have lower lung capacity even many years after exposure to these fires \citep{rosales2019persistent}, and that prenatal exposure is associated with lower adult height \citep{tan2019seeking}. Moreover, \cite{mead2018impact} show that more than 60 percent of residents in Malaysia have been exposed to a harmful level of air pollution following episodes of wildfires in Indonesia and other neighboring countries.} For the United States, \cite{moeltner2013wildfire} find that large-scale wildfires in California increase PM$_{2.5}$ pollution concentrations in distant metropolitan areas of Nevada (Reno/Sparks), and this has an impact on hospital admissions due to respiratory and cardiovascular causes. Relatedly, \cite{miller2017blowing}  estimate the effect of PM$_{2.5}$ pollution from wildfires on mortality in the Medicare population finding that the annual mortality costs of wildfire air pollution is just over US\$ 6 billion.%\footnote{Wildfire is just one type of disaster associated with natural hazards, and similar results have been documented in other settings, for example \citet{halliday2019vog} examine the health effects of air pollution due to volcanic eruptions.} 
 
 In this paper we examine the link between climate-related wildfires and the adverse effects of wildfire air pollution on human health. In particular, in this paper we estimate the impacts of wildfires on human health over the short- and mid-term for the case of Chile -- a highly vulnerable country due to increased fuel aridity of its forests, shrublands and grasslands in vast geographical areas as a consequence of climate-driven extreme heat and long lasting droughts. We use data on wildfire and health outcomes over the period of 1990 to 2018 to look at both the short- and mid-term effects of wildfire air pollution on hospital admissions and mortality.\footnote{We refer to short-term effects as those health impacts that are manifested almost contemporaneously, whereas mid-term effects as those that health impacts that are manifested soon after a wildfire event (for example, a few weeks later).}
 % On the other hand, we refer to mid- and long-term effects as those effects that are observed late in life, and that are likely a consequence of a deterioration of the stock of health capital due to wildfire smoke exposure while in the womb or very early in life. We will further explain this distinction in subsection \ref{sscn:vitalstats}.}  
@@ -105,14 +105,17 @@ In this paper we examine the link between climate-related wildfires and the adve
 
 %A naive analysis, however, may overlook that the population that are more likely to be exposed to wildfire air pollution need not be comparable to that those that are less likely to be exposed. For instance, people largely affected by wildfire air pollution tend to live in more rural areas which are oftentimes poorer, enjoy a lower health background status and tend to have more limited access to quality health care systems that would allow them to cope with adverse health shocks. Thereby, comparing those individuals that are more likely to be exposed to wildfire smoke to those of the general population may result in biased estimates of the effects of wildfire air pollution on health.\footnote{Unlike the literature in economics, the large epidemiological literature in this area ignores the geographical sorting of the population. Thus, those estimates suffer from selection bias and cannot be deemed as causal.}
 
-For identification, we rely on location- and time-specific fixed effects and model specifications with flexible interactions. Furthermore, this strategy is complemented with granular satellite-level data on wind direction at the time of the wildfire \citep{zivin2020unintended,RangelVogl2019}. Using this wind direction data, we estimate the effect of wildfire exposure on health outcomes focusing on those wildfires that are \textit{upwind} from where people live.  This identification strategy relies on the assumption that, all else equal, wind direction should not affect the health outcome variables other than via changes in exposure to the air pollution from the wildfire. That is, given the wind direction at the time of the wildfires and their exact geographical location, exposure to their associated air pollution can be considered quasi-random. 
+For identification, we rely on location- and time-specific fixed effects and model specifications with flexible interactions. Furthermore, this strategy is complemented with granular satellite-level data on wind direction at the time of the wildfire \citep{RangelVogl2019}. Using this wind direction data, we estimate the effect of wildfire exposure on health outcomes focusing on those wildfires that are \textit{upwind} from where people live.  This identification strategy relies on the assumption that, all else equal, wind direction should not affect the health outcome variables other than via changes in exposure to the air pollution from the wildfire. That is, given the wind direction at the time of the wildfires and their exact geographical location, exposure to their associated air pollution can be considered quasi-random. This identification strategy was first developed by \cite{RangelVogl2019} to examine the causal effects of air pollution from agricultural fires on health outcomes in the State of Sao Paulo, Brazil. The authors employ the differential exposure to air pollution of those fires that are \textit{upwind} -- as compared to those that are \textit{downwind}. \cite{RangelVogl2019} find significant effects of air pollution from these agricultural fires on health at birth (birthweight and prematurity), perinatal morbidity (hospital admissions) and perinatal mortality (both stillbirth and death just after birth).  Using the same identification strategy \cite{he2020straw} find significant effects of air pollution from agricultural fires on rural mortality in China, and \cite{morello2023hospitalization} find a small effect on hospitalizations due to asthma among the elderly in the Brazilian Amazons.\footnote{Also using this identification strategy \cite{graffzivin2020unintended} find significant effects of agricultural fires on university admission exams in China, and \cite{Singh2022stubble} find a significant effects of crop and forest fires on the height-for-age of children less than five years old in India.} Similarly, \citet{rocha2022winds} employ exogenous variation in wind direction across municipalities in the Brazilian Amazons. They find that wildfire-related air pollution leads to an increase in hospitalization rates, particularly among children and the elderly.\footnote{Many studies have documented an statistical association between wildfire air pollution and health. For example, \cite{reid2016critical} review the epidemiological literature documenting associations between wildfire air pollution and general respiratory outcomes, such as asthma exacerbations and chronic obstructive pulmonary disease. \cite{cascio2018wildland} updates and expands this review documenting also statistical associations of wildfire air pollution on mortality in the United States \citep{zu2016long} and Europe \citep{kollanus2017mortality}. For central Chile, \cite{ciciretti2022relationship} find an association between wildfire air pollution and emergency care visits due to respiratory problems -- specifically, bronchitis, chronic lower respiratory diseases and pneumonia -- on children less than one year old and those 1 to 4 years old.}
 
-%That is, those individuals that are equally likely to be exposed to wildfire air pollution due to their proximity to burnable lands, are differentially exposed to the air pollution from these wildfires due the quasi-randomness introduced by the exact location of the wildfire together the wind direction at the time of the wildfire.
+% IN A REVISED VERSION WE SHOULD UNDERSCORE THE CONTRIBUTIONS OF THE PAPER AND HOW THESE FILL IMPORTANT GAPS IN THE LITERATURE.
 
-In this paper we are interested on examining the health effects of exposure to ambient air pollution. To this end, we leave out of our sample those people living within a `buffer zone' of 5km from the wildfire. We do this under the assumption that, those living in such a proximity to a wildfire may experience, first-hand, the destructive consequences of the flames and smoke. Thereby, these people may not be exposed to the ambient air pollution from the wildfire, but instead, to much elevated levels of air pollution as well as other possible health stressors and harms.\footnote{In addition, those in very short proximity to wildfire may change their behaviour in such a way that it is not feasible to  construct a 'control group' for these individuals.} Moreover, when analyzing our main health outcomes, we identify those individuals that experience health problems that are due to more direct exposure to wildfires -- such as those experienced by those firefighters and/or those that experience respiratory problems due to direct exposure to active wildfires 'on-site'. To this end, our health data allows to identify the first reason for the symptoms, as assessed by health care professionals according to ICD10 codes. And for those people that experience injuries and other consequences due to external causes (ICD10 codes S00 through T88) our data allows to identify whether the reason is associated to direct exposure to smoke, fire and flames (ICD10 codes X00 through X08). Thereby, this allows to group those people into a separate category.
+\textbf{Provide snapshot of main findings...}
+
+The rest of this paper is structured as follows. We provide some brief background and contextual details in Section \ref{scn:background}.  In Section \ref{scn:data} we provide information on data sources measuring exposure to fires, pollutants, and health outcomes.  Section \ref{scn:methods} defines our design and estimation strategy, as well as assumptions required for estimates to be interpreted as causal effects.  In Section \ref{scn:results} we present results.  We conclude and discuss ongoing extensions of this working paper in Section \ref{scn:conclusion}.
 
 
 \section{Background and Context}
+\label{scn:background}
 Chile is a geographically diverse country, extending across 38 degrees in latitude, and as such is exposed to quite variable climatic and environmental conditions.  Climate zones vary from desert in the north, to glacial in the south. The country has about 16 million hectares of forest cover, with native forests composing around 85 percent of this, equivalent to 13 million hectares, and forest plantations accounting for 14 percent, or around 2.3 million hectares. %These values show the figure that the forestry sector represents in Chile.
 Given both abundant vegetation and a Mediterranean climate, the central zone of Chile is significantly exposed to risk of wildfire.  Historically, these wildfires have been mainly concentrated in the central and south-central regions of Chile, from Valparaíso to the Araucanía districts \citep{sarricolea2020recent}.\footnote{This is the most populated region in the country, concentrating 78.9 percent of the population according to censal records \citep{INE2018}.} Most of the types of land use and land cover burned in Chile are savannas, croplands, broad leaf and evergreen forests and woody savannas \citep{sarricolea2020recent}. 
 
@@ -163,8 +166,6 @@ Beyond these proximal costs of wildfires, there are considerable additional cost
 % CRT: Yo no lo pondría
 %Existen investigaciones que evidencian los efectos directos de los desastres naturales en la salud infantil, por ejemplo, que los niños perciben por hasta $3$ veces más, toda situación como los incendios, pues por un lado son afectados directamente por experiencias de muerte, de destrucción, lo que se une a la ausencia de sus padres por muerte, o la impotencia y la sensación que ellos viven a través de los mayores \citep{saul_2010}. Las reacciones de los padres y otros adultos de confianza al desastre van a influir directamente en cómo los niños ven y manejan la situación. También los miedos pueden surgir de la propia imaginación de los niños, siendo parte de cómo ellos hacen frente a lo vivido \citep{saul_2010}. De acuerdo con el informe Social protection for children at times of disaster \citep{Cepal2017} pese a que la periodicidad de las catástrofes en Latinoamérica entre la década del $90$ y el año $2010$ ha aumentado $3,6$ veces, no hay investigaciones sobre los efectos sobre la población infantil. Pero hay dos directrices que apuntan a que el número de niños y niñas afectados por desastres es eminente y progresivo, debido al aumento del número de desastres y al incremento de la población infantil \citep{Cepal2017}. En “The legacy of natural disasters: The intergenerational impact of $100$ years of disasters in Latin America” indica que los niños en el útero y los niños pequeños son los más vulnerables a los desastres naturales y sufren los efectos negativos más duraderos \citep{caruso_2017}.\\
 
-
-
 \section{Data}
 \label{scn:data} 
 We generate a week by municipality level panel covering all wildfires and hospitalizations in the country over the period of 2004-2018.  We additionally incorporate registers of population and air quality similarly at the municipality level at high temporal frequency.  Chile consists of 346 municipalities\footnote{Municipalities in Chile are the third level administrative district.  These municipalities are similar to counties, each with their own mayor and administrative bodies, and vary in size, with certain large cities containing multiple municipalities, and in rural areas generally cover multiple towns.}, and these 346 municipalities are observed over 783 weeks (15 years), resulting in a balanced panel of 270,918 observations.
@@ -191,11 +192,14 @@ We examine all hospitalizations, and also focus on specific classes of morbiditi
 %These births can be followed across time to observe their later life survival and inpatient records.  Data on all births are merged (using a masked version of the national identity number) with the hospitalization registry and the death registry.  %These registries cover all deaths and in-patient hospitalizations in the country, both in public and private health establishments. 
 %Before 2001 a considerable proportion of hospital records are missing the individual identifier.  As such, when working with hospitalization records we do not consider records prior to 2001, instead consistently working with subsets of birth cohorts which have complete hospitalization record.  For this reason, when we seek to determine impacts of exposure to fires early in life on later life health-care usage, we work with age-specific outcomes.  This follows a procedure described in \citet{Clarkeetal2022}.  For example, when considering hospitalization at age 1, we can examine this for cohorts whose hospitalizations are observed completely at this age, namely individuals born from 2001--2017.  And when considering hospitalization at age 2, we work with the sample of births from 2000-2016, and so forth for other ages. Of all births, 2,924,796 are matched to at least one hospitalization, and in total 5,654,411 hospitalizations are matched with births, implying that the average number of hospitalizations per matched birth is 1.93.  These hospitalizations cover all inpatient care provided in the country, both in public hospitals and private clinics, and include information on both the reason for hospitalization (recorded by standardized ICD-10 codes), as well as the duration of hospitalization in nights.
 
+In Table \ref{tab:sumstats}, panel A we provide summary statistics of administrative records covering all hospitalizations at the municipal by week level. These are all cast as rates per 100,000 exposed population.  For the entire population, we observe that respiratory casuse account for around 10\% of all hospitalizations (a mean of 21 hospitalization per 100,000 inhabitants in a week compared to 182 per 100,000 for all cause hospitalizations), closely followed by circulatory causes.  Rates of hospitalization are documented for a number of specific ages (infant, and over 65), and rates are observed to vary considerably by age.  Unsurprisingly, rates of hospitalization are around 4 times higher among infants than in the general population, and around 2 times higher in those aged 65 and older.  It is worth noting that in a small number of cases, not all cells have defined values of rates.  For example, among infants, less than 1\% of the cells (2455 or 270,188) have no defined rate of hospitalization, given that there are 0 populations in this particular group in a number of very small municipalities.  %As we lay out in the methods section later in this paper, we will generally weight cells by population size, so findings will not be driven by municipalities with very small 
+
 
 \begin{table}[htpb!]
     \centering
     \caption{Summary Measures of Key Dependent and Independent Variables}
     \label{tab:sumstats}
+    \scalebox{0.9}{
     \begin{tabular}{lccccc} \toprule
     & Obs.\ & Mean & Std.\ Dev. & Min. & Max. \\ \midrule
     \multicolumn{6}{l}{\textbf{Panel A: Hospitalization Measures}}\\
@@ -207,10 +211,9 @@ We examine all hospitalizations, and also focus on specific classes of morbiditi
     \multicolumn{6}{p{16.4cm}}{\footnotesize \textbf{Notes}: Observations cover municipality by week cells for the 346 municipalities and 783 weeks over the period of 2003-2018.
     Panel A refers to rates of hospitalizations per 100,000 exposed population, and are generated based on consistently applied ICD-10 codings from administrative records.  Rates are presented for the full population, as well as two particular age groups (individuals aged 0-1 year and individuals aged $\geq$ 65 years). A small number of missing observations exist for municipal by week cells where the population is zero for a given age, as in these cases population rates are undefined.
     All measures in Panel B refer to exposures to wildfires of the indicated size at a weekly level, with an exposure referring to a 6 hour period in this municipality in which it was within 200 km of a fire of the indicated size.  Downwind and upwind refer to the municipality being located downwind ($\pm$ 30 degrees), or upwind ($\pm$ 30 degrees) of the fire.  }\\  \bottomrule
-    \end{tabular}
+    \end{tabular}}
 \end{table}
 
-In Table \ref{tab:sumstats}, panel A we provide summary statistics of administrative records covering all hospitalizations at the municipal by week level. These are all cast as rates per 100,000 exposed population.  For the entire population, we observe that respiratory casuse account for around 10\% of all hospitalizations (a mean of 21 hospitalization per 100,000 inhabitants in a week compared to 182 per 100,000 for all cause hospitalizations), closely followed by circulatory causes.  Rates of hospitalization are documented for a number of specific ages (infant, and over 65), and rates are observed to vary considerably by age.  Unsurprisingly, rates of hospitalization are around 4 times higher among infants than in the general population, and around 2 times higher in those aged 65 and older.  It is worth noting that in a small number of cases, not all cells have defined values of rates.  For example, among infants, less than 1\% of the cells (2455 or 270,188) have no defined rate of hospitalization, given that there are 0 populations in this particular group in a number of very small municipalities.  %As we lay out in the methods section later in this paper, we will generally weight cells by population size, so findings will not be driven by municipalities with very small 
 
 %In general, we observe substantial variation in the number of hospitalizations, in line with variation in municipality size, with a mean of 72 people per week, but a maximum of up to 1569 hospitalization in the largest municipality by week cell.  
 %We document basic trends of these outcomes in Appendix \ref{app:Figures}.  
@@ -236,35 +239,37 @@ In Table \ref{tab:sumstats}, panel A we provide summary statistics of administra
 We access data on all wildfires occurring in Chile between the period of 2004 until 2021 from administrative records maintained by CONAF.  These data are collected and systematized by CONAF, and have been made available in a comparable way from the period of 1985 onwards. We work with the period of years necessary to match with hospital records discussed previously, and given that these data are available until the end of 2018, our final sample used in models laid out below consists of fire seasons 2004-2018.  These records contain a record of each wildfire, including information on the region, province and municipality in which it occurred, a precise geo-reference where available\footnote{This information has not been collected in precisely the same way over time.  Prior to the year 2003, this was collected using a series of IGM maps with 1:50,000 resolution, implying that fires were geo-located to within quadrants of approximately 400 hectacres, and then information was additionally recorded by CONAF to limit this to 100 hectacre areas within these quadrants.  From 2003 onwards, this information was collected exactly based on GPS measures.}%For this reason, we generally work with municipalities as the point of reference for fires.}
 , the type of land-cover affected, the duration of the wildfire, and the total area burned.  
 
-Measures of the total area burned are estimated by CONAF personnel, or in the case of large wildfires, with a magnitude of greater than 200 hectacres (hereafter Ha), these are determined based off of satellite images. Measures of total duration of fire are calculated as the time elapsed between the moment when fires were first detected, and the time at which the wildfires were reported to be extinguished.  Among all wildfires registered, the majority of wildfires are relatively small (at less than 1 hour and less than 1 Ha burned), though a long tail is observed, with a number of substantially more serious fires.  To illustrate this, descriptive histograms of the total area burned, and total duration of recorded fires are displayed in Figure \ref{fig:descfires}, where a small number of outliers have been removed from the plot (fires of $>$100 ha or $>$ 24 hours).  Appendix Figure \ref{fig:firesHours} documents similar patterns in terms of duration burned.  
-In general, over the period under study we observe some evidence of an increase in exposure to fires, particularly among larger fires.  Figure \ref{fig:firesize} plots the total number of fires reported nationally in each year between 2004-2021, over a range of fire sizes (measured by area burned).  If considering all fires of 1Ha or larger, we observe that the number of fires has increased from around 1500 per year in early 2000s, to around 2000 in the 2020s, and see similar patterns, albeit at much lower magnitudes, for fires of considerably larger sizes.  We assess empirically the importance of fires of varying sizes in the Results section of this paper.
-
-
-%In future analysis of the wildfire data we will consider wildfires of different extension and duration, which would probably lead us to focus mostly on larger and longer fires -- that is, those in the tail of the distribution  -- which are more destructive and are likely to emit considerable amounts of air pollutants. As a consequence, we would be bringing back in those observations that have been removed from Figure \ref{fig:descfires}.
 
 \begin{figure}[htpb!]
     \centering
     \caption{Wildfire Exposures by Magnitude of Fire}
     \label{fig:descfires}
     \begin{subfigure}{0.49\textwidth}
-          \includegraphics[scale=0.55]{./results/descriptives/firesHA0_10.eps}
+          \includegraphics[scale=0.5]{./results/descriptives/firesHA0_10.eps}
          \caption{$<$10 Ha}
     \end{subfigure}
     \begin{subfigure}{0.49\textwidth}
-          \includegraphics[scale=0.55]{./results/descriptives/firesHA10_100.eps}
+          \includegraphics[scale=0.5]{./results/descriptives/firesHA10_100.eps}
          \caption{[10-100) Ha}
     \end{subfigure}
 
     \begin{subfigure}{0.49\textwidth}
-          \includegraphics[scale=0.55]{./results/descriptives/firesHA100_500.eps}
+          \includegraphics[scale=0.5]{./results/descriptives/firesHA100_500.eps}
          \caption{[100-500) Ha}
     \end{subfigure}
     \begin{subfigure}{0.49\textwidth}
-          \includegraphics[scale=0.55]{./results/descriptives/firesHA500_1000.eps}
+          \includegraphics[scale=0.5]{./results/descriptives/firesHA500_1000.eps}
          \caption{[500-1000) Ha}
     \end{subfigure}
-    \floatfoot{\textbf{Notes:} Histrograms describe the number of fires registered across all records maintained by CONAF by the area which they are reported to burn.  Given the heavy left-skew of the distribution, these are displayed by area in panel (a)-(d), where panels do not have identically scaled y-axes.  These histograms are based on all fires reported at any time during the 2004-2018 fire seasons.}
+    \floatfoot{\textbf{Notes:} Histograms describe the number of fires registered across all records maintained by CONAF by the area which they are reported to burn.  Given the heavy left-skew of the distribution, these are displayed by area in panel (a)-(d), where panels do not have identically scaled y-axes.  These histograms are based on all fires reported at any time during the 2004-2018 fire seasons.}
 \end{figure}
+
+Measures of the total area burned are estimated by CONAF personnel, or in the case of large wildfires, with a magnitude of greater than 200 hectacres (hereafter Ha), these are determined based off of satellite images. Measures of total duration of fire are calculated as the time elapsed between the moment when fires were first detected, and the time at which the wildfires were reported to be extinguished.  Among all wildfires registered, the majority of wildfires are relatively small (at less than 1 hour and less than 1 Ha burned), though a long tail is observed, with a number of substantially more serious fires.  To illustrate this, descriptive histograms of the total area burned, and total duration of recorded fires are displayed in Figure \ref{fig:descfires}, where a small number of outliers have been removed from the plot (fires of $>$100 ha or $>$ 24 hours).  Appendix Figure \ref{fig:firesHours} documents similar patterns in terms of duration burned.  
+In general, over the period under study we observe some evidence of an increase in exposure to fires, particularly among larger fires.  Figure \ref{fig:firesize} plots the total number of fires reported nationally in each year between 2004-2021, over a range of fire sizes (measured by area burned).  If considering all fires of 1Ha or larger, we observe that the number of fires has increased from around 1500 per year in early 2000s, to around 2000 in the 2020s, and see similar patterns, albeit at much lower magnitudes, for fires of considerably larger sizes.  We assess empirically the importance of fires of varying sizes in the Results section of this paper.
+
+
+%In future analysis of the wildfire data we will consider wildfires of different extension and duration, which would probably lead us to focus mostly on larger and longer fires -- that is, those in the tail of the distribution  -- which are more destructive and are likely to emit considerable amounts of air pollutants. As a consequence, we would be bringing back in those observations that have been removed from Figure \ref{fig:descfires}.
+
 
 
 
@@ -329,7 +334,7 @@ In general, over the period under study we observe some evidence of an increase 
 % Se trabaja en las temporadas de incendios 2003 – 2021 con los datos entregados por CONAF, entre ellos, se cuenta con la información de localización del inicio de casi la totalidad de los siniestros, estos datos son obtenidos mediante información satelital en formato WGS 1984 UTM. Para temporadas previas, desde 1985 a 2002 se cuenta con la información, pero no con la ubicación de inicio. Existen resultados clásicos que muestran que un error de medición aleatorio de la variable independiente genera un sesgo de atenuación, por lo tanto, lo que se estimará es una cota inferior del resultado exacto. A modo de obtener una aproximación, se calculó el centroide comunal y se asume que ahí ocurrió el inicio del incendio. Evidentemente es un error de medición de la variable independiente, pero es un error aleatorio ya que se debe a que no se conoce el lugar exacto del inicio del siniestro. Para estimar el tamaño del sesgo, se realiza una estimación comparativa, entre las temporadas 2003-2021, por un lado, con los datos exactos de inicio de incendio y, por otro lado, con el centroide comunal. Así, obtenemos un punto de referencia de las diferencias.
 
 \subsection{Air Pollution, Wind direction and Meteorological Data}
-\label{sscn:airdata}
+\label{sscn:wind}
 We obtain satellite-level data on fine particulate matter, PM$_{2.5}$, from reanalysis data from the Climate Change Service of the European Centre for Medium-Range Weather Forecasts (ECMWF). In particular, the ECMWF's CAMS global reanalysis (EAC4) provides a dataset at the 0.75\textdegree $\times$ 0.75\textdegree latitude-longitude at the earth surface level (atmospheric pressure of 1000 hPa). This is roughly, a 70 $\times$ 70 km.\ grid, every three hours, for the period 2003 to 2022.\footnote{For more details, see \hyperlink{https://ads.atmosphere.copernicus.eu/cdsapp\#!/dataset/cams-global-reanalysis-eac4?tab=overview}{\textcolor{blue}{https://ads.atmosphere.copernicus.eu/cdsapp\#!/dataset/cams-global-reanalysis-eac4?tab=overview}}.}  Summary statistics for this measure are presented in Panel B of Table \ref{tab:sumstats} (measured in kg/m$^3$), with the variable having been processed to provide a weekly average for each municipality, based on the weekly average of the grid intersecting the municipality.  Note that for this measure, there are a small number of observations missing, which corresponds to a single municipality (Chilean Antarctica) over the entire period.
 
 %the network of ground-level air pollution monitoring stations (SINCA, due to it's acronym in Spanish) of Chile's Ministry for the Environment. SINCA provides accurate data on hourly-level concentrations of several criteria air pollutants, including PM$_{2.5}$, for most of the large and medium-size cities throughout Chile. However, SINCA does not provide PM$_{2.5}$ data for small size cities and localities that lack a monitoring station.
@@ -365,7 +370,7 @@ Our design seeks to estimate the causal impact of exposure to wildfires at the p
  
 \subsection{Wind Direction as a Causal Empirical Design}
 \label{sscn:design}
-To ensure that we capture \emph{exogenous} exposure to wildfire, we follow an empirical strategy previously adopted by \cite{RangelVogl2019} and also employed by \cite{zivin2020unintended} to identify the causal effects of wildfires. This strategy consists of using ground-level wind direction data to identify wildfires that are \textit{upwind} from a given municipality as well as wildfires that are \textit{downwind} from it. In this way, we estimate the effects of exposure to \textit{upwind} wildfires on the health outcomes of the population residing in each municipality, as well as documenting the considerable relevance of upwind exposure as a driver of air pollution.  
+To ensure that we capture \emph{exogenous} exposure to wildfire, we follow an empirical strategy previously adopted by \cite{RangelVogl2019} and also employed by \cite{graffzivin2020unintended} to identify the causal effects of wildfires. This strategy consists of using ground-level wind direction data to identify wildfires that are \textit{upwind} from a given municipality as well as wildfires that are \textit{downwind} from it. In this way, we estimate the effects of exposure to \textit{upwind} wildfires on the health outcomes of the population residing in each municipality, as well as documenting the considerable relevance of upwind exposure as a driver of air pollution.  
 
 %This strategy consists of using wind direction data to identify municipalities that are \textit{downwind} from a wildfire's smoke plume as well as those that are \textit{not downwind} (both, \textit{upwind} municipalities as well as 'vertical' municipalities). For each group of municipalities, and for a given wildfire, we will identify the effect of downwind/not-downwind wildfires on the health outcome. Thereby, we will use difference between our \textit{downwind} estimate with respect to the \textit{not-downwind} estimate as our estimate of the effect of wildfire on the health outcome.
 
@@ -377,7 +382,7 @@ To ensure that we capture \emph{exogenous} exposure to wildfire, we follow an em
 \begin{figure}[htpb!]
     \centering
     \vspace{1mm}
-    \includegraphics[scale=0.41]{./results/descriptives/DownwindFigure_2.png}
+    \includegraphics[scale=0.6]{./results/descriptives/DownwindFigure_2.png}
     \caption{Exposure to Wildfires}
     \label{fig:Downwind_Fig}
     \vspace{2mm}
@@ -409,120 +414,35 @@ Definitions of exposure to fire in this way are thus dynamic, as for a given fir
     \floatfoot{\textbf{Notes: }}
 \end{figure}    
 
+\subsection{Further Design Considerations}
+\label{sscn:Outcomes_design}
 
+In this paper we are interested on examining the health effects of exposure to ambient air pollution. To this end, we leave out of our sample those people living within a `buffer zone' of 5km from the wildfire. We do this under the assumption that, those living in such a proximity to a wildfire may experience, first-hand, the destructive consequences of the flames and smoke. Thereby, these people may not be exposed to the ambient air pollution from the wildfire, but instead, to much elevated levels of air pollution as well as other possible health stressors and harms.\footnote{In addition, those in very short proximity to wildfire may change their behaviour in such a way that it is not feasible to  construct a 'control group' for these individuals.} Moreover, when analyzing our main health outcomes, we identify those individuals that experience health problems that are due to more direct exposure to wildfires -- such as those experienced by those firefighters and/or those that experience respiratory problems due to direct exposure to active wildfires 'on-site'. To this end, our health data allows to identify the first reason for the symptoms, as assessed by health care professionals according to ICD10 codes. And for those people that experience injuries and other consequences due to external causes (ICD10 codes S00 through T88) our data allows to identify whether the reason is associated to direct exposure to smoke, fire and flames (ICD10 codes X00 through X08). Thereby, this allows to group those people into a separate category.
 
 
 \subsection{Empirical Specifications}
 \label{sscn:empirics}
-BRING ALL EQUATIONS HERE AND ELIMINATE 
-
-
-
-
-\subsection{Two Way Fixed Effects Model in a Municipal-level Panel}
-\label{sscn:comunatime}
-We construct a municipal-level panel where, for each of Chile's 346 municipalities, we observe a number of outcomes at the weekly and monthly level, over a maximum period of 1992-2019.  We begin by estimating the following two-way, or higher-order, fixed effect model:
+\subsubsection{Contemporaneous Effects}
+We take this design to data in the following way.  To begin, we estimate contemporaneous models which estimate the impact of exposure to upwind and downwind fires on a number of health and environmental outcomes.  Specifically, we estimate:
 \begin{equation}
-\label{eq:TwoWayFE}
-Y_{mt}=\alpha + \beta\text{Wildfire}_{mt} + \varphi_m + \lambda_t + \bm{X}'_{mt}\bm{\gamma} + \varepsilon_{imt},
+\label{eqn:static}
+y_{mrt}=\alpha + \beta\text{Upwind}_{mt} + \gamma\text{Downwind}_{mt} + \varphi_m + \mu_r\cdot\lambda_t + \bm{X}'_{mt}\bm{\Gamma} + \varepsilon_{rmt},
 \end{equation}
-where $Y_{mt}$ refers to health or socioeconomic outcomes in municipality $m$ in week or month $t$.  Fully saturated time fixed effects are included as $\lambda_t$ and full municipality-level fixed effects are included as $\varphi_m$ to capture aggregate factors which are invariant across space (seasonality, for example), and factors which are municipal-invariant across times (geography, for example).  A vector of time-varying controls $\bm{X}'_{mt}$ is included which seeks to capture relevant factors which vary by municipality and time, for example exposure to seasonal infectious disease, temperature and precipitations. \footnote{We pay particular attention for these controls not to be affected by the wildfire itself nor correlated with factors driving the ignition and intensity  of wildfires.}  We estimate a series of models graduating the controls to capture potentially more relevant omitted factors in (\ref{eq:TwoWayFE})  In the most demanding specifications this will additionally include region-by-time trends for each of Chile's 16 regions, and even region-by-week fixed effects, to capture factors such as time-varying changes in demographic patterns, epidemiological factors, and so forth.\footnote{Regions in Chile are the second level administrative division, and consist of multiple municipalities. Municipalities are the third level administrative division. There are 16 regions, and 346 municipalities in the country, and each municipality is entirely contained in a single region.} 
+where $y_{mrt}$ refers to outcomes in municipality $m$, in region $r$ and in week $t$.  These outcomes are regressed on the number of upwind fires and the number of downwind fires occurring in that particular week.  The coefficients of interest $\beta$ captures the marginal effect of exposure to upwind wildfires conditional on any exposure to downwind wildfires, and similarly, $\gamma$ captures the marginal effect of exposure to downwind fires conditional on any upwind exposures.  We capture any municipal-specific time invariant factors such as geographic location as $\varphi_m$.  Importantly, we consistently include region by week fixed effects, here $\mu_r\cdot\lambda_t$.  This is key to the design, as it allows us to isolate exposure to marginal upwind or downwind fires when comparing to municipalities within the same region and time period.  Finally, in certain specification we include time-varying controls capturing conditions such as temperature and humidity. The term $\varepsilon_{rmt}$ is a stochastic error term, and standard errors are consistently clustered in two ways, by municipality and week.  Two-way clustering is appropriate given that we have a large sample in both dimensions suggesting asymptotic assumptions are likely met \citep{CameronMiller2015}.  Clustering by municipality allows for arbitrary correlations of shocks within municipalities across time, while clustering by week allows for arbitrary correlations between shocks over space in a particular moment of time. 
 
-The principal independent variable Wildfire$_{mt}$ captures exposure to wildfire in municipality $m$ and time period $t$.
- % CRT Note: I commented the paragraph below because I don't think we are doing this approach anymore.
-% In principal models, this measures the intensity of wildfires, as measured by the number of fires in a time-by-municipality cell. In alternative models we will use a binary classification (1 if exposed to at least one wildfire, 0 otherwise), and alternative continuous measures such as the total amount of hectares burned, and the total duration of all fires in the municipality. 
-Outcome variables $Y_{mt}$ include rates of hospitalization and mortality rates. When examining rates of hospitalization and mortality, we consider both all cause morbidity and mortality, and causes plausibly related to exposure to wildfire air pollution, such as respiratory and cardiovascular. Models are consistently weighted by municipal population, and standard errors are clustered by municipality to capture potential correlations in error terms within municipalities across time.
+Outcomes examined for equation \ref{eqn:static} are, firstly, rates of ambient PM$_{2.5}$, and secondly, rates of hospitalization for a range of morbidities and demographic groups.  In the case of PM$_{2.5}$, rather than estimate at the weekly level which is likely to considerably smooth sharp spikes in contaminants closely occurring around fires, we estimate specifications at a daily level, where all other details follow equation \ref{eqn:static}. In the case of models for hospitalization rates, specifications are consistently weighted by municipal population to ensure that results are not driven by municipalities with very small populations where small changes in the number of events can lead to very large changes in rates.
 
-Our model can be interpreted as a 'reduced-form' type model. On the other hand, a full 'two-stage' type model would estimate, in a first-stage, the effects of wildfire exposure on ambient air pollution concentrations. This would allow us to obtain a measure of wildfire-driven air pollution. And then, a 'second-stage', would estimate the effect of wildfire-driven air pollution on health outcomes. However, due to the coarse spatial granularity of the available data for PM$_{2.5}$ we abstract from this 'two-stage' approach throughout most of our analysis.\footnote{Nonetheless, in section \ref{sscn:results_pm25} below we present visual results of a first-stage type regression of wildfire exposure on ambient PM$_{2.5}$ concentrations. This estimates the $\delta$ parameter in the following regression:
+These models provide the reduced form effect of wildfire exposure on the outcomes considered.  Alternatively, one could estimate two stage models where wildfire exposure is used to instrument pollution, and the instrumented effect of pollution is then used in a second stage regression of hospitalizations on pollutants.  Currently, we present reduced form and first stage regressions separately, though note that these can be scaled to give the equivalent two-stage least square estimates.
 
-\begin{equation}
-\label{eq:FirstStagePM}
-\text{PM$_{2.5}$}_{mt}=\rho + \delta\text{Wildfire}_{mt} + \vartheta_m + \theta_t + \bm{X}'_{mt}\bm{\zeta} + \epsilon_{imt},
-\end{equation}
-} 
 
 \subsubsection{Persistent Effects}
 \label{sscn:comunatime_p}
-Our parameter of interest $\beta$ in equation \ref{eq:TwoWayFE} above captures the contemporaneous effect of wildfires on outcome $Y_{mt}$.  However, in certain cases impacts may persist for more than a single period of time $t$, and as such we also estimate the dynamic version of (\ref{eq:TwoWayFE}) as:
+Our parameter of interest $\beta$ and $\gamma$ in equation \ref{eqn:static} above captures the contemporaneous effect of wildfires on outcome $y_{mrt}$.  However, in certain cases impacts may persist for more than a single period of time, or not appear instantaneously, and as such we also estimate the dynamic version of (\ref{eqn:static}).  Specifically, this is:
 \begin{equation}
-\label{eq:TwoWayDynamic}
-Y_{mt}=\alpha + \sum_{j=-J}^K\delta^{j}\text{Wildfire}_{m,t+j} + \varphi_m + \lambda_t + \bm{X}'_{mt}\bm{\gamma} + \varepsilon_{imt}.
+\label{eq:dynamic}
+y_{rmt}=\alpha + \sum_{j=-J}^K\beta^{j}\text{Upwind}_{m,t+j} + \sum_{j=-J}^K\gamma^{j}\text{Downwind}_{m,t+j} + \varphi_m + \lambda_t + \bm{X}'_{mt}\bm{\gamma} + \varepsilon_{rmt},
 \end{equation}
-Here, all details follow those laid out previously in (\ref{eq:TwoWayFE}), however instead of (only) considering the instantaneous impact of wildfire air pollution, we also consider $J$ lag and $K$ lead effects.  The $J$ lags refer to impacts of having been previously exposed to the air pollution from a wildfire, as, for example, exposure to a wildfire one week previously may be reflected in hospitalization rates if individuals remain hospitalized for an extended period. The $K$ leads can be viewed as a partial test of our identifying assumptions. As there can be no impact of \emph{future} exposure to wildfire on contemporary health outcomes. If our model is correctly specified, these terms associated to the $K$ leads should not be observed to be significantly different to zero. This is a test in the lines of \citet{Granger1969} causality. 
-
-
-% $X_{mdt}$ denotes a vector of municipality-, district-, time-varying controls. These include prevalence of respiratory viruses, weather variables (a flexible polynomial of temperature and precipitations), socio-economic factors (municipality-specific GDP per-capita, poverty and unemployment indices, etc.). 
-%$\alpha_{md}$ denotes municipality-district-specific fixed effects, capturing any time-invariant characteristic of municipality $m$ that may affect the health outcome $Y_{imdt}$ (E.g., differential municipality-specific capacity to cope with adverse health shocks).
-%$\lambda_{t}$ denotes time-specific fixed effects, capturing any municipality-invariant feature that occurred during the same period of time $t$ (e.g., widespread seasonal health shocks). 
-%$\varphi_{dy}$ denotes district$\times$year fixed effects, capturing any unobserved effect taking place in a given health district $d$, during year $y$ (e.g., opening of a new hospital and/or health care facility serving a given district). 
-
-%Alternatively, we could substitute $\varphi_{dy}$ for one of the following terms:
-%$\varphi_{de}$ (district$\times$season fixed effects),  
-%$\varphi_{dt}$ (district$\times$month fixed effects),  
-%$\varphi_{my}$ (municipality$\times$year fixed effects), or
-%$\varphi_{me}$ (municipality$\times$season fixed effects)
-
-% NB: 'District' se refiere a los servicios de salud de chile (son 23 aprox?). 
-% Otra opcion seria hacer todo a nivel de municipalidad y de mes (i.e. \varphi_{mt}), pero creo que se corre el riesgo de overcontrolling y perder (de cierta manera) la posibilidad de explicar una componente importante de variabilidad en el outcome de salud.  
-
-%Alternatively, if we would like to examine the cumulative effect of Wildfires, say over the last $S$ weeks/days, we may want to estimate the following equation (where $S$ may refer to 7, 15 and 30 days, or 2 and 4 weeks): 
-
-%\begin{equation}
-%Y_{imdt}=\beta_{S} \times S^{-1}\sum_{s=1}^{S} Wildfire_{md(t-s)}+X'_{mdt}\gamma+\alpha_{md}+\lambda_{t}+\varphi_{dy}+\epsilon_{imt}
-%\label{eq:TwoWayFE_Cum}
-%\end{equation}
-\subsection{Wind Direction in a Two-Way Fixed Effects Model}
-\label{sscn:wind}
-
-
-
-
-To implement this identification strategy, we estimate the following equation:
-\begin{equation}
-\label{eq:TwoWayFE_Wind}
-Y_{mt}=\alpha + \beta\text{Wildfire}_{mt}\times\mathds{1}\{\text{Upwind}_{mt}\} + \varphi_{m} + \lambda_t + \bm{X}'_{mt}\gamma + \varepsilon_{mt}
-\end{equation}
-where, for a given wildfire within a 50 kilometers from municipality $m$ on period $t$, $\mathds{1}\{\text{Upwind}_{mdt}\}$ takes on value equal to $1$ if a wildfire is \textit{upwind}, and takes on value equal to $0$ if a wildfire is \textit{downwind}.\footnote{Alternatively,  $\mathds{1}\{Upwind_{mdt}\}$ could be defined as taking on value equal to $0$ when a wildfire is simply \textit{not-upwind} from a municipality $m$}.  The equation defined in (\ref{eq:TwoWayFE_Wind}) can be viewed as the exogeneized version of (\ref{eq:TwoWayFE}), where all details, apart from the use of the Upwind variation, follow those in (\ref{eq:TwoWayFE}). Similarly, we implement a version of (\ref{eq:TwoWayDynamic}) accounting for the upwind variation.
-
-
-
-%For analyses at the frequency of 6-hour by municipality cells (analyses of pollutant concentrations), these data are used directly.  
-For health  outcomes analyses, these are conducted at a municipality-by-week level. For these outcomes, exposure to the wildfire is measured as the total number of 6-hour periods for which a municipality has a wildfire that is upwind, downwind, or non-upwind. Thus, for example, a municipality in which a wildfire burned for 48 hours and that this wildfire was upwind for five 6-hour blocks and it was non-upwind for three 6-hour blocks, it would be treated as exposed to upwind wildfires for five periods. In this way, upwind and downwind measures capture independent exposure to fires, while also capturing dose-responses in which municipalities exposed to wildfires for a greater period are classified as having a higher dose.  In all specifications, both exposure to upwind and downwind fires are included together as independent variables, such that upwind exposure is estimated \emph{conditional} on any downwind exposure owing to changes in wind direction.  
-%ds for which a municipality is upwind, downwind, or non-upwind from a fire.  Thus, for example, a municipality in which a fire burned for 48 hours (eight 6 hour blocks), 4 of which it was upwind and 4 of which it was non-upwind, it would be treated as exposed (upwind) to 4 periods of wildfire.  And similarly, a municipality in which a fire burned for 48 hours, and in each of the eight 6 hour blocks was downwind from the fire, this municipality would be classified as having 0 upwind time periods of exposure, and 8 downwind time periods of exposure.  In this way, upwind and downwind measures capture independent exposure to fires, while also capturing dose responses in which municipalities exposed to fires for a greater period are classified as having a higher dose response.  In all specifications, both upwind and downwind exposure are included together as independent variables such that downwind exposure is estimated conditional on any upwind exposure owing to changes in wind direction.  
-
-%\textit{Reduced form equation}
-%\[Health_{ict}=\beta Wildfires_{ct}+X'_{ict}\gamma+\alpha_c+\alpha_t+\alpha_{ct}+\epsilon_{ict}\]
-
-%where $Health_{ict}$ refers to the health outcome of individual $i$
- %in municipality $c$ on period $t$, $Wildfires_{ct}$ denotes exposure to wildfires by municipality $c$ on period $t$ \footnote{for calculating this exposure we'll be using wind speed and wind direction data so that to calculate geographical areas downwind from a wildfire.},  $X$ denotes a vector of controls,  $\alpha_c$ denotes a municipality-specific fixed effect, $\alpha_t$ denotes a time-specific fixed effect, $\alpha_{ct}$ denotes a municipality-time fixed effect, and 
- %$\epsilon_{ict}$ denotes an idiosyncratic error term 
- 
-%\textit{Two-stage least square strategy for Air Pollution}
- 
-%\[AirPollution_{ct}=\pi Wildfires_{ct}+X'_{ict}\omega+\alpha_c+\alpha_t+\alpha_{ct}+\varepsilon_{ict}\]
-%\label{eq:firststg}
-
-%\[Health_{ict}=\delta AirPollution_{ct}+X'_{ict}\theta+\alpha_c+\alpha_t+\alpha_{ct}+\upsilon_{ict}\]\label{eq:secondstg}
-%where $\delta$ captures the effect of wildfire-driven air pollution on the health outcome.
-
-% CRT Note: I'm commenting this entire section because it will not enter the IDB working paper version.
-%\subsection{Estimating Short, Medium and Long-Term Impacts Based on Individual-Level Exposure}
-%The design laid out above allows us to isolate the impacts of wildfire in each municipality on average outcomes in the relatively short term. However it will not allow us to capture possible scarring effects of wildfire air pollution on the 'stock' of health, which would appear over the long run. 
-%For this reason, we implement a second design. The benefit of this design is that, for each individual birth $i$ we can observe individual-level exposure to wildfire air pollution, and follow the individual across his or her entire life (up to the end of the sample period). Thus, observing health at birth, hospital use during life, survival status at each point in time, and -- in cases where females go on to have a future birth -- observing the health of their future children at birth.  
-
-%This design consists of estimating models following:
-%\begin{equation}
-%\label{eq:individual}
-%Y_{imbt}=\alpha + \beta\text{Wildfire}_{mb} + \varphi_m + \mu_b + \lambda_t + \bm{X}'_{imb}\bm{\gamma} + \varepsilon_{imbt},
-%\end{equation}
-%for each individual $i$, born in municipality $m$, birth cohort $b$.  Outcomes are observed at time $t$, where outcomes refer to measures observed over the life-course of all individuals.  Here, exposure to wildfire air pollution will be captured by Wildfire$_{mb}$ and refers to the same measures defined in section \ref{sscn:comunatime}, however explicitly capturing exposure just prior to or soon after birth.\footnote{At this point, Wildfire$_{mb}$ is loosely defined as exposure to wildfire air pollution over the period of time preceding and soon after birth (say, over the third trimester of pregnancy and during the months/trimesters and first year of life). This will be clarified in subsequent versions of this draft paper.} Individual level controls $\bm{X}_{imb}$ can capture factors such as individual $i$ mother's and father's education and their age at $i$'s birth. Moreover we will control for  fixed effects capturing general temporal effects related to outcomes over time, $\lambda_t$, or over birth cohort, $\mu_b$, or general differences across municipalities within the country, $\varphi_m$.
-
-%Outcomes $Y_{imbt}$ will be measured over the life of individuals across a number of domains.  First, we will consider health at birth, with measures such as birth weight, gestational length, an indicator for low birth weight, and an indicator for prematurity. This will allow us to test if -- at an individual level -- we see immediate impacts of wildfire air pollution exposure on health during the period of time preceding and closely following birth. We expect that these results mimic those from the \textit{static} analysis in subsection \ref{sscn:comunatime}.
-
-%In this second design, we will then examine whether exposure to wildfire air pollution soon before and after birth has any impact of later-life inpatient hospitalization and mortality, at ages $\in\{1,\ldots,25\}$ for all cause morbidity/mortality, and for morbidities related to respiratory causes.  Finally, we will consider whether these exposures can impact future female fertility, and the health of \emph{future} generations among women affected by wildfire air pollution during their own birth, where $Y_{imbt}$ measures later life fertility, and the same health measures at birth, but of babies born to those females who were exposed to fires soon before and soon after their own birth.
-
-% CRT Note: I'm leaving this paragraph below as 'commented' because of the reviewer's comment/criticism about how to interpret downwind exposure.
-% As laid out in section \ref{sscn:wind}, we will additionally combine these models with a strategy which seeks to use exogenous variation in exposure owing to wind direction, estimating individual-level specifications analogous to (\ref{eq:TwoWayFE_Wind}).
+where all  details follow those laid out previously in (\ref{eqn:static}), however instead of (only) considering the instantaneous impact of wildfire air pollution, we also consider $J$ lag and $K$ lead effects.  The $J$ lags refer to impacts of having been previously exposed to the air pollution from a wildfire, as, for example, exposure to a wildfire one week previously may be reflected in hospitalization rates if individuals remain hospitalized for an extended period. The $K$ leads can be viewed as a partial test of our identifying assumptions. As there can be no impact of \emph{future} exposure to wildfire on contemporary health outcomes, conditional on current and prior exposures. If our model is correctly specified, these terms associated to the $K$ leads should not be observed to be significantly different to zero. This is a test in the lines of \citet{Granger1969} causality. 
 
 
 
@@ -531,7 +451,7 @@ For health  outcomes analyses, these are conducted at a municipality-by-week lev
 
 \subsection{Impacts of Wildfire on PM$_{2.5}$}
 \label{sscn:results_pm25}
-A first key consideration is whether this design to estimate exposure to wildfires actually captures true exposure to contaminants.  For this reason, we first estimate equation XXXX where the outcome consists of PM$_{2.5}$ concentrations.  Descriptively, it appears clear that large wildfires are important drivers of contaminants.  Figure \ref{fig:PM25} presents a descriptive plot of mean rates of ambient PM$_{2.5}$ nationwide in Chile by day over the period of 2003--2021.  While there is clear cyclical variation in line with temporal patterns in which PM$_{2.5}$ concentrations are substantially higher in winter than summer, key sharp spikes are observed during summer months each year.  The most notorious of these are indicated with red vertical lines (slightly shifted so as not to obscure the spikes), and are observed surrounding large wildfires, or series of megafires.  For example, the wildfires of 2017 are associated with mean contaminants which are an entire order of magnitude higher than is standard in summer months, and rates of PM$_{2.5}$ concentrations around 4 times higher than winter peaks.
+A first key consideration is whether this design to estimate exposure to wildfires actually captures true exposure to contaminants.  For this reason, we first estimate equation \ref{eqn:static} where the outcome consists of PM$_{2.5}$ concentrations.  Descriptively, it appears clear that large wildfires are important drivers of contaminants.  Figure \ref{fig:PM25} presents a descriptive plot of mean rates of ambient PM$_{2.5}$ nationwide in Chile by day over the period of 2003--2021.  While there is clear cyclical variation in line with temporal patterns in which PM$_{2.5}$ concentrations are substantially higher in winter than summer, key sharp spikes are observed during summer months each year.  The most notorious of these are indicated with red vertical lines (slightly shifted so as not to obscure the spikes), and are observed surrounding large wildfires, or series of megafires.  For example, the wildfires of 2017 are associated with mean contaminants which are an entire order of magnitude higher than is standard in summer months, and rates of PM$_{2.5}$ concentrations around 4 times higher than winter peaks.
 
 \begin{figure}[ht!]
     \centering
@@ -546,45 +466,52 @@ A first key consideration is whether this design to estimate exposure to wildfir
 %Figure \ref{fig:firstStage} below presents predicted PM$_{2.5}$ concentrations ($\widehat{PM}_{2.5}$, as in equation \ref{eq:FirstStagePM}) driven by exposure to wildfires for different wildfire size. The figure shows that wildfire upwind and downwind exposure drives differential levels of PM$_{2.5}$ concentrations. Moreover, our estimated PM$_{2.5}$ for downwind wildfire is statistically not different from zero, meaning that downwind wildfires do not significantly generate ambient PM$_{2.5}$.  
 
 
-We estimate this relationship formally in Figure \ref{fig:firstStage}.  Here we present a series of parameter estimates and their corresponding 95\% CIs for the coefficients $\beta$ (solid red line) and $\gamma$ (dashed blue line) from equation XXX.  In this case, upwind and downwind are estimated based on a range of fires as indicated on the x-axis, namely all fires of 0 Ha or above, all fires of at least 50 Ha or above, up to all fires of at least 250 Ha or above (in increments of 50 Ha). Sets of coefficients on upwind and downwind are estimated in a single model for each fire size plotted in the figure.  In all specifications, we observe clear impacts of exposure to wildfires on ambient concentrations of PM$_{2.5}$.  What's more, we observe exposure to upwind fires produces large increases in contaminants, while exposure to downwind fires produces small increases, which are often not statistically distinguishable from 0. This suggests validation of the exposure design....  The impact of wildfires on [BY SIZE]...
+We estimate this relationship formally in Figure \ref{fig:firstStage}.  Here we present a series of parameter estimates and their corresponding 95\% CIs for the coefficients $\beta$ (solid red line) and $\gamma$ (dashed blue line) from equation \ref{eqn:static}.  In this case, upwind and downwind effects are estimated based on a range of fires as indicated on the x-axis, namely all fires of 0 Ha or above, all fires of at least 50 Ha or above, up to all fires of at least 250 Ha or above (in increments of 50 Ha). Sets of coefficients on upwind and downwind are estimated in a single model for each fire size plotted in the figure.
 
-
+In all specifications, we observe clear impacts of exposure to wildfires on ambient concentrations of PM$_{2.5}$.  What's more, we observe exposure to upwind fires produces large increases in contaminants, while exposure to downwind fires produces small increases, which are often not statistically distinguishable from 0. This suggests validation of the exposure design insofar as municipalities which are arguably similar receive remarkably different exposures to contaminants of wildfires owing to the wind direction at the particular moment of the fire. The impact of wildfires is estimated to vary considerably by the size of fires considered.  When all fires are considered (estimate at 0 on the x-axis), we see significant but relatively small impacts of the exposure to a single upwind wildfire on PM$_{2.5}$.  Point estimates in this case are at around 2$\times10^{-10} $kg/m$^3$, which is around 1\% of a standard deviation of PM$_2.5$ concentrations in the period under study (refer to Table \ref{tab:sumstats}).  However, impacts increase substantially as only larger fires are considered.  For fires of 100 Ha or above, an additional exposure is estimated to increase ambient contaminants by around 10\% of a standard deviation (2$\times10^{-9}$ kg/m$^3$), with estimated effect sizes observed to grow nearly monotonically as successively larger fires are considered.  In the case of downwind exposures, we observe that across the board null effects are observed, though these move to be marginally significant when considering very large fires, consistent with the fact that very larger smoke plumes may impact nearby municipalities even if fires are located downwind.
 
 \begin{figure}[htpb!]
     \caption{Exposure to Wildfires and PM$_{2.5}$}
     \label{fig:firstStage}
     \centering
     \includegraphics{./results/figures/exposurePM25.pdf}
-    \floatfoot{Notes: Each coefficient and confidence interval presents the impact of regression where airborne PM 2.5 concentrations are regressed on the number of wildfires which are \textit{upwind} (red solid line) and \textit{downwind} (blue dashed line) from a given municipality.  Observations consist of municipality cells in each 6 hour block occurring from 2002 to 2021 (19,xxx,xxx observations).  Each specification includes full municipal and hour$\times$day$\times$month$\times$year fixed effects, and the definition of the independent variable is based on exposure to wildfires of the size indicated on the x-axis or generated. 95\% confidence intervals are presented based on standard errors clustered by municipality.}
+    \floatfoot{Notes: Each coefficient and confidence interval presents the impact of regression where airborne PM 2.5 concentrations are regressed on the number of wildfires which are \textit{upwind} (red solid line) and \textit{downwind} (blue dashed line) from a given municipality.  Observations consist of municipality cells in each 6 hour block occurring from 2002 to 2021 (18,147,000 observations).  Each specification includes full municipal and hour$\times$day$\times$month$\times$year fixed effects, and the definition of the independent variable is based on exposure to wildfires of the size indicated on the x-axis or generated. 95\% confidence intervals are presented based on standard errors clustered by municipality.}
 \end{figure}
 
 
-\subsection{Static and Dynamic Two-way Fixed Effect Models}
-\label{scn:results_2wayFE}
-Indeed, the existing literature find no statistically significant effects of fire air pollution prior to controlling for wind transport of pollutants and identifying populations \textit{upwind} vs. \textit{downwind} from burning fires. \citep{RangelVogl2019,rocha2022winds,he2020straw,zivin2020unintended}.
+%\subsection{Static and Dynamic Two-way Fixed Effect Models}
+%\label{scn:results_2wayFE}
+%Indeed, the existing literature find no statistically significant effects of fire air pollution prior to controlling for wind transport of pollutants and identifying populations \textit{upwind} vs. \textit{downwind} from burning fires. \citep{RangelVogl2019,rocha2022winds,he2020straw,graffzivin2020unintended}.
 
 \subsection{Impacts on Inpatient Hospitalizations}
 \label{scn:results_hosp}
+We now turn to consider the impacts of exposure to wildfires on health outcomes as measured by inpatient hospitalizations.  In Table \ref{tab:RFhosp} we present results for equation \ref{eqn:static} considering all cause hospitalizations Panel A, and hospitalizations for Respiratory causes only (ICD codes J00-J99) in panel B.  Each column considers separate independent variables based on the total number of fires of at least the size indicated in column headers.  For example, column 1 uses as dependent variables the number of upwind and downwind fires of at least 50 Ha which a given municipality is exposed to, and similarly in other columns with fires of larger dimensions.
 
 %THESE TABLES ARE NOT IN GIT!
 \begin{table}[htpb!]
     \caption{Effects of Wildfire Exposure on Hospitalizations, by Fire Size}
-    \label{tab:RFhospAge}
+    \label{tab:RFhosp}
     \centering
     \begin{tabular}{lcccc} \\ \toprule
     & 50 Ha & 100 Ha & 200 Ha & 500 Ha \\ 
     & (1) & (2) & (3) & (4) \\ \midrule
-    \multicolumn{5}{l}{\textbf{All Cause Hospitalizations}}\\
+    \multicolumn{1}{l}{\textbf{Panel A: All Cause Hospitalizations}}&&&&\\
     \input{results/tables/RFhosp_all.tex} 
-    \midrule \\
+    \midrule 
       & 50 Ha & 100 Ha & 200 Ha & 500 Ha \\ 
     & (1) & (2) & (3) & (4)\\ \midrule
-    \multicolumn{5}{l}{\textbf{Respiratory Hospitalizations}}\\
+    \multicolumn{5}{l}{\textbf{Panel B: Respiratory Hospitalizations}}\\
     \input{results/tables/RFhosp_resp.tex} 
     \bottomrule
-    \multicolumn{5}{p{11.6cm}}{{\footnotesize \textbf{Notes}: Sample consists of municipality by week cells between 2004-2019.  All specifications include time (week by year) and space fixed effects (municipality and region by week by year).  Column headers indicate exposure to fires greater than specific sizes.  All observations are weighted by municipality population.  Standard errors clustered by municipality are listed in parentheses.   $^{*}\text{p}<0.10$, $^{**}\text{p}<0.05$, $^{***}\text{p}<0.01$.}}
+    \multicolumn{5}{p{12.8cm}}{{\footnotesize \textbf{Notes}: Sample consists of municipality by week cells between 2004-2019.  All specifications include time (week by year) and area fixed effects (municipality and region by week by year).  Column headers indicate exposure to fires greater than specific sizes.  All outcomes are cast as rates per 100,000 population considering all ages, with dependent variable means listed in Table footers.  All observations are weighted by municipality population.  Standard errors clustered by municipality and week are displayed in parentheses.   $^{*}\text{p}<0.10$, $^{**}\text{p}<0.05$, $^{***}\text{p}<0.01$.}}
     \end{tabular}
 \end{table}
+
+In panel A, while estimated effects of exposure to upwind fires are positive, effects are not statistically distinguishable from zero even in the case of very large fires of 500 Ha and above.  Given that all cause hospitalization includes many hospitalizations which cannot conceivably be affected by contaminant exposure (refer to Appendix Table \ref{tab:sumcauses} for a description of all top-level ICD-10 classifications), this is likely not surprising, as effects in affected morbidity classes will be diluted by noise in other non-affected classes.  The total effect sizes in this case are relatively moderate.  For example, considering (insignificant) effect sizes, a 1 standard deviation increase in exposure to 50 Ha wildfires would increase rates of hospitalization by less than 0.05\% (0.035$\times$3.1/181.9), while similar 1 standard deviation increases in fires of larger sizes are estimated to increase rates of hospitalization by no more than 0.16\% (corresponding to fires of 500Ha or larger; all standard deviation increases refer to values in Table \ref{tab:sumstats}).  Turning to effects related to causes more sensitive to wildfires, panel B estimates impacts of exposition on hospitalizations specifically for respiratory causes.  Here we observe that upwind fire exposure consistently increases rates of hospitalization, and these effects are statistically distinguishable from zero when considering large fires.  In the case of fires of 500Ha or above, we estimate that an additional upwind fire during the week increases rates of hospitalization for respiratory causes by 0.109 per 100,000 residents.  When expressed in terms of a 1 standard deviation movement in upwind fires, this effect is equivalent to a 0.75\% increase in rates of hospitalization across all ages (0.109$\times$1.45/21.284). While these results may not sound so large, consider that the most extreme municipality$\times$week cell exposure was 63 four hour periods during the week (consistent with multiple large wildfires burning all week).  For a municipality with such an extreme exposure, the linear marginal effects suggest impacts of up to a 33\% increase in hospitalizations (0.109$\times$63/21.284). In general, and in line with results from Figure \ref{fig:firstStage}, we observe no impact of exposure to downwind fires, which is consistent with the fact that there is no observed impact on pollutants when fires are downwind.
+
+
+
+These results are presented for individuals of all ages, though extant evidence from both environmental and other literatures makes clear that certain groups of individuals are more exposed to health shocks than others \citep{OgasawaraYumitori2019,UNICEF2021,Almondetal2018}.  Results are presented by age in Table \ref{tab:RFhospAge} considering impacts across age groups.  Panel A considers ages which are potentially more exposed (infants and young children, and individuals aged 65 and above), while panel B considers groups which are likely less sensitive (older children and younger adults).  Models in Table \ref{tab:RFhospAge} follow those in Table \ref{tab:RFhosp}, in the interests of space considering fires of 100 Ha or larger or fires of 250 Ha or larger.  In this case, in particular for individuals age between 0 and 1, we observe significant effects of exposure to upwind fires, \emph{even} when considering all cause mortality.  Here for infants, we observe that exposure to a single additional period of upwind exposure increases rates of hospitalization by 1.2-1.4 per 100,000, or around a 0.6\% increase in total hospitalizations. As in results noted in Table \ref{tab:RFhosp}, we observe no impact of exposure to downwind fires.  Results appear largely concentrated among infants, with no significant results observed, even among older adults.  Appendix Figures \ref{fig:hospRF_byAge_upwind} (upwind exposure) and \ref{fig:hospRF_byAge_downwind} (downwind exposure) present estimates in a more fine-grained way, considering quinquennial age groups.  Here we observe that while there is evidence of certain effects at specific older age groups (for example an increase in hospitalizations among 61-65 year-olds in \ref{fig:hospRF_byAge_upwind} panel (b)), these effects are not consistently observed in the same way as those among infants.  When considering effects for downwind exposure, we observe that estimates are both smaller, and generally null (Appendix Figure \ref{fig:hospRF_byAge_downwind}).
 
 
 %\begin{landscape}
@@ -618,14 +545,250 @@ Indeed, the existing literature find no statistically significant effects of fir
     \cmidrule(r){2-3}\cmidrule(r){4-5}\cmidrule(r){6-7}
     & 100 Ha & 250 Ha & 100 Ha & 250 Ha & 100 Ha & 250 Ha\\ 
     \midrule
-    \multicolumn{7}{l}{\textbf{Panel B: Less Sensitive Ages}}\\
+    \multicolumn{7}{l}{\textbf{Panel B: Less-Sensitive Ages}}\\
     \input{results/tables/RFhosp_ages_nonsensitive.tex} 
     \bottomrule
-    \multicolumn{7}{p{14.6cm}}{{\footnotesize \textbf{Notes}: Sample consists of municipality by week cells between 2004-2019.  All specifications include time (week by year) and space fixed effects (municipality and region by week by year).  Column headers indicate exposure to fires greater than specific sizes.  All observations are weighted by municipality population.  Standard errors clustered by municipality are listed in parentheses.   $^{*}\text{p}<0.10$, $^{**}\text{p}<0.05$, $^{***}\text{p}<0.01$.}}
+    \multicolumn{7}{p{15.4cm}}{{\footnotesize \textbf{Notes}: Sample consists of municipality by week cells between 2004-2019.  All specifications include time (week by year) and space fixed effects (municipality and region by week by year).  Column headers indicate exposure to fires greater than specific sizes.  All observations are weighted by municipality population.  Standard errors clustered by municipality are listed in parentheses.   $^{*}\text{p}<0.10$, $^{**}\text{p}<0.05$, $^{***}\text{p}<0.01$.}}
     \end{tabular}
 \end{table}
 
+Finally, in considering static effects corresponding to equation \ref{eqn:static}, we document effects of upwind exposure by age on specific hospitalization causes in Figure \ref{fig:hospRF_byAge_types}.  Here we present results for each age group documented in Table \ref{tab:RFhospAge} however now considering hospitalizations for respiratory causes (panel (a)), hospitalizations for diseases of the circulatory system (panel (b)), and hospitalization for burns-related causes (panel (c)).  For comparison, results for all hospitalizations are presented in panel (a).  In general results once again point to main impacts being driven by exposure among infants.  There are a small number of other significant effects observed, though these are small (eg effects on respiratory hospitalizations among 16-40 year olds).
+
+
+\begin{figure}[ht!]
+    \centering
+    \caption{Impacts of Fire Exposure (Upwind) on Age-Specific Hospitalisations, by Cause}
+    \label{fig:hospRF_byAge_types}
+    \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=.99\textwidth]{./results/figures/morb_all_150.pdf}
+    \caption{All cause hospitalisations}
+    \end{subfigure}    
+    \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=.99\textwidth]{./results/figures/morb_resp_150.pdf}
+    \caption{Respiratory Causes}
+    \end{subfigure}    
+    \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=.99\textwidth]{./results/figures/morb_circ_150.pdf}
+    \caption{Circulatory Causes}
+    \end{subfigure}    
+    \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=.99\textwidth]{./results/figures/morb_burn_150.pdf}
+    \caption{Burns}
+    \end{subfigure}    
+    \floatfoot{Notes: Each coefficient and set of confidence intervals is drawn from a separate regression model identical to that presented in Table \ref{tab:RFhosp} based on municipality and week cells from 2004--2019.  Outcomes are defined as mortality per 100,000 in the age group indicated on the horizontal axis.  Each panel is based on dependent variable (upwind fire exposure) to any wildfire of 150 hectares are greater.  All other details follow notes to Table \ref{tab:RFhosp}.}
+\end{figure}
+
+\subsection{Dynamic Impacts of Fire Exposure on Hospitalizations}
+\label{sscn:dynmaicEffects}
+In this section we present results for impacts of exposure to wildfires not only in the current period of time (current week) but also in recent periods.  In these analyses, we are interested in dynamic effects for two reasons.  Firstly, these allow us to capture potentially non-immediate effects, which may emerge either if hospitalizations resulting from wildfire exposure are serious and individuals remain hospitalized for a number of weeks, or dynamic in nature, with exposure in a given week also resulting in further complications in the immediate future.  Secondly, these allow us a partial test of identifying assumptions insofar as no effect should be observed on current hospitalizations given exposure to a wildfire in the future.  If we observe such anticipatory effects, we may be concerned that effects estimated up to this point owe to differential trends in outcomes in exposed and non-exposed areas, rather than causal estimates.
+
+Results corresponding to equation \ref{eq:dynamic} are presented in Figure \ref{fig:HospMTerm_Inf}.  Here we consider all cause hospitalizations for infants, which in the previous sub-section have been documented to increase considerably based on exposure to wildfires.  Here we consider 2 lead terms (pre-exposure periods), the instantaneous effect, and 6 further lag terms.  This allows us to capture impacts of wildfires being realized up to a month and a half after the original exposure.   Results are presented for exposure to large fires: fires greater than or equal to 200 Ha in
+panel (a), and greater than or equal to 500 Ha in panel (b). 
+
+%below presents parameter estimates and confidence intervals from estimating the dynamic model in equation (\ref{eq:dynamic}) with 6 lags and 4 leads for hospital admissions for infants (i.e., 0 to 1 years old). Since one should not expect to find significant effects of future wildfire exposure on current hospital admissions, parameter estimates for leads act as a 'placebo test' and should be interpreted as a check of our identification strategy. Results from Figure \ref{fig:HospMTerm_Inf} show that it is only exposure on the current week what drives an increase in hospital admissions for infants. 
+
+%%NOT IN GITHUB!!!  NEED TO FIX.
+\begin{figure}[htpb!]
+    \caption{Dynamic Impacts of Upwind Fires on Infants' Hospitalizations for All Causes}   
+    \label{fig:HospMTerm_Inf}
+    \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=.99\textwidth]{./results/figures/rate_all_00_01_200.pdf}
+    \caption{Fires $\geq$ 200 Ha}
+    \end{subfigure}    
+    \begin{subfigure}{0.49\textwidth}
+    \centering
+     \includegraphics[width=.99\textwidth]{./results/figures/rate_all_00_01_500.pdf}
+     \caption{Fires $\geq$ 500 Ha}
+     \end{subfigure}    
+     \floatfoot{Notes: Each coefficient and set of confidence intervals is drawn from a regression model akin to that presented in Table \ref{tab:RFhosp} based on municipality and week cells from 2004--2019. These estimates are obtained from running a dynamic model, as in equation (\ref{eq:dynamic}), with 6 lags and 2 leads.  All other details follow those provided in Notes to Table \ref{tab:RFhosp}.}
+\end{figure}
+
+Here we observe that exposure to fires results in considerable spikes at the moment of exposure, with little evidence of longer term impacts.  In the case of 200 Ha fires, effects are large and statistically significant, while in the case of 500 Ha fires, results are very similar in magnitude, but with wider confidence intervals.  In general, at least up to 6 weeks post-exposure, we do not observe significant impacts.  This of course does not rule out the exposure to fire in current periods does not have longer term outcomes.  Indeed, results from the wider literature suggest substantial accumulative results may be observed throughout life \citep{Fulleretal2022,Russetal2021}.  Rather, these results simply suggest that in the immediate surroundings of large wildfires, most impacts are observed contemporaneously, with no clear evidence of spillovers in hospitalizations in future weeks.  In work in progress based on linked microdata we are examining how exposure affects future health at an individual level across an individual's life.   
+
+
+\begin{figure}[htpb!]
+    \centering
+    \caption{Dynamic Impacts of Upwind Fire Exposure ($\geq$ 200 Ha) on Respiratory Hospitalizations by Age}
+    \label{fig:HosRespMTerm200_Age}
+    \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=.9\textwidth]{./results/figures/rate_resp_00_01_200.pdf}
+    \caption{Infants}
+    \end{subfigure}    
+    \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=.9\textwidth]{./results/figures/rate_resp_01_05_200.pdf}
+    \caption{Toddlers}
+    \end{subfigure}    
+    \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=.9\textwidth]{./results/figures/rate_resp_06_15_200.pdf}
+    \caption{Children}
+    \end{subfigure}    
+    \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=.9\textwidth]{./results/figures/rate_resp_16_40_200.pdf}
+    \caption{Young Adults}
+    \end{subfigure}
+    \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=.9\textwidth]{./results/figures/rate_resp_41_65_200.pdf}
+    \caption{Middle Age}
+    \end{subfigure}    
+    \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=.9\textwidth]{./results/figures/rate_resp_65_pl_200.pdf}
+    \caption{Elderly}
+    \end{subfigure}  
+    \vspace{-3mm}
+    \floatfoot{Notes: Each coefficient and set of confidence intervals is drawn from a regression model akin to that presented in Table \ref{tab:RFhosp} based on municipality and week cells from 2004--2019. These estimates are obtained from running a dynamic model, as in equation (\ref{eq:dynamic}), with 6 lags and 2 leads.  All other details follow those provided in Notes to Table \ref{tab:RFhosp}.}
+\end{figure}
+
+
+Results for alternative age groups, and for respiratory hospitalizations in particular, are presented in Figure \ref{fig:HosRespMTerm200_Age}.  These results estimate identical models to those documented in Figure \ref{fig:HospMTerm_Inf} panel (a), however now considering only respiratory hospitalizations, and for each age group previously considered in Table \ref{tab:RFhospAge}.  Similar results, but for larger fires of 500 Ha are provided as Appendix Figure \ref{fig:HosRespMTerm500_Age}. 
+Here once again we consistently observe null effects for pre-exposure periods, providing further support for the upwind exposure design.  We observe effects suggestive of increases in hospitalizations at lag 0 for infants (panel (a)), and older adults (panel (f)), but neither are statistically significant.  We observe some evidence of delayed effects for certain groups (for example panel (b) and (f), though effects are considerably smaller to those documented on infants.
+
+\subsection{\textcolor{red}{Impacts on Mortality}}
+\textcolor{red}{TBD WHETHER WE INCLUDE THIS.  IF WE GET UPDATED DATA ON RUBÍ AND THINGS ARE CLEANER; PERHAPS WORTH WRITING THIS IN.  CAN BE DONE QUICKLY IF RESULTS ARE GENERATED...}
+\begin{figure}[htpb!]
+    \centering
+ \label{fig:mortAll}
+    \caption{Impacts of Fire Exposure (Upwind) on Age-Specific Mortality Rate, by Cause}    \label{fig:mortRF_byAge_types}
+    \begin{subfigure}{0.49\textwidth}
+    \centering
+   \includegraphics[width=.99\textwidth]{./results/figures/mort_all_250.pdf}
+    \caption{All cause mortality}
+    \end{subfigure}    
+    \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=.99\textwidth]{./results/figures/mort_resp_250.pdf}
+    \caption{Respiratory Causes}
+    \end{subfigure}    
+    \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=.99\textwidth]{./results/figures/mort_circ_250.pdf}
+    \caption{Circulatory Causes}
+    \end{subfigure}    
+    \begin{subfigure}{0.49\textwidth}
+    \centering
+    \includegraphics[width=.99\textwidth]{./results/figures/mort_burn_250.pdf}
+    \caption{Burns}
+    \end{subfigure}    
+    \floatfoot{Notes: Each coefficient and set of confidence intervals is drawn from a separate regression model identical to that presented in Table \ref{tab:RFhosp} based on municipality and week cells from 2004--2019.  Outcomes are defined as mortality per 100,000 in the age group indicated on the horizontal axis.  Each panel is based on dependent variable (upwind fire exposure) to any wildfire of 250 hectares are greater.  All other details follow notes to Table \ref{tab:RFhosp}.}
+\end{figure}
 \clearpage
+
+
+\section{Conclusion}
+\label{scn:conclusion}
+In this paper we study the impact of wildfires on air contamination in nearby areas, and on population-level health outcomes measured by rates of inpatient hospitalization.  We cross high-quality administrative records of hospitalizations from Chile with rich, fine-grained measures of fires, air pollution, and wind direction over 15 wildfire seasons.  Leveraging presumably random shifts in wind direction, we setup a causal design by comparing outcomes in municipalities in which fires are upwind (and hence exposed) and those in which fires are downwind (and hence unexposed).
+
+We document that upwind fires result in substantial increases in contaminants.  Exposure to an an additional 6 hour period of a wildfire within a day increases contaminants by around 10\%.  Correspondingly, exposure to wildfires is found to result in increased rates of hospitalizations for respiratory causes among the entire population, and for all causes among infants.  In general, infants are observed to be most sensitive to exposure to wildfire, at least when considering the likelihood of hospitalization.  These results are concerning given evidence that the impacts of environmental shocks may last many years into the future.  
+
+Our results suggest that hospitalizations are most affected when individuals are exposed to larger wildfires, and when exposure occurs for longer periods.  We also observe that increases in hospitalizations are contemporaneous, occurring in the week in which wildfires occur, and concentrated among certain causes.  The fact that these results are notable even at the population level suggests that policy responses to wildfires should consider health-system readiness as a key variable.
+
+The impacts of wildfires in this setting are likely to be considerably broader than their impacts on hospitalizations.  Fortunately, this causal design can be extended to include a range of other outcomes, and microdata is available for a considerably broader class of outcomes, and over a broader time period.  We are currently extending this design to cover a substantially longer period (30 years), and additional outcomes.  In particular, we are considering the effect of wildfires on health at birth, mortality, inter-generational impacts on health, educational attainment, and labour market outcomes.  While the results here suggest that the increasing intensity of wildfires will imply increasing costs at a health system level, future work considering additional outcomes will allow us to more completely estimate the individual and society-level costs of wildfire.
+
+
+
+
+
+%\renewcommand{\footnotesize}{\footnotesize}
+\end{spacing}
+\clearpage
+\bibliographystyle{chicago}
+\bibliography{refs}
+
+\begin{spacing}{1.3}
+
+
+  \newpage
+  
+\appendix
+\setcounter{page}{1}
+\renewcommand{\thepage}{A\arabic{page}}
+
+
+
+\begin{center}
+{\Large Online Appendix -- Not for Print}\\
+%\textbf{Identifying the Effects of Climate-Driven Wildfires in Latin America} \\
+\textbf{Wildfires and Human Health: Evidence from 15 Wildfire Seasons in Chile} \\
+Rub\'i Arrizaga, Damian Clarke, Pedro Cubillos, Crist\'obal Ruiz-Tagle
+\end{center}
+\end{spacing}
+
+%\section*{Appendix Figures and Tables}
+
+
+
+%\renewcommand{\listfigurename}{List of Figures (Appendix and Online Appendix)}
+%\renewcommand{\listtablename}{List of Tables (Appendix and Online Appendix)}
+
+%\listoffigures
+%\listoftables
+%\captionsetup[figure]{list=yes}
+%\captionsetup[table]{list=yes}
+\setcounter{table}{0}
+\renewcommand{\thetable}{A\arabic{table}}
+\setcounter{figure}{0}
+\renewcommand{\thefigure}{A\arabic{figure}}
+    
+\section{Appendix Tables}   
+\label{app:Tables}
+%\newgeometry{margin=0.5in}
+%\begin{spacing}{1.3}    
+
+\input{results/descriptives/DS_hospitalization}
+
+%\end{spacing}
+
+
+\clearpage
+\section{Appendix Figures} 
+\label{app:Figures}
+%\newgeometry{margin=0.5in}
+%\begin{spacing}{1.3}
+\begin{figure}[H]
+    \centering
+    \caption{Wildfire Exposures by Duration of Fire}
+    \label{fig:firesHours}
+    \begin{subfigure}{0.45\textwidth}
+          \includegraphics[scale=0.46]{./results/descriptives/firesHours0_3.eps}
+         \caption{$<$3 Hours}
+    \end{subfigure}
+    \begin{subfigure}{0.45\textwidth}
+          \includegraphics[scale=0.46]{./results/descriptives/firesHours3_24.eps}
+         \caption{[3-24) Hours}
+    \end{subfigure}
+
+    \begin{subfigure}{0.45\textwidth}
+          \includegraphics[scale=0.46]{./results/descriptives/firesHours24_72.eps}
+         \caption{24-72) Hours}
+    \end{subfigure}
+    \begin{subfigure}{0.45\textwidth}
+          \includegraphics[scale=0.46]{./results/descriptives/firesHours72_336.eps}
+         \caption{[72-336) Hours}
+    \end{subfigure}
+    \floatfoot{\textbf{Notes:}  Histograms describe the number of fires registered across all records maintained by CONAF by the duration the fire is recorded as burning.  Given the heavy left-skew of the distribution, these are displayed by duration in panels (a)-(d), where panels do not have identically scaled y-axes.  These histograms are based on all fires reported at any time during the 2004-2018 fire seasons.}
+\end{figure}
+\FloatBarrier
+
+\clearpage
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.95]{results/descriptives/national.pdf}
+    \caption{Exposure Design to Wildfires (Distance)}
+    \label{fig:designDist}
+  \floatfoot{Notes: Large orange points represent fires, grey arrows represent wind directions (arrow heads) and velocities (length of arrow).  Shaded colours refer to the distance, in meters, from each municipality to the nearest wildfire.  This is a representative figure at a particular moment of time.  To observe how such patterns evolve over longer periods, refer to the dynamic figure: \url{http://damianclarke.net/resources/fires_and_wind_distance.gif}.}
+\end{figure}    
+
 
 \begin{figure}[htpb!]
     \centering
@@ -698,103 +861,31 @@ Indeed, the existing literature find no statistically significant effects of fir
     \includegraphics[width=.99\textwidth]{./results/figures/ageEffects_downwind_500.eps}
     \caption{Fires $\geq$ 500 Ha}
     \end{subfigure}        
-    \floatfoot{Notes: Refer to notes to Figure     \label{fig:hospRF_byAge_upwind}.  All details are identical in this figure, however here exposure refers to non-upwind exposure to fires in the week and municipality cell.}
+    \floatfoot{Notes: Refer to notes to Figure     \ref{fig:hospRF_byAge_upwind}.  All details are identical in this figure, however here exposure refers to non-upwind exposure to fires in the week and municipality cell.}
 \end{figure}
+
+
+%\begin{figure}[htpb!]
+%    \centering
+%    \caption{Wildfires -- Trends over time}
+%    \label{fig:fireTrends}
+%   \begin{subfigure}{0.49\textwidth}
+%     \centering
+%     \includegraphics[width=.99\textwidth]{Descriptive/Figures/ncounties_year.eps}
+%     \caption{Yearly Fires}
+%   \end{subfigure}    
+%   \begin{subfigure}{0.49\textwidth}
+%     \centering
+%     \includegraphics[width=.99\textwidth]{Descriptive/Figures/ncounties_month.eps}
+%     \caption{Monthly Fires}
+%   \end{subfigure}    
+%\end{figure}
 
 
 \begin{figure}[htpb!]
     \centering
-    \caption{Impacts of Fire Exposure (Upwind) on Age-Specific Hospitalisations, by Cause}
-    \label{fig:hospRF_byAge_types}
-    \begin{subfigure}{0.49\textwidth}
-    \centering
-    \includegraphics[width=.99\textwidth]{./results/figures/morb_all_150.pdf}
-    \caption{All cause hospitalisations}
-    \end{subfigure}    
-    \begin{subfigure}{0.49\textwidth}
-    \centering
-    \includegraphics[width=.99\textwidth]{./results/figures/morb_resp_150.pdf}
-    \caption{Respiratory Causes}
-    \end{subfigure}    
-    \begin{subfigure}{0.49\textwidth}
-    \centering
-    \includegraphics[width=.99\textwidth]{./results/figures/morb_circ_150.pdf}
-    \caption{Circulatory Causes}
-    \end{subfigure}    
-    \begin{subfigure}{0.49\textwidth}
-    \centering
-    \includegraphics[width=.99\textwidth]{./results/figures/morb_burn_150.pdf}
-    \caption{Burns}
-    \end{subfigure}    
-    \floatfoot{Notes: Each coefficient and set of confidence intervals is drawn from a separate regression model identical to that presented in Table \ref{tab:RFhosp} based on municipality and week cells from 2004--2019.  Outcomes are defined as mortality per 100,000 in the age group indicated on the horizontal axis.  Each panel is based on dependent variable (upwind fire exposure) to any wildfire of 140 hectares are greater.  All other details follow notes to Table \ref{tab:RFhosp}.}
-\end{figure}
-
-\clearpage
-
-\subsection{Mid-Term Impacts on Inpatient hospitalizations}
-In this section we present results for impacts of exposure to wildfires not only in the current period of time (current week) but also in recent periods. Figure  \ref{fig:HospMTerm_Inf} below presents parameter estimates and confidence intervals from estimating the dynamic model in equation (\ref{eq:TwoWayDynamic}) with 6 lags and 4 leads for hospital admissions for infants (i.e., 0 to 1 years old). Since one should not expect to find significant effects of future wildfire exposure on current hospital admissions, parameter estimates for leads act as a 'placebo test' and should be interpreted as a check of our identification strategy. Results from Figure \ref{fig:HospMTerm_Inf} show that it is only exposure on the current week what drives an increase in hospital admissions for infants. 
-
-%%NOT IN GITHUB!!!  NEED TO FIX.
-\begin{figure}[htpb!]
-    \label{fig:HospMTerm_Inf}
-    \caption{Mid-Term Impacts of Upwind Fires on Infants' Hospitalizations for All Causes}   
-    \begin{subfigure}{0.49\textwidth}
-    \centering
-    \includegraphics[width=.99\textwidth]{./results/figures/rate_all_00_01_200.pdf}
-    \caption{Fires $\geq$ 200 Ha}
-    \end{subfigure}    
-    \begin{subfigure}{0.49\textwidth}
-    \centering
-     \includegraphics[width=.99\textwidth]{./results/figures/rate_all_00_01_500.pdf}
-     \caption{Fires $\geq$ 500 Ha}
-     \end{subfigure}    
- 
-       \floatfoot{Notes: Each coefficient and set of confidence intervals is drawn from a separate regression model akin to that presented in Table \ref{tab:RFhosp} based on municipality and week cells from 2004--2019. These estimates are obtained from running a dynamic model, as in equation (\ref{eq:TwoWayDynamic}), with 6 lags and 4 leads}
-\end{figure}
-
-
-\clearpage
-\begin{figure}[htpb!]
-    \centering
-    \caption{Mid-Term Impacts of Upwind Fire Exposure ($\geq$ 200 Ha) on Respiratory Hospitalizations, by Age Group}
-    \label{fig:HosRespMTerm200_Age}
-    \begin{subfigure}{0.49\textwidth}
-    \centering
-    \includegraphics[width=.99\textwidth]{./results/figures/rate_resp_00_01_200.pdf}
-    \caption{Infants}
-    \end{subfigure}    
-    \begin{subfigure}{0.49\textwidth}
-    \centering
-    \includegraphics[width=.99\textwidth]{./results/figures/rate_resp_01_05_200.pdf}
-    \caption{Toddlers}
-    \end{subfigure}    
-    \begin{subfigure}{0.49\textwidth}
-    \centering
-    \includegraphics[width=.99\textwidth]{./results/figures/rate_resp_06_15_200.pdf}
-    \caption{Children}
-    \end{subfigure}    
-    \begin{subfigure}{0.49\textwidth}
-    \centering
-    \includegraphics[width=.99\textwidth]{./results/figures/rate_resp_16_40_200.pdf}
-    \caption{Young Adults}
-    \end{subfigure}
-    \begin{subfigure}{0.49\textwidth}
-    \centering
-    \includegraphics[width=.99\textwidth]{./results/figures/rate_resp_41_65_200.pdf}
-    \caption{Middle Age}
-    \end{subfigure}    
-    \begin{subfigure}{0.49\textwidth}
-    \centering
-    \includegraphics[width=.99\textwidth]{./results/figures/rate_resp_65_pl_200.pdf}
-    \caption{Elderly}
-    \end{subfigure}  
-    \floatfoot{Notes: }
-\end{figure}
-
-\begin{figure}[htpb!]
-    \centering
- \label{fig:HosRespMTerm500_Age}
-    \caption{Mid-Term Impacts of Upwind Fire Exposure ($\geq$ 500 Ha) on Respiratory Hospitalizations, by Age Group}    
+    \caption{Dynamic Impacts of Upwind Fire Exposure ($\geq$ 500 Ha) on Respiratory Hospitalizations, by Age Group}    
+    \label{fig:HosRespMTerm500_Age}
     \begin{subfigure}{0.49\textwidth}
     \centering
    \includegraphics[width=.99\textwidth]{./results/figures/rate_resp_00_01_500.pdf}
@@ -825,205 +916,8 @@ In this section we present results for impacts of exposure to wildfires not only
     \includegraphics[width=.99\textwidth]{./results/figures/rate_resp_65_pl_500.pdf}
     \caption{Elderly}
     \end{subfigure}    
-    \floatfoot{Notes: }
+    \floatfoot{Notes: Each coefficient and set of confidence intervals is drawn from a regression model akin to that presented in Table \ref{tab:RFhosp} based on municipality and week cells from 2004--2019. These estimates are obtained from running a dynamic model, as in equation (\ref{eq:dynamic}), with 6 lags and 2 leads.  All other details follow those provided in Notes to Table \ref{tab:RFhosp}.}
 \end{figure}
-
-
-\clearpage
-
-\subsection{Impacts on Mortality}
-\begin{figure}[htpb!]
-    \centering
- \label{fig:mortAll}
-    \caption{Impacts of Fire Exposure (Upwind) on Age-Specific Mortality Rate, by Cause}    \label{fig:mortRF_byAge_types}
-    \begin{subfigure}{0.49\textwidth}
-    \centering
-   \includegraphics[width=.99\textwidth]{./results/figures/mort_all_250.pdf}
-    \caption{All cause mortality}
-    \end{subfigure}    
-    \begin{subfigure}{0.49\textwidth}
-    \centering
-    \includegraphics[width=.99\textwidth]{./results/figures/mort_resp_250.pdf}
-    \caption{Respiratory Causes}
-    \end{subfigure}    
-    \begin{subfigure}{0.49\textwidth}
-    \centering
-    \includegraphics[width=.99\textwidth]{./results/figures/mort_circ_250.pdf}
-    \caption{Circulatory Causes}
-    \end{subfigure}    
-    \begin{subfigure}{0.49\textwidth}
-    \centering
-    \includegraphics[width=.99\textwidth]{./results/figures/mort_burn_250.pdf}
-    \caption{Burns}
-    \end{subfigure}    
-    \floatfoot{Notes: Each coefficient and set of confidence intervals is drawn from a separate regression model identical to that presented in Table \ref{tab:RFhosp} based on municipality and week cells from 2004--2019.  Outcomes are defined as mortality per 100,000 in the age group indicated on the horizontal axis.  Each panel is based on dependent variable (upwind fire exposure) to any wildfire of 250 hectares are greater.  All other details follow notes to Table \ref{tab:RFhosp}.}
-\end{figure}
-
-\clearpage
-
-
-
-
-\subsection{Impacts on Mortality}
-\begin{figure}[htpb!]
-    \centering
-    \caption{All Cause Mortality by Age (per 100,000)}
-    \label{fig:mortAll}
-    \includegraphics{./results/figures/mort_all_250.pdf}
-    \end{figure}
-
-\begin{figure}
-    \centering
-    \caption{Mortality by Age -- Respiratory Causes Only (per 100,000)}
-    \label{fig:mortResp}
-    \includegraphics{./results/figures/mort_resp_250.pdf}
-\end{figure}
-
-\begin{figure}
-    \centering
-    \caption{Mortality by Age -- Circulatory Causes Only (per 100,000)}
-    \label{fig:mortCirc}
-    \includegraphics{./results/figures/mort_circ_250.pdf}
-\end{figure}
-
-\begin{figure}
-    \centering
-    \caption{Mortality by Age -- Burns-Related Only (per 100,000)}
-    \label{fig:mortCirc}
-    \includegraphics{./results/figures/mort_burn_250.pdf}
-\end{figure}
-
-\section{Conclusion}
-In this section we highlight work in progress and future work.  This is laid out in bullet point form below, describing our work in the two months until the presentation of the full draft of the paper.  
-\begin{itemize}
-    \item Cross fine grained exposure data with all principal outcomes on health in a municipality by week panel.
-    \item Incorporate key covariates and mechanisn variables into the paper, including satellite-level measures of PM$_{2.5}$, as well as temperature and precipitation.
-    \item Cross fine-grained exposure data with all principal outcomes on health in an individual level panel, which allows us to follow exposed individuals, as well as their own children in an intergenerational panel.
-    \item Estimate econometric models.
-    \item Conduct a full consideration of exposure to wildfires.  This will consist of both examining variations in exposure owing to distance to each fire, as well as considering that the impacts of exposure are likely only present in cases of large wildfires, rather than small short-lived fires.
-    \item Write final version of the paper, including updating to include full references, and cleaning up exposition throughout.
-\end{itemize}
-
-
-%Currently, we are downloading and processing Wind direction data to identify \textit{downwind} vs \textit{upwind} municipalities for each period of time $t$. This will be followed by a similar analysis that will download and process satellite-level PM$_{2.5}$ data. This polluton data will be used to run a first-stage type analysis of the effect of wildfire $\times$ wind-direction on PM$_{2.5}$ pollution concentrations, per municipality $m$ and for each period of time $t$.
-
-%The \textit{dynamic} analysis remains to be conducted. This should follow \cite{Clarkeetal2022} by identifying those individuals that were impacted by wildfire air pollution while in the womb or early in life, and examine their health outcomes later in life.
-
-%On the other hand, we understand that the drivers of wildfires are different from those of cropfires. Whereas the former is likely to be associated to unintentional ignition and fueled by arid land cover (which can be linked high temperatures and prevalence of droughts), the latter is usually a much more controlled fire that is part of a common agricultural soil management practice. To address this issue, we plan on using data on land cover layers from CONAF as well as satellite-level data from Google Earth Engine.\footnote{Alternative, a proxy identification of these two types of fires could be conducted by identifying those fires that are small and short-lasting, as these tend to be associated to cropfires rather than wildfires}
-
-
-
-%\bibliographystyle{chicago}
-%\bibliography{refs}
-
-%\renewcommand{\footnotesize}{\footnotesize}
-\end{spacing}
-\clearpage
-\bibliographystyle{chicago}
-\bibliography{refs}
-
-\begin{spacing}{1.3}
-
-
-  \newpage
-  
-\appendix
-\setcounter{page}{1}
-\renewcommand{\thepage}{A\arabic{page}}
-
-
-
-\begin{center}
-{\Large Online Appendix -- Not for Print}\\
-%\textbf{Identifying the Effects of Climate-Driven Wildfires in Latin America} \\
-\textbf{Wildfires and Human Health: Evidence from 15 Wildfire Seasons in Chile} \\
-Rub\'i Arrizaga, Damian Clarke, Pedro Cubillos, Crist\'obal Ruiz-Tagle
-\end{center}
-\end{spacing}
-
-%\section*{Appendix Figures and Tables}
-
-
-
-%\renewcommand{\listfigurename}{List of Figures (Appendix and Online Appendix)}
-%\renewcommand{\listtablename}{List of Tables (Appendix and Online Appendix)}
-
-%\listoffigures
-%\listoftables
-%\captionsetup[figure]{list=yes}
-%\captionsetup[table]{list=yes}
-\setcounter{table}{0}
-\renewcommand{\thetable}{A\arabic{table}}
-\setcounter{figure}{0}
-\renewcommand{\thefigure}{A\arabic{figure}}
-    
-%\section{Appendix Tables}   
-%\label{app:Tables}
-%\newgeometry{margin=0.5in}
-%\begin{spacing}{1.3}    
-
-
-
-%\end{spacing}
-
-
-%\clearpage
-\section{Appendix Figures} 
-\label{app:Figures}
-\newgeometry{margin=0.5in}
-\begin{spacing}{1.3}
-\begin{figure}[htpb!]
-    \centering
-    \caption{Wildfire Exposures by Duration of Fire}
-    \label{fig:firesHours}
-    \begin{subfigure}{0.45\textwidth}
-          \includegraphics[scale=0.46]{./results/descriptives/firesHours0_3.eps}
-         \caption{$<$3 Hours}
-    \end{subfigure}
-    \begin{subfigure}{0.45\textwidth}
-          \includegraphics[scale=0.46]{./results/descriptives/firesHours3_24.eps}
-         \caption{[3-24) Hours}
-    \end{subfigure}
-
-    \begin{subfigure}{0.45\textwidth}
-          \includegraphics[scale=0.46]{./results/descriptives/firesHours24_72.eps}
-         \caption{24-72) Hours}
-    \end{subfigure}
-    \begin{subfigure}{0.45\textwidth}
-          \includegraphics[scale=0.46]{./results/descriptives/firesHours72_336.eps}
-         \caption{[72-336) Hours}
-    \end{subfigure}
-    \floatfoot{\textbf{Notes:} }
-\end{figure}
-
-
-
-\begin{figure}
-    \centering
-    \includegraphics[scale=0.95]{results/descriptives/national.pdf}
-    \caption{Exposure Design to Wildfires (Distance)}
-    \label{fig:designDist}
-  \floatfoot{Notes: Large orange points represent fires, grey arrows represent wind directions (arrow heads) and velocities (length of arrow).  Shaded colours refer to the distance, in meters, from each municipality to the nearest wildfire.  This is a representative figure at a particular moment of time.  To observe how such patterns evolve over longer periods, refer to the dynamic figure: \url{http://damianclarke.net/resources/fires_and_wind_distance.gif}.}
-\end{figure}    
-
-
-%\begin{figure}[htpb!]
-%    \centering
-%    \caption{Wildfires -- Trends over time}
-%    \label{fig:fireTrends}
-%   \begin{subfigure}{0.49\textwidth}
-%     \centering
-%     \includegraphics[width=.99\textwidth]{Descriptive/Figures/ncounties_year.eps}
-%     \caption{Yearly Fires}
-%   \end{subfigure}    
-%   \begin{subfigure}{0.49\textwidth}
-%     \centering
-%     \includegraphics[width=.99\textwidth]{Descriptive/Figures/ncounties_month.eps}
-%     \caption{Monthly Fires}
-%   \end{subfigure}    
-%\end{figure}
-
-
 
 \clearpage
 %\setcounter{page}{1}
@@ -1035,7 +929,7 @@ Rub\'i Arrizaga, Damian Clarke, Pedro Cubillos, Crist\'obal Ruiz-Tagle
 
 
 
-\end{spacing}
+%\end{spacing}
 \end{document}
 
 
@@ -1069,3 +963,107 @@ Rub\'i Arrizaga, Damian Clarke, Pedro Cubillos, Crist\'obal Ruiz-Tagle
     \multicolumn{6}{p{15.2cm}}{\footnotesize Notes:}
     \end{tabular}
   \end{table}
+  
+  
+  
+% $X_{mdt}$ denotes a vector of municipality-, district-, time-varying controls. These include prevalence of respiratory viruses, weather variables (a flexible polynomial of temperature and precipitations), socio-economic factors (municipality-specific GDP per-capita, poverty and unemployment indices, etc.). 
+%$\alpha_{md}$ denotes municipality-district-specific fixed effects, capturing any time-invariant characteristic of municipality $m$ that may affect the health outcome $Y_{imdt}$ (E.g., differential municipality-specific capacity to cope with adverse health shocks).
+%$\lambda_{t}$ denotes time-specific fixed effects, capturing any municipality-invariant feature that occurred during the same period of time $t$ (e.g., widespread seasonal health shocks). 
+%$\varphi_{dy}$ denotes district$\times$year fixed effects, capturing any unobserved effect taking place in a given health district $d$, during year $y$ (e.g., opening of a new hospital and/or health care facility serving a given district). 
+
+%Alternatively, we could substitute $\varphi_{dy}$ for one of the following terms:
+%$\varphi_{de}$ (district$\times$season fixed effects),  
+%$\varphi_{dt}$ (district$\times$month fixed effects),  
+%$\varphi_{my}$ (municipality$\times$year fixed effects), or
+%$\varphi_{me}$ (municipality$\times$season fixed effects)
+
+% NB: 'District' se refiere a los servicios de salud de chile (son 23 aprox?). 
+% Otra opcion seria hacer todo a nivel de municipalidad y de mes (i.e. \varphi_{mt}), pero creo que se corre el riesgo de overcontrolling y perder (de cierta manera) la posibilidad de explicar una componente importante de variabilidad en el outcome de salud.  
+
+%Alternatively, if we would like to examine the cumulative effect of Wildfires, say over the last $S$ weeks/days, we may want to estimate the following equation (where $S$ may refer to 7, 15 and 30 days, or 2 and 4 weeks): 
+
+%\begin{equation}
+%Y_{imdt}=\beta_{S} \times S^{-1}\sum_{s=1}^{S} Wildfire_{md(t-s)}+X'_{mdt}\gamma+\alpha_{md}+\lambda_{t}+\varphi_{dy}+\epsilon_{imt}
+%\label{eq:TwoWayFE_Cum}
+%\end{equation}
+
+
+\subsection{Two Way Fixed Effects Model in a Municipal-level Panel}
+\label{sscn:comunatime}
+We construct a municipal-level panel where, for each of Chile's 346 municipalities, we observe a number of outcomes at the weekly and monthly level, over a maximum period of 1992-2019.  We begin by estimating the following two-way, or higher-order, fixed effect model:
+\begin{equation}
+\label{eq:TwoWayFE}
+Y_{mt}=\alpha + \beta\text{Wildfire}_{mt} + \varphi_m + \lambda_t + \bm{X}'_{mt}\bm{\gamma} + \varepsilon_{imt},
+\end{equation}
+where $Y_{mt}$ refers to health or socioeconomic outcomes in municipality $m$ in week or month $t$.  Fully saturated time fixed effects are included as $\lambda_t$ and full municipality-level fixed effects are included as $\varphi_m$ to capture aggregate factors which are invariant across space (seasonality, for example), and factors which are municipal-invariant across times (geography, for example).  A vector of time-varying controls $\bm{X}'_{mt}$ is included which seeks to capture relevant factors which vary by municipality and time, for example exposure to seasonal infectious disease, temperature and precipitations. \footnote{We pay particular attention for these controls not to be affected by the wildfire itself nor correlated with factors driving the ignition and intensity  of wildfires.}  We estimate a series of models graduating the controls to capture potentially more relevant omitted factors in (\ref{eq:TwoWayFE})  In the most demanding specifications this will additionally include region-by-time trends for each of Chile's 16 regions, and even region-by-week fixed effects, to capture factors such as time-varying changes in demographic patterns, epidemiological factors, and so forth.\footnote{Regions in Chile are the second level administrative division, and consist of multiple municipalities. Municipalities are the third level administrative division. There are 16 regions, and 346 municipalities in the country, and each municipality is entirely contained in a single region.} 
+
+The principal independent variable Wildfire$_{mt}$ captures exposure to wildfire in municipality $m$ and time period $t$.
+ % CRT Note: I commented the paragraph below because I don't think we are doing this approach anymore.
+% In principal models, this measures the intensity of wildfires, as measured by the number of fires in a time-by-municipality cell. In alternative models we will use a binary classification (1 if exposed to at least one wildfire, 0 otherwise), and alternative continuous measures such as the total amount of hectares burned, and the total duration of all fires in the municipality. 
+Outcome variables $Y_{mt}$ include rates of hospitalization and mortality rates. When examining rates of hospitalization and mortality, we consider both all cause morbidity and mortality, and causes plausibly related to exposure to wildfire air pollution, such as respiratory and cardiovascular. Models are consistently weighted by municipal population, and standard errors are clustered by municipality to capture potential correlations in error terms within municipalities across time.
+
+Our model can be interpreted as a 'reduced-form' type model. On the other hand, a full 'two-stage' type model would estimate, in a first-stage, the effects of wildfire exposure on ambient air pollution concentrations. This would allow us to obtain a measure of wildfire-driven air pollution. And then, a 'second-stage', would estimate the effect of wildfire-driven air pollution on health outcomes. However, due to the coarse spatial granularity of the available data for PM$_{2.5}$ we abstract from this 'two-stage' approach throughout most of our analysis.\footnote{Nonetheless, in section \ref{sscn:results_pm25} below we present visual results of a first-stage type regression of wildfire exposure on ambient PM$_{2.5}$ concentrations. This estimates the $\delta$ parameter in the following regression:
+
+\begin{equation}
+\label{eq:FirstStagePM}
+\text{PM$_{2.5}$}_{mt}=\rho + \delta\text{Wildfire}_{mt} + \vartheta_m + \theta_t + \bm{X}'_{mt}\bm{\zeta} + \epsilon_{imt},
+\end{equation}
+} 
+
+
+\subsection{Wind Direction in a Two-Way Fixed Effects Model}
+\label{sscn:wind}
+
+
+
+
+To implement this identification strategy, we estimate the following equation:
+\begin{equation}
+\label{eq:TwoWayFE_Wind}
+Y_{mt}=\alpha + \beta\text{Wildfire}_{mt}\times\mathds{1}\{\text{Upwind}_{mt}\} + \varphi_{m} + \lambda_t + \bm{X}'_{mt}\gamma + \varepsilon_{mt}
+\end{equation}
+where, for a given wildfire within a 50 kilometers from municipality $m$ on period $t$, $\mathds{1}\{\text{Upwind}_{mdt}\}$ takes on value equal to $1$ if a wildfire is \textit{upwind}, and takes on value equal to $0$ if a wildfire is \textit{downwind}.\footnote{Alternatively,  $\mathds{1}\{Upwind_{mdt}\}$ could be defined as taking on value equal to $0$ when a wildfire is simply \textit{not-upwind} from a municipality $m$}.  The equation defined in (\ref{eq:TwoWayFE_Wind}) can be viewed as the exogeneized version of (\ref{eq:TwoWayFE}), where all details, apart from the use of the Upwind variation, follow those in (\ref{eq:TwoWayFE}). Similarly, we implement a version of (\ref{eq:TwoWayDynamic}) accounting for the upwind variation.
+
+
+
+%For analyses at the frequency of 6-hour by municipality cells (analyses of pollutant concentrations), these data are used directly.  
+For health  outcomes analyses, these are conducted at a municipality-by-week level. For these outcomes, exposure to the wildfire is measured as the total number of 6-hour periods for which a municipality has a wildfire that is upwind, downwind, or non-upwind. Thus, for example, a municipality in which a wildfire burned for 48 hours and that this wildfire was upwind for five 6-hour blocks and it was non-upwind for three 6-hour blocks, it would be treated as exposed to upwind wildfires for five periods. In this way, upwind and downwind measures capture independent exposure to fires, while also capturing dose-responses in which municipalities exposed to wildfires for a greater period are classified as having a higher dose.  In all specifications, both exposure to upwind and downwind fires are included together as independent variables, such that upwind exposure is estimated \emph{conditional} on any downwind exposure owing to changes in wind direction.  
+%ds for which a municipality is upwind, downwind, or non-upwind from a fire.  Thus, for example, a municipality in which a fire burned for 48 hours (eight 6 hour blocks), 4 of which it was upwind and 4 of which it was non-upwind, it would be treated as exposed (upwind) to 4 periods of wildfire.  And similarly, a municipality in which a fire burned for 48 hours, and in each of the eight 6 hour blocks was downwind from the fire, this municipality would be classified as having 0 upwind time periods of exposure, and 8 downwind time periods of exposure.  In this way, upwind and downwind measures capture independent exposure to fires, while also capturing dose responses in which municipalities exposed to fires for a greater period are classified as having a higher dose response.  In all specifications, both upwind and downwind exposure are included together as independent variables such that downwind exposure is estimated conditional on any upwind exposure owing to changes in wind direction.  
+
+%\textit{Reduced form equation}
+%\[Health_{ict}=\beta Wildfires_{ct}+X'_{ict}\gamma+\alpha_c+\alpha_t+\alpha_{ct}+\epsilon_{ict}\]
+
+%where $Health_{ict}$ refers to the health outcome of individual $i$
+ %in municipality $c$ on period $t$, $Wildfires_{ct}$ denotes exposure to wildfires by municipality $c$ on period $t$ \footnote{for calculating this exposure we'll be using wind speed and wind direction data so that to calculate geographical areas downwind from a wildfire.},  $X$ denotes a vector of controls,  $\alpha_c$ denotes a municipality-specific fixed effect, $\alpha_t$ denotes a time-specific fixed effect, $\alpha_{ct}$ denotes a municipality-time fixed effect, and 
+ %$\epsilon_{ict}$ denotes an idiosyncratic error term 
+ 
+%\textit{Two-stage least square strategy for Air Pollution}
+ 
+%\[AirPollution_{ct}=\pi Wildfires_{ct}+X'_{ict}\omega+\alpha_c+\alpha_t+\alpha_{ct}+\varepsilon_{ict}\]
+%\label{eq:firststg}
+
+%\[Health_{ict}=\delta AirPollution_{ct}+X'_{ict}\theta+\alpha_c+\alpha_t+\alpha_{ct}+\upsilon_{ict}\]\label{eq:secondstg}
+%where $\delta$ captures the effect of wildfire-driven air pollution on the health outcome.
+
+% CRT Note: I'm commenting this entire section because it will not enter the IDB working paper version.
+%\subsection{Estimating Short, Medium and Long-Term Impacts Based on Individual-Level Exposure}
+%The design laid out above allows us to isolate the impacts of wildfire in each municipality on average outcomes in the relatively short term. However it will not allow us to capture possible scarring effects of wildfire air pollution on the 'stock' of health, which would appear over the long run. 
+%For this reason, we implement a second design. The benefit of this design is that, for each individual birth $i$ we can observe individual-level exposure to wildfire air pollution, and follow the individual across his or her entire life (up to the end of the sample period). Thus, observing health at birth, hospital use during life, survival status at each point in time, and -- in cases where females go on to have a future birth -- observing the health of their future children at birth.  
+
+%This design consists of estimating models following:
+%\begin{equation}
+%\label{eq:individual}
+%Y_{imbt}=\alpha + \beta\text{Wildfire}_{mb} + \varphi_m + \mu_b + \lambda_t + \bm{X}'_{imb}\bm{\gamma} + \varepsilon_{imbt},
+%\end{equation}
+%for each individual $i$, born in municipality $m$, birth cohort $b$.  Outcomes are observed at time $t$, where outcomes refer to measures observed over the life-course of all individuals.  Here, exposure to wildfire air pollution will be captured by Wildfire$_{mb}$ and refers to the same measures defined in section \ref{sscn:comunatime}, however explicitly capturing exposure just prior to or soon after birth.\footnote{At this point, Wildfire$_{mb}$ is loosely defined as exposure to wildfire air pollution over the period of time preceding and soon after birth (say, over the third trimester of pregnancy and during the months/trimesters and first year of life). 
+Related, Jayachandran (2009) finds that prenatal smoke exposure from the 1997 wildfire in the third trimester of pregnancy was the most important predictor of ‘missing’ children from the Indonesian 2000 Census.
+
+This will be clarified in subsequent versions of this draft paper.} Individual level controls $\bm{X}_{imb}$ can capture factors such as individual $i$ mother's and father's education and their age at $i$'s birth. Moreover we will control for  fixed effects capturing general temporal effects related to outcomes over time, $\lambda_t$, or over birth cohort, $\mu_b$, or general differences across municipalities within the country, $\varphi_m$.
+
+%Outcomes $Y_{imbt}$ will be measured over the life of individuals across a number of domains.  First, we will consider health at birth, with measures such as birth weight, gestational length, an indicator for low birth weight, and an indicator for prematurity. This will allow us to test if -- at an individual level -- we see immediate impacts of wildfire air pollution exposure on health during the period of time preceding and closely following birth. We expect that these results mimic those from the \textit{static} analysis in subsection \ref{sscn:comunatime}.
+
+%In this second design, we will then examine whether exposure to wildfire air pollution soon before and after birth has any impact of later-life inpatient hospitalization and mortality, at ages $\in\{1,\ldots,25\}$ for all cause morbidity/mortality, and for morbidities related to respiratory causes.  Finally, we will consider whether these exposures can impact future female fertility, and the health of \emph{future} generations among women affected by wildfire air pollution during their own birth, where $Y_{imbt}$ measures later life fertility, and the same health measures at birth, but of babies born to those females who were exposed to fires soon before and soon after their own birth.
+
+% CRT Note: I'm leaving this paragraph below as 'commented' because of the reviewer's comment/criticism about how to interpret downwind exposure.
+% As laid out in section \ref{sscn:wind}, we will additionally combine these models with a strategy which seeks to use exogenous variation in exposure owing to wind direction, estimating individual-level specifications analogous to (\ref{eq:TwoWayFE_Wind}).
+
