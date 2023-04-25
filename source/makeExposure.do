@@ -73,6 +73,7 @@ log using "$LOG/makeExposure.txt", text replace
 local delta = 30
 local firesize 25 50 75 100 125 150 175 200 250 500 0 
 local donuts 5 0
+local MDIST 100
 
 cd "$DAT"
 unzipfile comunaBase
@@ -91,11 +92,8 @@ foreach donut of numlist `donuts' {
             rename CUT_2018 numeric_CUT_2018
             gen CUT_2018 = string(numeric_CUT_2018,"%05.0f")
             *keep if LENGTH_KM>=`donut' 
-            keep if LENGTH_KM>=`donut' & LENGTH_KM<=50
+            keep if LENGTH_KM>=`donut' & LENGTH_KM<=`MDIST'
             keep if Superficie>=`farea' & Superficie!=.
-            
-            rename Lat CONAF_Lat
-            rename Lon CONAF_Lon
             
             split Inicio
             rename Inicio1 beginDate
@@ -220,7 +218,7 @@ foreach donut of numlist `donuts' {
             count
 
             append using "${DAT}/fires/I_`yr'-`yrplus1'", force
-            keep if LENGTH_KM>=`donut' & LENGTH_KM<=50
+            keep if LENGTH_KM>=`donut' & LENGTH_KM<=`MDIST'
             keep if Superficie>=`farea' & Superficie!=.
         
             rename CUT_2018 numeric_CUT_2018
@@ -228,8 +226,6 @@ foreach donut of numlist `donuts' {
 
             dis "Count file ``yr'-yrplus1'"
             count
-            rename Lat CONAF_Lat
-            rename Lon CONAF_Lon
             
             
             split Inicio
@@ -309,7 +305,7 @@ foreach donut of numlist `donuts' {
         
             **Add previous year's overflow (fire that started year prior, but rolled over)
             append using `overflow`yr'', force
-            drop CONAF_Lat CONAF_Lon 
+        
             drop DAY MON HOU HOU_R D2 D3 D4
             compress
 
