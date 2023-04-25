@@ -374,7 +374,7 @@ foreach donut of numlist `donuts' {
             gen F_exposure_45_90   = bearingDifference>45&bearingDifference<=90 
             gen F_exposure_90_135  = bearingDifference>90&bearingDifference<=135 
             gen F_exposure_135_180 = bearingDifference>135&bearingDifference<=180 
-            
+        
             foreach f in upwind downwind nondownwind {
                 gen `f'Duration = duration   if `f'==1
                 gen `f'Surface  = Superficie if `f'==1
