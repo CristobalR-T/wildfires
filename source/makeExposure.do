@@ -91,6 +91,8 @@ foreach donut of numlist `donuts' {
             use "${DAT}/fires/I_2002-2003"
             rename CUT_2018 numeric_CUT_2018
             gen CUT_2018 = string(numeric_CUT_2018,"%05.0f")
+            rename fire_comcode numeric_fire_comcode 
+            gen fire_comcode = string(numeric_fire_comcode,"%05.0f")
             *keep if LENGTH_KM>=`donut' 
             keep if LENGTH_KM>=`donut' & LENGTH_KM<=`MDIST'
             keep if Superficie>=`farea' & Superficie!=.
@@ -151,8 +153,14 @@ foreach donut of numlist `donuts' {
             replace Nom_Comuna = "Los Ángeles" if Nom_Comuna=="Los Angeles"
             replace Nom_Comuna = "Marchihue"   if Nom_Comuna=="Marchigue"
             replace Nom_Comuna = "Puchuncaví"  if Nom_Comuna=="Puchuncavi"
+            replace Nom_Comuna = "Aisén"       if Nom_Comuna=="Aysén"
+            replace Nom_Comuna = "Coihaique"   if Nom_Comuna=="Coyhaique"
+            replace Nom_Comuna = "Marchihue"   if Nom_Comuna=="Marchigüe"
+            replace Nom_Comuna = "Paiguano"    if Nom_Comuna=="Paihuano"
+            replace Nom_Comuna = "Ránquil"     if Nom_Comuna=="Ranquil"
             
             merge m:1 Nom_Comuna using "$DAT/comunaBase"
+            tab Nom_Comuna if _merge==1
             drop if _merge==2
             drop _merge
             
@@ -160,6 +168,7 @@ foreach donut of numlist `donuts' {
             rename Cod_Comuna_2018 CUT_2018
             **THIS IS A KLUDGE -- fix in arcgis -- FIXED NOW.  THIS CONDITION NEVER OCCURS
             tostring CUT_2018_exposure, replace //for new data
+            dis "How many replaces?"
             replace CUT_2018 = CUT_2018_exposure if CUT_2018==""
             
             **strip out preceding zeros
@@ -168,7 +177,14 @@ foreach donut of numlist `donuts' {
             
             cd "${DAT}/wind"
             unzipfile u10_v10_2002
-            merge m:1 CUT_2018 Date using "${DAT}/wind/u10_v10_2002"
+            *merge m:1 CUT_2018 Date using "${DAT}/wind/u10_v10_2002"
+
+            rename CUT_2018 CUT_2018_temp
+            rename fire_comcode CUT_2018
+            dis "LOOK HERE"
+            merge m:1 CUT_2018 Date using "$DAT/wind/u10_v10_2002"                        
+            rename CUT_2018 fire_comcode 
+            rename CUT_2018_temp CUT_2018 
             //drop observations if no fires in municipality*time cell
             drop if _merge==2
             keep if D1=="2003"
@@ -223,6 +239,8 @@ foreach donut of numlist `donuts' {
         
             rename CUT_2018 numeric_CUT_2018
             gen CUT_2018 = string(numeric_CUT_2018,"%05.0f")
+            rename fire_comcode numeric_fire_comcode 
+            gen fire_comcode = string(numeric_fire_comcode,"%05.0f")
 
             dis "Count file ``yr'-yrplus1'"
             count
@@ -284,12 +302,18 @@ foreach donut of numlist `donuts' {
             replace Nom_Comuna = "Los Ángeles" if Nom_Comuna=="Los Angeles"
             replace Nom_Comuna = "Marchihue"   if Nom_Comuna=="Marchigue"
             replace Nom_Comuna = "Puchuncaví"  if Nom_Comuna=="Puchuncavi"
-        
+            replace Nom_Comuna = "Aisén"       if Nom_Comuna=="Aysén"
+            replace Nom_Comuna = "Coihaique"   if Nom_Comuna=="Coyhaique"
+            replace Nom_Comuna = "Marchihue"   if Nom_Comuna=="Marchigüe"
+            replace Nom_Comuna = "Paiguano"    if Nom_Comuna=="Paihuano"
+            replace Nom_Comuna = "Ránquil"     if Nom_Comuna=="Ranquil"
+            
             dis "Merge fires to comuna details (using is 346 lines)"
-            **Merge == 3 is fires occurring in municipalites
-            **Merge == 2 is fires without municipality name assigned yet (to get from lat/long)
-            **Merge == 1 is fires occurring after end of year
+            **Merge == 3 is fires matched to municipality info
+            **Merge == 2 is municipalities which had no fires this year
+            **Merge == 1 is misnamed
             merge m:1 Nom_Comuna using "$DAT/comunaBase"
+            tab Nom_Comuna if _merge==1
             drop if _merge==2
             drop _merge
             
@@ -297,11 +321,14 @@ foreach donut of numlist `donuts' {
             rename Cod_Comuna_2018 CUT_2018
             **THIS IS A KLUDGE -- fix in arcgis -- FIXED NOW.  THIS CONDITION NEVER OCCURS
             tostring CUT_2018_exposure, replace //for new data
+            dis "How many replaces?"
             replace CUT_2018 = CUT_2018_exposure if CUT_2018==""
         
             **strip out preceding zeros
             destring CUT_2018, replace
             tostring CUT_2018, replace
+            destring fire_comcode, replace
+            tostring fire_comcode, replace
         
             **Add previous year's overflow (fire that started year prior, but rolled over)
             append using `overflow`yr'', force
@@ -315,9 +342,18 @@ foreach donut of numlist `donuts' {
             **Merge == 3 is fires occurring in municipalities
             **Merge == 1 is fires occurring outside of year
             **Merge == 2 is municipalities with no fires            
-            merge m:1 CUT_2018 Date using "$DAT/wind/u10_v10_`yr'"
+            //BELOW DOES THE MERGE TO WIND IN EACH MUNICIPALITY
+            //merge m:1 CUT_2018 Date using "$DAT/wind/u10_v10_`yr'"
+            //BELOW DOES THE MERGE TO WIND AT FIRE EPICENTRE
+            rename CUT_2018 CUT_2018_temp
+            rename fire_comcode CUT_2018
+            dis "LOOK HERE"
+            merge m:1 CUT_2018 Date using "$DAT/wind/u10_v10_`yr'"                        
             //drop observations if no fires in municipality*time cell
             drop if _merge==2
+            rename CUT_2018 fire_comcode 
+            rename CUT_2018_temp CUT_2018 
+            
         
             **TAKE FIRES THAT START IN CURRENT YEAR, BUT GO TO NEXT YEAR...
             preserve
@@ -332,24 +368,17 @@ foreach donut of numlist `donuts' {
                 destring `var', replace
             }
         
-            rename beta_grado bearingComuna
-        
-            *gen bearingWind = atan2(viento_u10,viento_v10)*180/c(pi)
-            gen bearingWind = atan2(viento_v10,viento_u10)*180/c(pi)
-            replace bearingWind = bearingWind + 360 if bearingWind<0
+            rename gamma_grado bearingComuna
+
+            //https://sgichuki.github.io/Atmo/
+            gen bearingWind = mod(270-atan2(viento_v10,viento_u10)*180/c(pi), 360)
             gen windSpeed = sqrt(viento_u10^2+viento_v10^2)
-        
             
-            gen windPlus  = bearingWind + `delta'
-            replace windPlus = windPlus-360 if windPlus>360
-            gen windMinus = bearingWind - `delta'
-            replace windMinus = windMinus + 360 if windMinus<0
-        
             ***FOR MAPS
             gen distancia = LENGTH_KM*1000
             preserve
-            rename bearingComuna beta_grado
-            keep CUT_2018_exposure Superficie la2 lo2 beta_grado Date duration distancia 
+            rename bearingComuna gamma_grado
+            keep CUT_2018_exposure Superficie la2 lo2 beta_grado Date duration distancia gamma_grado
             rename (la2 lo2) (la1 lo1) 
             rename CUT_2018_exposure CUT_2018
             rename distancia Distancia
@@ -359,7 +388,7 @@ foreach donut of numlist `donuts' {
         
             **bearing difference calculates distance between wind direction
             **  and municipality direction
-            #delimit ;
+            #delimit ; 
             gen bearingDifference = min(abs(bearingWind-bearingComuna),
                                     360-abs(bearingWind-bearingComuna));
             #delimit cr

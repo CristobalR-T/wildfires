@@ -32,7 +32,7 @@ cap mkdir "$OUT/figures"
 *-------------------------------------------------------------------------------
 *--- (1) Descriptive of particulate matter over time (commented out)
 *-------------------------------------------------------------------------------
-local rundesc 1 //set this as 1 if wanting to make descriptive graph and table
+local rundesc 0 //set this as 1 if wanting to make descriptive graph and table
 
 if `rundesc'==1 {
     cd "$DAT/PM25"
@@ -117,6 +117,10 @@ foreach year of numlist 2004(1)2021 {
                 rename `var' `var'_`dist' 
             }
         }
+        local Fv F_exposure_0_45 F_exposure_45_90 F_exposure_90_135 F_exposure_135_180 
+        foreach var of varlist `Fv' {
+            rename `var' `var'_`dist'
+        }
         sum upwind_`dist' downwind_`dist' nondownwind_`dist' fire
         #delimit ;
         keep pm2p5 Date Cod_Comuna_2018 CUT_2018 upwind* downwind*
@@ -138,12 +142,15 @@ foreach dist of numlist 0(25)200 250 {
     replace downwind_`dist' = 0 if downwind_`dist'==.
     replace nondownwind_`dist' = 0 if nondownwind_`dist'==.
 }
+foreach var of varlist F_exposure* {
+    replace `var' = 0 if `var'==.
+}
 
 destring Cod_Comuna_2018, replace
 gen region = floor(Cod_Comuna_2018/1000)
 bys CUT_2018 (Date): gen time = _n
 
-
+ 
 gen LB_up     = .
 gen UB_up     = .
 gen Beta_up   = .
@@ -159,9 +166,11 @@ gen equality  = .
 local j=1
 sum windSpeed, d
 local median = r(p50)
-local opts absorb(time CUT_2018) cluster(CUT_2018)
+local opts absorb(i.region#i.time CUT_2018) cluster(CUT_2018)
 foreach dist of numlist 0(25)200 250 {
-    reghdfe pm2p5 upwind_`dist' downwind_`dist' nondownwind_`dist', `opts'
+    local X upwind_`dist' downwind_`dist'
+    sum `X'
+    reghdfe pm2p5 `X', `opts'
     replace Beta_up = _b[upwind_`dist'] in `j'
     replace LB_up   = _b[upwind_`dist']+invnormal(0.025)*_se[upwind_`dist'] in `j'
     replace UB_up   = _b[upwind_`dist']+invnormal(0.975)*_se[upwind_`dist'] in `j'
@@ -171,7 +180,6 @@ foreach dist of numlist 0(25)200 250 {
     replace UB_down   = _b[downwind_`dist']+invnormal(0.975)*_se[downwind_`dist'] in `j'
     test upwind_`dist'= downwind_`dist'
     replace equality = r(p) in `j'
-
     replace distance = `dist' in `j'
     local ++j
 }
@@ -186,9 +194,4 @@ legend(order(2 "Estimate (upwind)" 4 "Estimate (downwind)" 1 "95% CI")
 #delimit cr
 graph export "$OUT/figures/exposurePM25.pdf", replace
 drop LB_* UB_* Beta_* distance equality
-
-
-
-
-
 
