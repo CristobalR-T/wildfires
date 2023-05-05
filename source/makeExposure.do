@@ -56,10 +56,6 @@ if c(username)=="damian" {
     global BASE "/home/damian/investigacion/2022/climateChangeLatAm/replication"
 }
 
-if c(username)=="Pedro" {
-    global BASE "C:\Users\Pedro\Documents\GitHub\wildfires"
-}
-
 
 global DAT "${BASE}/data"
 global LOG "${BASE}/log"
