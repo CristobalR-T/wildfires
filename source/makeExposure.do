@@ -73,6 +73,8 @@ log using "$LOG/makeExposure.txt", text replace
 local delta = 30
 local firesize 25 50 75 100 125 150 175 200 250 500 0 
 local donuts 5 0
+local firesize 0 
+local donuts 0
 local MDIST 100
 
 cd "$DAT"
@@ -355,7 +357,7 @@ foreach donut of numlist `donuts' {
             rename CUT_2018_temp CUT_2018 
             
         
-            **TAKE FIRES THAT START IN CURRENT YEAR, BUT GO TO NEXT YEAR...
+            //TAKE FIRES THAT START IN CURRENT YEAR, BUT GO TO NEXT YEAR...
             preserve
             keep if D1=="`yrplus1'"
             drop _merge Long Lat viento_v10 Comuna viento_u10 
@@ -369,11 +371,14 @@ foreach donut of numlist `donuts' {
             }
         
             rename gamma_grado bearingComuna
-
-            //https://sgichuki.github.io/Atmo/
-            gen bearingWind = mod(270-atan2(viento_v10,viento_u10)*180/c(pi), 360)
+            // One line calculation for wind direction and correct for 0 to 360 degrees 
+            // For example, see: https://sgichuki.github.io/Atmo/
+            gen bearingWind = mod(270-atan2(viento_u10,viento_v10)*180/c(pi), 360)
             gen windSpeed = sqrt(viento_u10^2+viento_v10^2)
-            
+            sum bearingWind
+            hist bearingWind
+            graph export "$OUT/windDirections`yr'.eps", replace
+        
             ***FOR MAPS
             gen distancia = LENGTH_KM*1000
             preserve
