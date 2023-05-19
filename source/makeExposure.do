@@ -52,6 +52,7 @@ cap log close
 *-------------------------------------------------------------------------------
 *--- (0) General globals and key parameters
 *-------------------------------------------------------------------------------
+global BASE "C:\Users\crist\Documents\GitHub\wildfires"
 if c(username)=="damian" {
     global BASE "/home/damian/investigacion/2022/climateChangeLatAm/replication"
 }
@@ -72,9 +73,8 @@ log using "$LOG/makeExposure.txt", text replace
 
 local delta = 30
 local firesize 25 50 75 100 125 150 175 200 250 500 0 
-local donuts 5 0
-local firesize 0 
-local donuts 0
+local donuts  50 5 0
+*local MDIST 200
 local MDIST 100
 
 cd "$DAT"
@@ -179,14 +179,16 @@ foreach donut of numlist `donuts' {
             
             cd "${DAT}/wind"
             unzipfile u10_v10_2002
-            *merge m:1 CUT_2018 Date using "${DAT}/wind/u10_v10_2002"
+            //BELOW DOES THE MERGE TO WIND IN EACH MUNICIPALITY
+            merge m:1 CUT_2018 Date using "${DAT}/wind/u10_v10_2002"
 
-            rename CUT_2018 CUT_2018_temp
-            rename fire_comcode CUT_2018
-            dis "LOOK HERE"
-            merge m:1 CUT_2018 Date using "$DAT/wind/u10_v10_2002"                        
-            rename CUT_2018 fire_comcode 
-            rename CUT_2018_temp CUT_2018 
+            //BELOW DOES THE MERGE TO WIND AT FIRE EPICENTRE
+            //rename CUT_2018 CUT_2018_temp
+            //rename fire_comcode CUT_2018
+            //merge m:1 CUT_2018 Date using "$DAT/wind/u10_v10_2002"                        
+            //rename CUT_2018 fire_comcode 
+            //rename CUT_2018_temp CUT_2018 
+
             //drop observations if no fires in municipality*time cell
             drop if _merge==2
             keep if D1=="2003"
@@ -300,6 +302,7 @@ foreach donut of numlist `donuts' {
         
             gen Date = D1 + "-" + D2 + "-" + D3 + " " + D4 + ":00:00"
             rename Comuna Nom_Comuna
+			
             replace Nom_Comuna = "Los Álamos"  if Nom_Comuna=="Los Alamos"
             replace Nom_Comuna = "Los Ángeles" if Nom_Comuna=="Los Angeles"
             replace Nom_Comuna = "Marchihue"   if Nom_Comuna=="Marchigue"
@@ -320,12 +323,12 @@ foreach donut of numlist `donuts' {
             drop _merge
             
             rename CUT_2018 CUT_2018_exposure
-            rename Cod_Comuna_2018 CUT_2018
+            rename Cod_Comuna_2018 CUT_2018 
             **THIS IS A KLUDGE -- fix in arcgis -- FIXED NOW.  THIS CONDITION NEVER OCCURS
             tostring CUT_2018_exposure, replace //for new data
             dis "How many replaces?"
             replace CUT_2018 = CUT_2018_exposure if CUT_2018==""
-        
+			        
             **strip out preceding zeros
             destring CUT_2018, replace
             tostring CUT_2018, replace
@@ -345,17 +348,17 @@ foreach donut of numlist `donuts' {
             **Merge == 1 is fires occurring outside of year
             **Merge == 2 is municipalities with no fires            
             //BELOW DOES THE MERGE TO WIND IN EACH MUNICIPALITY
-            //merge m:1 CUT_2018 Date using "$DAT/wind/u10_v10_`yr'"
+            merge m:1 CUT_2018 Date using "$DAT/wind/u10_v10_`yr'"
+
             //BELOW DOES THE MERGE TO WIND AT FIRE EPICENTRE
-            rename CUT_2018 CUT_2018_temp
-            rename fire_comcode CUT_2018
-            dis "LOOK HERE"
-            merge m:1 CUT_2018 Date using "$DAT/wind/u10_v10_`yr'"                        
+            //rename CUT_2018 CUT_2018_temp 
+            //rename fire_comcode CUT_2018
+            //merge m:1 CUT_2018 Date using "$DAT/wind/u10_v10_`yr'"                        
+            //rename CUT_2018 fire_comcode 
+            //rename CUT_2018_temp CUT_2018 
+            
             //drop observations if no fires in municipality*time cell
             drop if _merge==2
-            rename CUT_2018 fire_comcode 
-            rename CUT_2018_temp CUT_2018 
-            
         
             //TAKE FIRES THAT START IN CURRENT YEAR, BUT GO TO NEXT YEAR...
             preserve
@@ -369,20 +372,27 @@ foreach donut of numlist `donuts' {
             foreach var of varlist Long Lat viento* {
                 destring `var', replace
             }
-        
-            rename gamma_grado bearingComuna
+
+            // This will use angle of the wind 'coming from'
+            //rename gamma_grado bearingComuna
+            // This will use angle of the wind 'coming from'
+            rename beta_grado bearingComuna 
+
             // One line calculation for wind direction and correct for 0 to 360 degrees 
             // For example, see: https://sgichuki.github.io/Atmo/
-            gen bearingWind = mod(270-atan2(viento_u10,viento_v10)*180/c(pi), 360)
+            // This formula is for  wind 'coming from'
+            gen bearingWind = mod(270-atan2(viento_v10,viento_u10)*180/c(pi), 360)
             gen windSpeed = sqrt(viento_u10^2+viento_v10^2)
             sum bearingWind
-            hist bearingWind
+            // This will produce a histogram of wind 'coming from'
+            hist bearingWind, xlabel(45(45)360)
             graph export "$OUT/windDirections`yr'.eps", replace
         
             ***FOR MAPS
             gen distancia = LENGTH_KM*1000
             preserve
-            rename bearingComuna gamma_grado
+            //rename bearingComuna gamma_grado
+            rename bearingComuna beta_grado
             keep CUT_2018_exposure Superficie la2 lo2 beta_grado Date duration distancia gamma_grado
             rename (la2 lo2) (la1 lo1) 
             rename CUT_2018_exposure CUT_2018
@@ -391,8 +401,8 @@ foreach donut of numlist `donuts' {
             save "$DAT/maps/fires`yr'", replace 
             restore
         
-            **bearing difference calculates distance between wind direction
-            **  and municipality direction
+            //bearing difference calculates distance between wind direction
+            //  and municipality direction
             #delimit ; 
             gen bearingDifference = min(abs(bearingWind-bearingComuna),
                                     360-abs(bearingWind-bearingComuna));
@@ -422,14 +432,20 @@ foreach donut of numlist `donuts' {
             by(NOM_COM CUT_2018_exposure Date);
             #delimit cr
             
-            gen date = date(Date, "YMDhms") 
-            rename CUT_2018_exposure Cod_Comuna_2018
+            gen date = date(Date, "YMDhms")
+            rename CUT_2018_exposure Cod_Comuna_2018	
             save "$DAT/windAndFires/fireWind_`yr'_`farea'_donut`donut'.dta", replace
-        
+
+            #delimit ;
+            zipfile "$DAT/windAndFires/fireWind_`yr'_`farea'_donut`donut'.dta",
+            saving("$DAT/windAndFires/fireWind_`yr'_`farea'_donut`donut'.zip", replace);
+            #delimit cr
+            cap erase "$DAT/windAndFires/fireWind_`yr'_`farea'_donut`donut'.dta"	
+
             // GENERATE a municipality by day dataset (groups multiple fires)
             // This is then joined to empty cells so it is a balanced panel
             #delimit ;
-            collapse windSpeed upwind downwind nondownwind 
+            collapse windSpeed upwind downwind nondownwind
             upwindDistance downwindDistance nondownwindDistance fire F_exposure_*,
             by(NOM_COM Cod_Comuna_2018 date);
             #delimit cr
@@ -441,6 +457,7 @@ foreach donut of numlist `donuts' {
             dis "Merge fires by day to full municipality panel"
             **Merge == 2 is days with no fires
             **Merge == 3 is days with fires
+            tostring Cod_Comuna_2018, replace
             merge m:1 Cod_Comuna_2018 date using `year`yr''
             local dsum = `dsum'+`ndays'
             tempfile comunaExposure_`yr'
@@ -460,11 +477,14 @@ foreach donut of numlist `donuts' {
         foreach num of numlist 2004(1)2019 {
             append using `comunaExposure_`num''
         }
+        // Saving municipality-by-day dataset
         
         *-------------------------------------------------------------------------------
         *--- (3a) Generate weekly panel that corresponds to the exposure dates in health
         *-------------------------------------------------------------------------------
-        save "$DAT/exposure/exposureDaily_`farea'ha_donut`donut'.dta", replace
+        cd "$DAT/exposure/"
+        capture drop _merge
+        save "exposureDaily_`farea'ha_donut`donut'.dta", replace
         **This fixes the date with regards to 2001 when egresos starts
         gen accumDays    = date-14975
         gen weeksEgresos = ceil(accumDays/7)
@@ -475,13 +495,16 @@ foreach donut of numlist `donuts' {
                  (sum) upwind   downwind          nondownwind         fire
                  F_exposure_*,  by(weeksEgresos Cod_Comuna_2018);
         #delimit cr
-        
-        save "$DAT/exposure/exposureWeekly_egresos_`farea'ha_donut`donut'.dta", replace
-        
+
+        local fname exposureWeekly_egresos_`farea'ha_donut`donut'
+        save "`fname'.dta", replace
+        zipfile "`fname'.dta", saving("`fname'.zip", replace)		
+        cap erase "`fname'.dta"	
+       
         *-------------------------------------------------------------------------------
         *--- (3b) Generate weekly panel that corresponds to the exposure dates in birth
         *-------------------------------------------------------------------------------
-        use "$DAT/exposure/exposureDaily_`farea'ha_donut`donut'.dta", replace
+        use "exposureDaily_`farea'ha_donut`donut'.dta", replace
         **This fixes the date with regards to 1992 when births starts
         gen accumDays    = date-11687
         gen weeksBirths = ceil(accumDays/7)
@@ -492,13 +515,16 @@ foreach donut of numlist `donuts' {
                  (sum) upwind   downwind         nondownwind         fire
                  F_exposure_*,  by(weeksBirths Cod_Comuna_2018);
         #delimit cr        
-        save "$DAT/exposure/exposureWeekly_births_`farea'ha_donut`donut'.dta", replace
-        
-        
+
+        local fname exposureWeekly_births_`farea'ha_donut`donut'
+        save "`fname'.dta", replace
+        zipfile "`fname'.dta", saving("`fname'.zip", replace)		
+        cap erase "`fname'.dta"	
+
         *-------------------------------------------------------------------------------
         *--- (3b) Generate weekly panel that corresponds to the exposure dates in death
         *-------------------------------------------------------------------------------
-        use "$DAT/exposure/exposureDaily_`farea'ha_donut`donut'.dta", replace
+        use "exposureDaily_`farea'ha_donut`donut'.dta", replace
         **This fixes the date with regards to 1990 when mortality starts
         gen accumDays    = date-10957
         gen weeksDeaths = ceil(accumDays/7)
@@ -509,7 +535,16 @@ foreach donut of numlist `donuts' {
                  (sum) upwind   downwind         nondownwind         fire
                  F_exposure_*,  by(weeksDeaths Cod_Comuna_2018);
         #delimit cr
-        save "$DAT/exposure/exposureWeekly_deaths_`farea'ha_donut`donut'.dta", replace
+
+        local fname exposureWeekly_deaths_`farea'ha_donut`donut'
+        save "`fname'.dta", replace
+        zipfile "`fname'.dta", saving("`fname'.zip", replace)		
+        cap erase "`fname'.dta"	
+
+        //Zipping 'exposureDaily' files
+        local fname exposureDaily_`farea'ha_donut`donut' 
+	zipfile "`fname'.dta", saving("`fname'.zip", replace)		
+	cap erase "`fname'.dta"
     }
 }
 
